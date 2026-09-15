@@ -3167,7 +3167,10 @@ let __autoRaf = 0;
 function renderGameAuto(){
   if(__NORENDER) return;
   if(__autoRaf) return;
-  __autoRaf = requestAnimationFrame(()=>{ __autoRaf = 0; renderGame(); });
+  // 4.206q：挂机渲染降频 200ms（原 rAF 每帧全量重建 DOM）——移动端低配机主线程被逐帧渲染占满时，
+  // 点击事件排队/丢失（表现为「停止」关不掉、速度调不了）；降频后主线程每 200ms 才渲染一次，
+  // 交互及时响应。手动操作走 renderGame() 立即刷新，不受影响。
+  __autoRaf = setTimeout(()=>{ __autoRaf = 0; renderGame(); }, 200);
 }
 function renderGame(){
   if(__NORENDER) return; // 渲染开关（批测免全量重建）
@@ -7433,7 +7436,11 @@ EVENTS = EVENTS.filter(e=>!!e);
 let AUTO = {on:false, speed:4, cool:0, acc:0, pauseMs:1500};
 try{ const _ap = parseInt(localStorage.getItem('dl_rs_autoPause')||'1500', 10); if(!isNaN(_ap) && [0,1500,3000,5000].indexOf(_ap)>=0) AUTO.pauseMs = _ap; }catch(e){}
 document.querySelectorAll('.auto-pause').forEach(b=>{ b.classList.toggle('on', (parseInt(b.dataset.p)||0)===AUTO.pauseMs); });
-$('btnAuto').onclick = ()=>{
+// 4.206q：移动端 touchstart 即时响应（click 在 touchend 后合成，移动端有 ~300ms 延迟，
+// 挂机高频渲染下主线程忙时点击易排队/丢失→「停止」关不掉、速度调不了）；
+// preventDefault 阻止 click 双触发（桌面无 touchstart 走 onclick，防抖锁兜底重复）。
+const _autoToggle = function(ev){
+  if(ev && ev.type === 'touchstart' && ev.cancelable) ev.preventDefault();
   const _wasPaused = AUTO._hqPaused; // 红金品质事件暂停恢复中
   AUTO._hqPaused = false; // 玩家手动操作，取消高品质事件的自动恢复
   const _now = Date.now();
@@ -7445,20 +7452,29 @@ $('btnAuto').onclick = ()=>{
   $('btnAuto').classList.toggle('auto-on', AUTO.on);
   $('autoHint').textContent = AUTO.on ? '自动挂机中……点击「停止」随时接管手动' : '自动模式：行动按需智能选择（缺钱经营/寿元紧张苦修/近关口苦修/低悟性交游/常规历练）、自动选择事件与猎妖，随时可停';
 };
+$('btnAuto').addEventListener('touchstart', _autoToggle, {passive:false});
+$('btnAuto').onclick = _autoToggle;
+const _autoSpeed = function(ev){
+  if(ev && ev.type === 'touchstart' && ev.cancelable) ev.preventDefault();
+  const _s = parseInt(this.dataset.s);
+  AUTO.speed = _s;
+  document.querySelectorAll('.auto-speed').forEach(x=>x.classList.remove('on'));
+  this.classList.add('on');
+};
 document.querySelectorAll('.auto-speed').forEach(b=>{
-  b.onclick = ()=>{
-    AUTO.speed = parseInt(b.dataset.s);
-    document.querySelectorAll('.auto-speed').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');
-  };
+  b.addEventListener('touchstart', _autoSpeed, {passive:false});
+  b.onclick = _autoSpeed;
 });
+const _autoPause = function(ev){
+  if(ev && ev.type === 'touchstart' && ev.cancelable) ev.preventDefault();
+  AUTO.pauseMs = parseInt(this.dataset.p)||0;
+  document.querySelectorAll('.auto-pause').forEach(x=>x.classList.remove('on'));
+  this.classList.add('on');
+  try{ localStorage.setItem('dl_rs_autoPause', String(AUTO.pauseMs)); }catch(e){}
+};
 document.querySelectorAll('.auto-pause').forEach(b=>{
-  b.onclick = ()=>{
-    AUTO.pauseMs = parseInt(b.dataset.p)||0;
-    document.querySelectorAll('.auto-pause').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');
-    try{ localStorage.setItem('dl_rs_autoPause', String(AUTO.pauseMs)); }catch(e){}
-  };
+  b.addEventListener('touchstart', _autoPause, {passive:false});
+  b.onclick = _autoPause;
 });
 setInterval(()=>{
   if(!AUTO.on) return;
@@ -7706,7 +7722,7 @@ renderStart();
 <div id="verBadge" title="F12 控制台：batchTest(300,false)=0加成成仙率 / batchTest(300,true)=满加成 / batchTestQual(200,false)=分层成仙率（准确度最高）" style="position:fixed;right:8px;bottom:4px;font-size:11px;color:rgba(255,255,255,.30);z-index:9999;pointer-events:none;font-family:Consolas,monospace"></div>
 <script>
 /* ============ XL_RS 4.104：开发者工具（版本号 + 成仙率批测） ============ */
-const XL_RS_VERSION = '4.206p'; // 死亡关自动修复后版本号同步
+const XL_RS_VERSION = '4.206q'; // 死亡关自动修复后版本号同步
 (function(){
   const FULL_LH = {superTop:100, shenTop:100, sheTop:100, liLiang:10, minJie:10, tiLi:10, jingShen:10, life:20, wuXing:20, cultTop:30, huntTop:15, epicEv:60, legendEv:50, mythicEv:50, shenGan:100};
   function newLife(lh, opts){
