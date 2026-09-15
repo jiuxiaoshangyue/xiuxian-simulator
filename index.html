@@ -11,7 +11,7 @@
     --blue:#5b8fe0; --purple:#a06fe0; --text:#e8edf7; --border:#2a3a5f; --accent:#e8c96a;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:"Microsoft YaHei","PingFang SC",sans-serif;min-height:100vh}
+  body{background:var(--bg);color:var(--text);font-family:"Microsoft YaHei","PingFang SC",sans-serif;min-height:100vh;min-height:100dvh} /* 4.206o：移动端动态视口（地址栏收展不跳动） */
   #app{max-width:1100px;margin:0 auto;padding:18px 16px 60px}
   #layout{display:grid;grid-template-columns:1.15fr 1fr;gap:18px;align-items:start}
   @media(max-width:820px){#layout{grid-template-columns:1fr}}
@@ -7434,8 +7434,13 @@ let AUTO = {on:false, speed:4, cool:0, acc:0, pauseMs:1500};
 try{ const _ap = parseInt(localStorage.getItem('dl_rs_autoPause')||'1500', 10); if(!isNaN(_ap) && [0,1500,3000,5000].indexOf(_ap)>=0) AUTO.pauseMs = _ap; }catch(e){}
 document.querySelectorAll('.auto-pause').forEach(b=>{ b.classList.toggle('on', (parseInt(b.dataset.p)||0)===AUTO.pauseMs); });
 $('btnAuto').onclick = ()=>{
+  const _wasPaused = AUTO._hqPaused; // 红金品质事件暂停恢复中
   AUTO._hqPaused = false; // 玩家手动操作，取消高品质事件的自动恢复
-  AUTO.on = !AUTO.on;
+  const _now = Date.now();
+  if(AUTO._btnLock && (_now - AUTO._btnLock) < 400) return; // 4.206p：防抖——移动端渲染卡顿下连点只生效一次，避免自动/停止来回翻转
+  AUTO._btnLock = _now;
+  if(_wasPaused){ AUTO.on = false; } // 暂停恢复中点击=明确停止（取消恢复、保持关闭），避免 on=!on 误判为"开启"导致无法关闭
+  else { AUTO.on = !AUTO.on; }
   $('btnAuto').textContent = AUTO.on ? '停止' : '自动';
   $('btnAuto').classList.toggle('auto-on', AUTO.on);
   $('autoHint').textContent = AUTO.on ? '自动挂机中……点击「停止」随时接管手动' : '自动模式：行动按需智能选择（缺钱经营/寿元紧张苦修/近关口苦修/低悟性交游/常规历练）、自动选择事件与猎妖，随时可停';
@@ -7701,7 +7706,7 @@ renderStart();
 <div id="verBadge" title="F12 控制台：batchTest(300,false)=0加成成仙率 / batchTest(300,true)=满加成 / batchTestQual(200,false)=分层成仙率（准确度最高）" style="position:fixed;right:8px;bottom:4px;font-size:11px;color:rgba(255,255,255,.30);z-index:9999;pointer-events:none;font-family:Consolas,monospace"></div>
 <script>
 /* ============ XL_RS 4.104：开发者工具（版本号 + 成仙率批测） ============ */
-const XL_RS_VERSION = '4.206n'; // 死亡关自动修复后版本号同步
+const XL_RS_VERSION = '4.206p'; // 死亡关自动修复后版本号同步
 (function(){
   const FULL_LH = {superTop:100, shenTop:100, sheTop:100, liLiang:10, minJie:10, tiLi:10, jingShen:10, life:20, wuXing:20, cultTop:30, huntTop:15, epicEv:60, legendEv:50, mythicEv:50, shenGan:100};
   function newLife(lh, opts){
