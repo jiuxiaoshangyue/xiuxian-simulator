@@ -239,6 +239,9 @@
     #atlasPanel,#boardPanel{max-height:55vh}
     /* 标题字号适配 */
     .logo{font-size:32px;letter-spacing:3px}
+    /* 4.309 顶部状态胶囊 3 列网格——手机信息栏压缩（原流式堆叠占屏约 1/3） */
+    #topStats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px 6px;margin-bottom:10px;padding:6px 0}
+    #topStats .statpill{font-size:12px;padding:4px 8px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   }
   /* 超窄屏（340px 以下）属性网格改单栏 */
   @media(max-width:340px){
@@ -8475,7 +8478,9 @@ function dnLife(g, _c){ // 寿命/渡劫层——寿尽前 30 年延寿（炼丹
     }
     if((g.danfangOwned||[]).indexOf('shou') < 0 && (g.money||0) >= 1000) return '买寿元方';
   }
-  if(!g._sanxian && lifeCapOf() - g.age < 15 && (g.realm||0) < 9) return '苦修';
+  if(!g._sanxian && lifeCapOf() - g.age < 15 && (g.realm||0) < 9){ // 4.308 寿尽冲刺灵石不足防空转：够苦修则苦修，不够先经营攒钱（同渡劫备战，避免 AUTO 下静默空转卡死）
+    const _kc = Math.floor((15 + g.a.家境*0.2) * (CFG.cult.coef[g.realm] || 1));
+    return (g.money||0) >= _kc ? '苦修' : '经营'; }
   if(isDujieOf()){ // 渡劫期灵石够→苦修（提道行→渡劫率↑），不够→经营备战（每年渡一劫，不涉险）
     const _need9 = Math.floor((15 + g.a.家境*0.2) * (CFG.cult.coef[g.realm] || 1)) * 20;
     return (g.money||0) < _need9 ? '经营' : '苦修';
@@ -8524,7 +8529,9 @@ function execNext(act, g, opts){
     }
     return true;
   }
-  if(act === '经营' || act === '苦修'){ doAction(act); return true; }
+  if(act === '经营' || act === '苦修'){
+    if(act === '苦修'){ const _kc = Math.floor((15 + g.a.家境*0.2) * (CFG.cult.coef[g.realm] || 1)); if((g.money||0) < _kc){ doAction('经营'); return true; } } // 4.308 灵石不足自动转经营，防空转
+    doAction(act); return true; }
   return false;
 }
 function execHeal(g, _log){ // 自动疗伤——按缺口购服疗伤丹（每 80 灵石一颗，攒满即愈）
@@ -8746,7 +8753,7 @@ window.scrollTo(0,0);
 <div id="verBadge" title="F12 控制台：batchTest(300,false)=0加成成仙率 / batchTest(300,true)=满加成 / batchTestQual(200,false)=分层成仙率（准确度最高）" style="position:fixed;right:8px;bottom:4px;font-size:11px;color:rgba(255,255,255,.30);z-index:9999;pointer-events:none;font-family:Consolas,monospace"></div>
 <script>
 /* ============ XL_RS 4.104：开发者工具（版本号 + 成仙率批测） ============ */
-const XL_RS_VERSION = '4.307'; // 猛档成功率封顶上调后版本号同步
+const XL_RS_VERSION = '4.309'; // 移动端顶部信息栏压缩后版本号同步
 (function(){
   const FULL_LH = {superTop:100, shenTop:100, sheTop:100, liLiang:10, minJie:10, tiLi:10, jingShen:10, life:20, wuXing:20, cultTop:30, huntTop:15, epicEv:60, legendEv:50, mythicEv:50, shenGan:100};
   function newLife(lh, opts){
