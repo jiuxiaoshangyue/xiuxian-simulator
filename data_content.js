@@ -168,19 +168,19 @@ const ORG_REQ = {
 const EVAL_FIRST = [
   // XL_RS 4.128：正魔仙凡四套整体风格——每档按 style（xian 仙途 / mo 魔道 / zheng 正道 / fan 凡尘）整段换措辞与价值观，不再是首尾贴句
   {cond: c=>c.lv>=CFG.realms[10] && c.g._heroFate && c.g.age<=45, texts:[
-    c=>{ if(c.g._moAscend) return `万古唯一的${c.qcn}，${c.s.name}——${c.g.age} 岁魔躯凝成，直入九幽。道行 ${c.pw.toLocaleString()}。${c.artifactTxt}你以逆命之姿把仙路踩成脚下血火，诸天万界自此记住了这道魔影——主角两个字，本就该这么写。`;
-         return `万古唯一的${c.qcn}，${c.s.name}——${c.g.age} 岁九劫成仙，道行 ${c.pw.toLocaleString()}。${c.artifactTxt}你触动了那传说中才会显现的逆天机缘，将无数人穷尽一生也走不完的仙路，压缩成了短短数十载。修仙界自此有了主角，而主角，就是你。`; }
+    c=>{ if(c.g._moAscend) return `万古唯一的${c.soulName}——${c.g.age} 岁魔躯凝成，直入九幽。道行 ${c.pw.toLocaleString()}。${c.artifactTxt}你以逆命之姿把仙路踩成脚下血火，诸天万界自此记住了这道魔影——主角两个字，本就该这么写。`;
+         return `万古唯一的${c.soulName}——${c.g.age} 岁九劫成仙，道行 ${c.pw.toLocaleString()}。${c.artifactTxt}你触动了那传说中才会显现的逆天机缘，将无数人穷尽一生也走不完的仙路，压缩成了短短数十载。修仙界自此有了主角，而主角，就是你。`; }
   ]},
   {cond: c=>c.g.endTag==='飞升' || c.g.endTag==='地仙' || c.g.endTag==='九幽真魔' || (c.lv>=CFG.realms[10] && c.g.godTitle), texts:[
     c=>{ const _gd = c.g._gongdeAscend, _mo = c.g._moAscend, _dx = c.g._dixian;
-         if(_mo) return `${c.qcn}${c.s.name}，魔躯既成，九幽为路。${c.godPathTxt}——道行 ${c.pw.toLocaleString()}。${c.artifactTxt}世人畏你如鬼、恨你入骨，而你立于魔焰之巅睥睨众生：这一世，万劫加身，换一场痛快。`;
-         if(_gd) return `${c.qcn}${c.s.name}，功德证道，白日飞升。${c.godPathTxt}，道行 ${c.pw.toLocaleString()}。${c.artifactTxt}你以苍生为念、以善行为梯，把「正」字走成了通天大道——青史之上，你是光照后世的那一笔。`;
-         if(_dx) return `${c.qcn}${c.s.name}，仙基重铸，地仙之身。${c.godPathTxt}，道行 ${c.pw.toLocaleString()}。${c.artifactTxt}渡劫未竟，你硬以凡躯补天缺——此身虽未登真仙，却已是人间最硬的仙骨。`;
-         return `${c.qcn}${c.s.name}，${c.godPathTxt}，九劫成仙，道行 ${c.pw.toLocaleString()}。${c.artifactTxt}你飞升仙域，与天同寿——从炼体到飞升，整整一世的跋涉，在此刻化为永恒。自此云海之上，多了一位俯瞰红尘的逍遥客。`; }
+         if(_mo) return `${c.soulName}，魔躯既成，九幽为路。${c.godPathTxt}——道行 ${c.pw.toLocaleString()}。${c.artifactTxt}世人畏你如鬼、恨你入骨，而你立于魔焰之巅睥睨众生：这一世，万劫加身，换一场痛快。`;
+         if(_gd) return `${c.soulName}，功德证道，白日飞升。${c.godPathTxt}，道行 ${c.pw.toLocaleString()}。${c.artifactTxt}你以苍生为念、以善行为梯，把「正」字走成了通天大道——青史之上，你是光照后世的那一笔。`;
+         if(_dx) return `${c.soulName}，仙基重铸，地仙之身。${c.godPathTxt}，道行 ${c.pw.toLocaleString()}。${c.artifactTxt}渡劫未竟，你硬以凡躯补天缺——此身虽未登真仙，却已是人间最硬的仙骨。`;
+         return `${c.soulName}，${c.godPathTxt}，九劫成仙，道行 ${c.pw.toLocaleString()}。${c.artifactTxt}你飞升仙域，与天同寿——从炼体到飞升，整整一世的跋涉，在此刻化为永恒。自此云海之上，多了一位俯瞰红尘的逍遥客。`; }
   ]},
   {cond: c=>c.lv>=CFG.realms[10], texts:[
-    c=>{ if(c.g._moAscend) return `${c.qcn}${c.s.name}，渡尽九劫，魔躯临世。${c.g.godTitle||'九幽真魔'}之名，${c.artifactTxt}自此刻起，连天都要避你的锋芒。`;
-         return `${c.qcn}${c.s.name}，渡尽九劫，证道成仙。${c.g.godTitle||'真仙'}临世，${c.artifactTxt}你的传说自此刻开始，与日月同辉。`; }
+    c=>{ if(c.g._moAscend) return `${c.soulName}，渡尽九劫，魔躯临世。${c.g.godTitle||'九幽真魔'}之名，${c.artifactTxt}自此刻起，连天都要避你的锋芒。`;
+         return `${c.soulName}，渡尽九劫，证道成仙。${c.g.godTitle||'真仙'}临世，${c.artifactTxt}你的传说自此刻开始，与日月同辉。`; }
   ]},
   {cond: c=>c.lv>=CFG.realms[9] && (c.g._jie||0)>=9, // DL_RS_4.157b：渡劫分档按已渡劫数（原 realms[10]-1==realms[9] 覆盖后两条）
    texts:[
@@ -222,10 +222,10 @@ const EVAL_FIRST = [
          return `合体大能，距大乘只一步之遥。${c.g.org?('你坐镇'+c.g.org+'，声名日隆'):'你已是当世有数的强者'}——只是那一步，终究没能迈过去。` }
   ]},
   {cond: c=>c.lv>=CFG.realms[6], texts:[
-    c=>{ if(c.style==='mo') return `炼虚魔君。灵根真身一出，仙道修士俯首。${c.g.youApt===89?'你本有机会问鼎合体，却把那份天资耗在了刀口舔血上——不悔。':'这条魔路你没能走到尽头，却已足够令人胆寒。'}`
-         if(c.style==='zheng') return `炼虚真君之尊，灵根真身足以震慑一方。${c.g.youApt===89?'天赋本可问鼎合体，奈何时运差了一线——但这一世所积功德，无人能及。':'你凭这一身修为与正气，走到了大多数人到不了的地方。'}`
-         if(c.style==='xian') return `炼虚真君。灵根真身一出，寻常修士俯首。${c.g.youApt===89?'你本有机会问鼎合体，却终究差了一线。':'这条路你没能走到尽头，却已足够耀眼。'}`
-         return `炼虚真君之尊，灵根真身足以震慑一方。${c.g.youApt===89?'天赋本可问鼎合体，奈何时运差了一线。':'你凭这一身修为，走到了大多数人到不了的地方。'}` }
+    c=>{ if(c.style==='mo') return `炼虚魔君。法相一出，仙道修士俯首。${c.g.youApt===89?'你本有机会问鼎合体，却把那份天资耗在了刀口舔血上——不悔。':'这条魔路你没能走到尽头，却已足够令人胆寒。'}`
+         if(c.style==='zheng') return `炼虚真君之尊，法相足以震慑一方。${c.g.youApt===89?'天赋本可问鼎合体，奈何时运差了一线——但这一世所积功德，无人能及。':'你凭这一身修为与正气，走到了大多数人到不了的地方。'}`
+         if(c.style==='xian') return `炼虚真君。法相一出，寻常修士俯首。${c.g.youApt===89?'你本有机会问鼎合体，却终究差了一线。':'这条路你没能走到尽头，却已足够耀眼。'}`
+         return `炼虚真君之尊，法相足以震慑一方。${c.g.youApt===89?'天赋本可问鼎合体，奈何时运差了一线。':'你凭这一身修为，走到了大多数人到不了的地方。'}` }
   ]},
   {cond: c=>c.lv>=CFG.realms[5], texts:[
     c=>{ if(c.style==='mo') return `化神圣者，凶名赫赫。这个境界已是绝大多数修士毕生难以企及的高度，你的名字，修仙界记得——带着三分敬畏。`
