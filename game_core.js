@@ -8404,6 +8404,7 @@ $('btnLifeLog').onclick = ()=>{
   box.style.display='block';
 };
 function startNewLife(){
+  closeAllModals(); // 新局关闭所有遗留弹窗（防轮回重开后成就墙自动弹出）
   // 来世天赋配置持久化（META.gift），开局不再清空——防轮回点白白损失；
   // 先以无定制状态生成基线觉醒（退点回滚目标），再应用已配置的定制（品质保底/命格指定）
   const _g = GIFT;
@@ -8553,6 +8554,48 @@ const _abS=document.getElementById('btnAutoSpeed'); if(_abS){ _abS.addEventListe
 const _abP=document.getElementById('btnAutoPause'); if(_abP){ _abP.addEventListener('touchstart', _autoPause, {passive:false}); _abP.onclick=_autoPause; }
 const _abSt=document.getElementById('btnStrat'); if(_abSt){ _abSt.addEventListener('touchstart', function(ev){ if(ev.cancelable) ev.preventDefault(); openStratModal(); }, {passive:false}); _abSt.onclick=function(){ openStratModal(); }; }
 const _abAch=document.getElementById('btnAch'); if(_abAch){ _abAch.addEventListener('touchstart', function(ev){ if(ev.cancelable) ev.preventDefault(); openAchModal(); }, {passive:false}); _abAch.onclick=function(){ openAchModal(); }; }
+
+// 4.362：所有弹窗关闭 X 按钮加 touchstart 即时响应——移动端高频渲染下 onclick 易丢失，touchstart 立即关闭
+(function(){
+  var modalIds=['stratModal','achModal','mishiModal','cultModal','tribModal','breakModal','wudaoModal'];
+  modalIds.forEach(function(mid){
+    var m=document.getElementById(mid);
+    if(!m) return;
+    var spans=m.querySelectorAll('span[onclick]');
+    for(var i=0;i<spans.length;i++){
+      var s=spans[i];
+      if(s.getAttribute('title')!=='关闭') continue;
+      // 增大触控热区到 44x44px
+      s.style.display='inline-flex';
+      s.style.alignItems='center';
+      s.style.justifyContent='center';
+      s.style.minWidth='32px';
+      s.style.minHeight='32px';
+      s.style.padding='6px';
+      s.addEventListener('touchstart', function(ev){
+        if(ev.cancelable) ev.preventDefault();
+        var fn=this.getAttribute('onclick');
+        if(fn){ try{ eval(fn); }catch(e){} }
+      }, {passive:false});
+    }
+  });
+})();
+
+// 检测是否有任何弹窗打开（自动挂机时暂停，防止高频渲染吞掉关闭按钮事件）
+function anyModalOpen(){
+  // 弹窗打开时自动暂停——防止高频渲染吞掉关闭按钮 touch/click 事件
+  if(anyModalOpen()) return;
+  var ids=['stratModal','achModal','mishiModal','cultModal','tribModal','breakModal','wudaoModal','atlasModal','boardModal','artModal'];
+  for(var i=0;i<ids.length;i++){ var m=document.getElementById(ids[i]); if(m && getComputedStyle(m).display!=='none') return true; }
+  var ev=document.querySelector('.evmodal'); if(ev&&getComputedStyle(ev).display!=='none') return true;
+  return false;
+}
+// 关闭所有弹窗（新局/切屏时调用，防遗留弹窗遮挡）
+function closeAllModals(){
+  var ids=['stratModal','achModal','mishiModal','cultModal','tribModal','breakModal','wudaoModal','atlasModal','boardModal','artModal'];
+  for(var i=0;i<ids.length;i++){ var m=document.getElementById(ids[i]); if(m) m.style.display='none'; }
+  document.querySelectorAll('.evmodal').forEach(function(e){ e.style.display='none'; });
+}
 
 setInterval(()=>{
   if(!AUTO.on) return;
