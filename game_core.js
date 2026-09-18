@@ -1105,11 +1105,11 @@ function _lhStartPress(btn, d, k, max){
       if(btns[0]) btns[0].disabled = (newV <= 0);
       if(btns[1]) btns[1].disabled = (newV >= max || META.lundian <= 0);
     }
-    // 4.363b：全局刷新所有行的"+"按钮 disabled 状态——lundian 是全局共享的，
-    // 减点后其他行的"+"按钮也应恢复可用（否则多行长按加点耗尽后，减一行点其他行仍灰着）
+    // 4.363c：全局刷新所有行的"+"按钮 disabled 状态——lundian 是全局共享的，
+    // 减点后其他行的"+"按钮也应恢复可用（不能跳过已disabled的，否则永远不会被重新启用）
     document.querySelectorAll(".lhrow").forEach(function(r){
       var plusBtn = r.querySelector('button[data-d="1"]');
-      if(plusBtn && !plusBtn.disabled){
+      if(plusBtn){
         var rv = r.querySelector(".lhval");
         if(rv){
           var parts = rv.textContent.split("/");
