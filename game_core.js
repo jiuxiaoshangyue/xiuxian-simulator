@@ -1086,12 +1086,24 @@ function _lhStartPress(btn, d, k, max){
   _lhPressBtn = btn;
   const doPoint = ()=>{
     const v = lunhuiVal(k);
+    var newV = v, stop = false;
     if(d>0){
-      if(META.lundian>0 && v<max){ META.lundian--; META.lunhui[k]=v+1; saveMeta(); renderLunhui(); }
-      else { _lhStopPress(); return; }
+      if(META.lundian>0 && v<max){ META.lundian--; newV = v+1; META.lunhui[k]=newV; }
+      else { stop = true; }
     } else {
-      if(v>0){ META.lundian++; META.lunhui[k]=v-1; saveMeta(); renderLunhui(); }
-      else { _lhStopPress(); return; }
+      if(v>0){ META.lundian++; newV = v-1; META.lunhui[k]=newV; }
+      else { stop = true; }
+    }
+    if(stop){ _lhStopPress(); return; }
+    saveMeta();
+    // 原地更新显示——不重建DOM（重建会销毁触摸目标，导致touchend丢失、长按停不下来）
+    var ld = document.getElementById("lunDian"); if(ld) ld.textContent = META.lundian;
+    var row = btn.closest(".lhrow");
+    if(row){
+      var valEl = row.querySelector(".lhval"); if(valEl) valEl.textContent = newV + "/" + max;
+      var btns = row.querySelectorAll("button");
+      if(btns[0]) btns[0].disabled = (newV <= 0);
+      if(btns[1]) btns[1].disabled = (newV >= max || META.lundian <= 0);
     }
   };
   // 第一次立即执行
@@ -1187,7 +1199,8 @@ function renderLunhuiPoints(box){ // 轮回点加点列表——LUNHUI_DEF 逐�
       b.onmousedown = (e)=>{ e.preventDefault(); _lhStartPress(b, delta, d.k, d.max); };
       b.ontouchstart = (e)=>{ e.preventDefault(); _lhStartPress(b, delta, d.k, d.max); };
       // 防止click事件重复触发（mousedown已经处理了第一次点击）
-      b.onclick = (e)=>{ e.preventDefault(); };
+      b.ontouchmove = (e)=>{ var t=e.touches[0]; if(!t) return; var r=b.getBoundingClientRect(); if(t.clientX<r.left-10||t.clientX>r.right+10||t.clientY<r.top-10||t.clientY>r.bottom+10) _lhStopPress(); };
+      b.ontouchcancel = ()=>{ _lhStopPress(); };
     });
     box.appendChild(row);
   });
