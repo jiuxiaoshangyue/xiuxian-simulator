@@ -1,6 +1,6 @@
 
 /* ============ XL_RS 4.104：开发者工具（版本号 + 成仙率批测） ============ */
-const XL_RS_VERSION = '4.363b'; // 4.361c 弹窗关闭按钮滚动消失修复（4.361b 旧链悟性收敛（4.361 宗门链悟性收敛——新链悟性奖励克制（4.360 宗门差异化——12 宗专属传承链（4.359 突破反馈强化：大境界 lg 亮横幅+小境界飘字（4.358 结构拆分——主逻辑拆出 game_core.js，开发者工具独立成文件；阶段2：修为门槛 expOfLv 判定 → realm 语义（事件数据 lv→realm/pos 迁移 35 处 + prBasic/optEnabled/needText/法宝/职务/境界共鸣改读 realm，删除 expOfLv）
+const XL_RS_VERSION = '4.363c'; // 4.361c 弹窗关闭按钮滚动消失修复（4.361b 旧链悟性收敛（4.361 宗门链悟性收敛——新链悟性奖励克制（4.360 宗门差异化——12 宗专属传承链（4.359 突破反馈强化：大境界 lg 亮横幅+小境界飘字（4.358 结构拆分——主逻辑拆出 game_core.js，开发者工具独立成文件；阶段2：修为门槛 expOfLv 判定 → realm 语义（事件数据 lv→realm/pos 迁移 35 处 + prBasic/optEnabled/needText/法宝/职务/境界共鸣改读 realm，删除 expOfLv）
 (function(){
   const FULL_LH = {superTop:100, shenTop:100, sheTop:100, liLiang:10, minJie:10, tiLi:10, jingShen:10, life:20, wuXing:20, cultTop:30, huntTop:15, epicEv:60, legendEv:50, mythicEv:50, shenGan:100};
   function newLife(lh, opts){
