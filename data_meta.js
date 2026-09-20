@@ -53,7 +53,17 @@ const CHAINS = {
   dongfu: {name:'古修洞府', desc:'发现上古修士遗留洞府，破禁而入，探宝参悟', steps:['df1','df2','df3','df4'], hiddenStep:'df5', bonus:{悟性:2, 神识:4, 修为:0.05}},
   // 4.351 新增两条链
   tianjiao: {name:'天骄争锋', desc:'十年一度诸天骄榜开榜，与同辈骄子论道争锋，连战连捷者加冕魁首', steps:['tj1','tj2','tj3','tj4'], hiddenStep:'tj5', bonus:{声望:15, 悟性:2, 修为:0.04}},
-  mogong: {name:'魔宫秘辛', desc:'魔宫使者夜访递上漆黑请柬，卷入正魔之秘——魔功惑心，是入魔还是斩魔，一念之差', steps:['mg1','mg2','mg3','mg4'], hiddenStep:'mg5', bonus:{悟性:2, 修为:0.04}}
+  mogong: {name:'魔宫秘辛', desc:'魔宫使者夜访递上漆黑请柬，卷入正魔之秘——魔功惑心，是入魔还是斩魔，一念之差', steps:['mg1','mg2','mg3','mg4'], hiddenStep:'mg5', bonus:{悟性:2, 修为:0.04}},
+  // ===== NPC 因缘链（4.364）——有名字、有性格、有故事的江湖人 =====
+  linmobai: {name:'墨白知交', org:'真阳门', identity:'同门师兄', root:'三灵根', realmStart:1, realmAge:17, growth:1.1, desc:'初识同门温润少年林墨白，从藏经阁初遇到秘境生死，切磋论道、托剑相托，终成莫逆之交', steps:['lmb1','lmb2','lmb3','lmb4','lmb5','lmb6'], bonus:{悟性:3, 神识:4, 修为:0.05, 功德:8}},
+  zhaowuji: {name:'无极争锋', org:'太虚剑宗', identity:'同门天才', root:'双灵根', realmStart:1, realmAge:16, growth:1.2, desc:'与骄傲天才赵无极擂台争锋，从对手到知己，于生死间结剑道之谊，白首论剑心', steps:['zwj1','zwj2','zwj3','zwj4','zwj5','zwj6'], bonus:{力量:4, 灵动:4, 修为:0.05, 声望:12}},
+  laojiugui: {name:'醉中真意', org:null, identity:'散修隐世高人', root:'天灵根', realmStart:4, realmAge:120, growth:0.3, desc:'醉卧山涧的老酒鬼似疯癫实深藏，一语惊醒、醉酒传功，方知是隐世高人', steps:['ljg1','ljg2','ljg3','ljg4','ljg5','ljg6'], bonus:{悟性:3, 修为:0.05, 道心:5}},
+  shenqingyi: {name:'青衣丹缘', org:'灵宝阁', identity:'丹道师姐', root:'三灵根', realmStart:2, realmAge:22, growth:1.1, desc:'灵宝阁药庐中初遇清冷丹师沈青衣，从辨药入门到丹炉炸裂、丹成相赠，终得丹道一脉相承', steps:['sqy1','sqy2','sqy3','sqy4','sqy5','sqy6'], bonus:{神识:4, 气血:4, 悟性:1, 修为:0.05}},
+  yeguhong: {name:'孤鸿剑影', org:null, identity:'散修邪剑', root:'双灵根', realmStart:3, realmAge:30, growth:1.2, desc:'山路上拦路打劫的黑衣散修叶孤鸿，亦敌亦友，从剑刃相向后惺惺相惜，终至道心相印', steps:['ygh1','ygh2','ygh3','ygh4','ygh5','ygh6'], bonus:{力量:4, 灵动:4, 道心:4, 修为:0.05}},
+  suxiaohe: {name:'小荷初露', org:'紫霄学宫', identity:'药庐小师妹', root:'四灵根', realmStart:1, realmAge:13, growth:1.0, desc:'紫霄学宫药庐里踩着板凳够药草的小师妹苏小荷，四灵根资质平平却心善手巧，一路采药救人，临别赠药见真情', steps:['sxh1','sxh2','sxh3','sxh4','sxh5','sxh6'], bonus:{气血:5, 神识:3, 功德:6, 修为:0.05}},
+  chutianji: {name:'天机问道', org:'天机阁', identity:'推演大师兄', root:'三灵根', realmStart:2, realmAge:25, growth:1.1, desc:'天机阁观星台上的青衫推演师楚天机，观星命、测天机，与你共参星盘，终窥一线天道预言', steps:['ctj1','ctj2','ctj3','ctj4','ctj5','ctj6'], bonus:{神识:5, 气运:3, 悟性:2, 修为:0.05}},
+  yuehua: {name:'寒月华辉', org:'太阴宫', identity:'月宫师姐', root:'双灵根', realmStart:2, realmAge:24, growth:1.2, desc:'太阴宫月华池畔白发如雪的寒月师姐，月下引气、神纹淬魂，从禁地相遇到月华同辉', steps:['hy1','hy2','hy3','hy4','hy5','hy6'], bonus:{神识:4, 灵动:4, 修为:0.05}},
+  chilian: {name:'赤练血影', org:'血煞宗', identity:'血煞魔女', root:'双灵根', realmStart:3, realmAge:28, growth:1.2, desc:'血煞宗血池旁浴血而笑的红衣魔女赤练，亦正亦邪，从血池炼体到生死与共，终见证血煞飞升', steps:['cl1','cl2','cl3','cl4','cl5','cl6'], bonus:{力量:5, 气血:4, 声望:8, 修为:0.05}}
 }
 /* 4.351 宗门渊源冲突——当前势力 → 敌对势力列表：事件池构建时过滤敌对势力链起点（已开始的链不受影响），
    一处配置全局生效，避免"加入某宗却触发敌对势力机缘"的逻辑矛盾 */

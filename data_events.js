@@ -684,4 +684,297 @@ let EVENTS = [
   {band:4, q:'mythic', minAge:18, name:'国师加冕', text:'从龙之功，皇朝鼎定。新皇亲临洞府，欲奉你为一国国师，享万民香火、倾国供奉。是入朝秉政，还是归隐山林？', chainId:'xingluo', step:'xl5', chainEnd:true, hidden:true, hiddenReq:{声望:90},
    opts:[{label:'入朝秉政', roll:{chance:0.7, extra:0.05, succ:{声望:40, 灵石:2000, 气运:2, 修为:0.15}, succText:'国师金印加身，万民香火汇聚，你的道行随之水涨船高。', fail:{声望:20}, failText:'朝堂倾轧不休，你挂印而去，却也算全身而退。'}}, {label:'归隐山林', roll:{chance:0.65, extra:0.05, succ:{悟性:3, 气运:3}, succText:'你辞谢皇恩，飘然归隐。新皇遥望你的背影，叹道：真仙人也。', fail:{声望:15}, failText:'皇恩难却，你只得受了个虚衔，仍自逍遥。'}}]},
 
+
+  /* ==== 4.364 NPC 因缘系统——好感度0-100，初始50，上限100生死之交，下限0死仇 ==== */
+  /* 好感度层级：0-29死仇/冷淡  30-49平淡  50-69友善  70-89知己  90-100生死之交 */
+  /* 每NPC 6步核心链 + 日常事件 */
+
+  /* --- 林墨白：温润同门，外柔内刚，重情重义。从初识到莫逆 --- */
+  {band:1, q:'rare', minAge:14, name:'初遇林墨白', text:'藏经阁中，你正翻阅一卷残卷，身旁一位青衣少年主动搭话：「这卷功法我读过三遍，第三页的行气路线有误——当走少阳，而非厥阴。」他眉目温润，笑起来如春风拂面。', once:true, chainId:'linmobai', chainStart:true, step:'lmb1', req:{org:'真阳门'}, w:0.2,
+   opts:[{label:'虚心请教', eff:{npcAff:{npc:'linmobai',val:15}, 悟性:1}, txt:'你依言重行气脉，果然顺畅不少。少年自报家门：林墨白，与你同宗。他眉眼弯弯，似是因有人愿意听他讲解而欣喜。'},
+         {label:'不以为然', eff:{npcAff:{npc:'linmobai',val:-10}}, txt:'你嘴上应承，心中却不以为然。林墨白眼底掠过一丝落寞，却仍温和笑道：「无妨，也许是我记错了。」'}]},
+
+  {band:1, q:'uncommon', minAge:20, name:'墨白赠书', text:'林墨白在藏经阁中找到你，递来一本手抄笔记：「我整理了数年的修炼心得，你看看有没有用。」他总是这样，温温和和地关心你。', chainId:'linmobai', step:'lmb2', req:{aff:{npc:'linmobai', min:40}},
+   opts:[{label:'欣然接受', eff:{npcAff:{npc:'linmobai',val:10}, 悟性:1}, txt:'笔记中批注详尽，你获益良多。他见你收下，眉眼弯弯，像是比自己悟了新功法还高兴。'},
+         {label:'婉言谢绝', eff:{npcAff:{npc:'linmobai',val:-8}}, txt:'你说自己的功法已足够。他点点头，将笔记收回袖中，眼底有一丝不易察觉的失落，却仍笑道：「也好，路终究要自己走。」'}]},
+
+  {band:2, q:'rare', minAge:25, name:'墨白切磋', text:'演武场上，林墨白持一柄木剑邀你切磋。他剑势温润如水，却绵里藏针，每一剑都恰到好处地封死你的退路——既不愿伤你，又不肯让你轻易过关。', chainId:'linmobai', step:'lmb3', req:{aff:{npc:'linmobai', min:50}},
+   opts:[{label:'全力相搏', need:{attr:{力量:18, 灵动:16}}, roll:{chance:0.55, extra:0.05, succ:{力量:4, 灵动:3, npcAff:{npc:'linmobai',valval:10}}, succText:'你与他拆了百余招，最终以半招之差落败——他收剑一笑，眸中满是欣赏：「兄台根基扎实，下次再讨教。」', fail:{气血:-5, npcAff:{npc:'linmobai',val:5}}, failText:'你技不如人，被他一剑点在腕上。他连忙收剑致歉，眼中满是愧疚——这般小心，反倒让你觉得他真把你当朋友。'}},
+         {label:'以道论剑', need:{attr:{悟性:18, 神识:16}}, roll:{chance:0.65, extra:0.04, succ:{悟性:3, 神识:2, npcAff:{npc:'linmobai',valval:10}}, succText:'你以道法剑意相和，两人越论越是投机，竟在演武场聊到月上中天。他忽然笑了：「我入宗十年，从未有人与我聊得这般痛快。」', fail:{悟性:1, npcAff:{npc:'linmobai',val:5}}, failText:'你论道不及他圆融，却也从他的话中听出几分新意。他认真记下你的观点，回去想来又有所得。'}}]},
+
+  {band:2, q:'rare', minAge:35, name:'墨白担忧', text:'你最近修炼过于拼命，林墨白找到你时眉头紧锁：「你的脸色很差。修行不是一天的事——跟我去后山走走，吐纳一番。」他语气是少见的认真，不似平日那般温和。', chainId:'linmobai', step:'lmb4', req:{aff:{npc:'linmobai', min:60}},
+   opts:[{label:'随他前往', eff:{气血:5, 神识:3, npcAff:{npc:'linmobai',val:10}}, txt:'后山灵气温润，他陪你静坐半日。你气血复元，心境也平和了不少。他看着你，终于松了口气：「你啊，总是不要命地练。」'},
+         {label:'继续修炼', eff:{气血:-5, npcAff:{npc:'linmobai',val:-8}}, txt:'你不肯停。他叹了口气，默默留下一瓶丹药，转身走了。走了几步又回头：「丹药在桌上，记得吃。」'}]},
+
+  {band:2, q:'epic', minAge:40, name:'墨白同行', text:'一处上古秘境开启，你与林墨白结伴而入。秘境深处，一头守护妖兽虎视眈眈——他低声道：「我牵制它，你寻机破其妖丹。若我撑不住……你先走，莫要管我。」', chainId:'linmobai', step:'lmb5', req:{aff:{npc:'linmobai', min:65}},
+   opts:[{label:'并肩死战', need:{attr:{力量:24, 气血:22}}, roll:{chance:0.5, extra:0.06, succ:{力量:5, 气血:4, 灵石:500, 功德:5, npcAff:{npc:'linmobai',valval:10}}, succText:'你二人配合默契，合力斩杀妖兽！他浑身浴血却笑着拍你肩膀：「我说过你我并肩，无事不成。」秘境中所得灵石他执意多分给你一份。', fail:{气血:-10, 灵石:200, npcAff:{npc:'linmobai',val:-5}}, failText:'妖兽凶悍，你二人苦战方退。他自责没能护住你，沉默了许久。', death:0.04, deathText:'殒命于秘境守护妖兽之口'}},
+         {label:'分头行动', roll:{chance:0.6, extra:0.04, succ:{灵石:300, 悟性:2, npcAff:{npc:'linmobai',valval:10}}, succText:'你独自寻得一处丹房，得灵药数株；他在外围猎得妖材，回来与你分了。临走时他轻声道：「下次……还是并肩吧。」', fail:{气血:-6, npcAff:{npc:'linmobai',val:-10}}, failText:'你误入一处禁制，险些困死其中。林墨白寻你时眼眶通红，将你背出秘境后沉默不语——他怕了，怕失去你这个朋友。'}}]},
+
+  {band:3, q:'epic', minAge:60, name:'墨白托剑', text:'多年修行，你与林墨白早已是莫逆之交。这日他寻你饮酒，酒过三巡，忽然正色道：「我欲闭关冲击化神，若此关不过……这柄木剑，便托付于你。若有一日你见此剑归鞘，便是我已仙逝。」他笑意温润，眼底却有不舍。', chainId:'linmobai', step:'lmb6', chainEnd:true, req:{aff:{npc:'linmobai', min:80}},
+   opts:[{label:'赠剑壮行', need:{attr:{声望:30}}, roll:{chance:0.6, extra:0.05, succ:{声望:10, 悟性:3, 道心:5, npcAff:{npc:'linmobai',valval:10}}, succText:'你接剑在手，郑重道：「我等你出关。」他大笑而去——三年后，一道化神神光冲天而起，他果然破关而出！第一件事便是寻你饮酒。', fail:{悟性:1, npcAff:{npc:'linmobai',val:5}}, failText:'他闭关三载，虽未破关，却也厚积薄发。出关时他先来看你，笑道：「让你白等了。」'}},
+         {label:'与他同修', need:{attr:{悟性:30}}, roll:{chance:0.55, extra:0.05, succ:{悟性:4, 神识:4, 修为:0.05, npcAff:{npc:'linmobai',valval:10}}, succText:'你与他一同闭关，互相印证道法——两人同时触碰到化神壁垒，彼此照拂，终得同破！出关之日他执你之手：「此生得友如此，夫复何求。」', fail:{修为:0.02, npcAff:{npc:'linmobai',val:5}}, failText:'同修未竟全功，却也让你道行精进不少。他道：「你我之道，终究不同，但心是一样的。」'}}]},
+
+  /* --- 赵无极：骄傲天才，嘴硬心软，外冷内热。从对手到知己 --- */
+  {band:1, q:'rare', minAge:16, name:'擂台赵无极', text:'宗门大比擂台上，一位锦衣少年傲然抱臂：「我赵无极，三岁引气、七岁筑基，同辈之中，还未逢敌手。你——敢上来一战么？」他目光如刀，上下打量着你，嘴角却微微上扬——似乎早已期待有人应战。', once:true, chainId:'zhaowuji', chainStart:true, step:'zwj1', req:{realm:[1,5]}, w:0.2,
+   opts:[{label:'上台应战', eff:{npcAff:{npc:'zhaowuji',val:10}}, txt:'你踏上擂台。赵无极眼中闪过一丝不易察觉的欣喜，嘴上却仍不饶人：「有点胆子——别让我太失望。」'},
+         {label:'忍气台下', eff:{npcAff:{npc:'zhaowuji',val:-15}}, txt:'你按捺住火气，拱手认输。他冷哼一声，转身下台——那轻蔑的眼神里，藏着几分失望。'}]},
+
+  {band:1, q:'uncommon', minAge:22, name:'无极限战书', text:'赵无极远远看见你，扬手扔来一块木牌：「半月后，演武场，敢不敢再来一场？别躲着不来！」他抱臂而立，一副"你不敢就是孬种"的表情，耳尖却微微泛红。', chainId:'zhaowuji', step:'zwj2', req:{aff:{npc:'zhaowuji', min:35}},
+   opts:[{label:'准时赴约', eff:{npcAff:{npc:'zhaowuji',val:10}, 力量:1, 灵动:1}, txt:'你们又打了一场。打完他嘴硬"这次让你三招"，转身时脚步却轻快了不少——他其实很高兴你来了。'},
+         {label:'装病不去', eff:{npcAff:{npc:'zhaowuji',val:-10}}, txt:'你称病未去。他在演武场等了一个时辰，第二天见你时冷着脸哼了一声，三天没跟你说话。'}]},
+
+  {band:2, q:'rare', minAge:30, name:'无极论道', text:'多年后，一处论道会上你再遇赵无极。他早已是宗门首席，见你前来，竟主动举杯：「当年擂台上那一掌，力道可还记着？」他别过脸，耳根微红，「……今日我请你喝酒，别多想。」', chainId:'zhaowuji', step:'zwj3', req:{aff:{npc:'zhaowuji', min:45}},
+   opts:[{label:'一笑泯仇', eff:{npcAff:{npc:'zhaowuji',val:15}, 声望:5}, txt:'你接过酒盏一饮而尽——当年的傲气少年，如今也学会了举杯。两人把酒言欢，他嘴硬道：「别误会，我只是看你还顺眼。」'},
+         {label:'旧怨难忘', eff:{npcAff:{npc:'zhaowuji',val:-12}, 道心:-1}, txt:'你端起酒盏却未饮。他看了你一眼，把酒泼在地上，起身就走，走了两步又停下：「……你还是这副德行。」'}]},
+
+  {band:2, q:'rare', minAge:40, name:'无极护短', text:'宗门弟子背后议论你，恰好被赵无极听见。他二话不说拔剑出鞘，剑光凌厉——"他的事，轮得到你们说三道四？"回头却冲你凶巴巴地吼："看什么看！自己争气点！"', chainId:'zhaowuji', step:'zwj4', req:{aff:{npc:'zhaowuji', min:60}},
+   opts:[{label:'道谢', eff:{声望:3, npcAff:{npc:'zhaowuji',val:10}}, txt:'你真心道谢。他脸一红，扭头就走："少废话！下次再让人欺负，我可不帮你！"走出十步又回头，"……真的。"'},
+         {label:'觉得他太冲动', eff:{npcAff:{npc:'zhaowuji',val:-8}}, txt:'你觉得他太过了。他愣了一下，冷笑一声："行，我多管闲事。"转身就走，再没回头。'}]},
+
+  {band:2, q:'epic', minAge:45, name:'无极相助', text:'猎妖途中你遭遇一头千年妖王，性命悬于一线——一道剑光突然从侧方斩来，硬生生劈开妖王的利爪。是赵无极！他嘴角带血，却仍一剑挡在你身前，嘴硬道：「别误会！我只是路过！你要是死了，谁来陪我打架！」', chainId:'zhaowuji', step:'zwj5', req:{aff:{npc:'zhaowuji', min:65}},
+   opts:[{label:'并肩死战', need:{attr:{力量:26, 气血:24}}, roll:{chance:0.45, extra:0.07, succ:{力量:6, 气血:5, 灵石:800, 声望:8, npcAff:{npc:'zhaowuji',valval:10}}, succText:'你与他背靠背死战，终将妖王斩杀！他浑身是血，却仰天大笑：「痛快！这辈子打得最痛快的一架！」笑完又别扭地别过脸，「……谢了啊。」', fail:{气血:-15, 灵石:200, npcAff:{npc:'zhaowuji',val:5}}, failText:'妖王太强，你二人拼死才逃得性命。他一路没说话，到了安全处才闷声道：「下次……跟紧我。」', death:0.06, deathText:'殒命于千年妖王之手'}},
+         {label:'断后掩护', need:{attr:{灵动:24}}, roll:{chance:0.55, extra:0.05, succ:{灵动:5, 声望:5, npcAff:{npc:'zhaowuji',valval:10}}, succText:'你以精妙身法牵制妖王，赵无极寻得破绽一剑封喉。他拍了拍你的肩，语气硬邦邦：「身法不错——但还是不如我。」', fail:{气血:-10, npcAff:{npc:'zhaowuji',val:-5}}, failText:'你掩护不及，被妖王扫中一掌。赵无极拼死将你救出，一路骂骂咧咧：「你能不能别这么让人操心！」'}}]},
+
+  {band:3, q:'legend', minAge:65, name:'无极剑心', text:'白首重逢，赵无极已是一代剑修宗师。他在剑庐中摆了两杯酒，指着石壁上一道剑痕：「这一剑，我磨了三十年。你看看，差在哪里？」你凝视良久，忽然一剑出鞘，在他剑痕旁补上一笔。他先是怒目而视，随即怔在原地。', chainId:'zhaowuji', step:'zwj6', chainEnd:true, req:{aff:{npc:'zhaowuji', min:80}},
+   opts:[{label:'剑意共鸣', need:{attr:{灵动:30, 悟性:28}}, roll:{chance:0.5, extra:0.08, succ:{灵动:8, 悟性:3, 修为:0.06, 声望:10, npcAff:{npc:'zhaowuji',valval:10}}, succText:'两道剑意交相辉映，剑庐中剑气纵横三息！赵无极掷剑于地，仰天大笑：「知我者，兄也！」笑罢又瞪你一眼，「……比我还是差一点。」', fail:{灵动:3, 悟性:1, npcAff:{npc:'zhaowuji',val:5}}, failText:'你这一剑虽不及他圆融，却另有一番天地。他捻须沉吟，嘴上不饶人：「马马虎虎。」眼底却满是欣慰。'}},
+         {label:'以剑论道', need:{attr:{神识:28}}, roll:{chance:0.55, extra:0.06, succ:{神识:6, 悟性:2, 修为:0.05, npcAff:{npc:'zhaowuji',valval:10}}, succText:'你一言点破他三十年剑障——赵无极如遭雷击，怔在原地，随即长揖到地：「一语点醒梦中人。」直起身时眼眶微红，「……你小子，总算有一件事比我强。」', fail:{神识:2, npcAff:{npc:'zhaowuji',val:5}}, failText:'你论剑虽未点透，却也让他有了新的启发。他哼了一声：「说得还行。」'}}]},
+
+  /* --- 老酒鬼：疯癫散修，深藏不露，大智若愚。从醉汉到师友 --- */
+  {band:1, q:'uncommon', minAge:18, name:'山涧醉汉', text:'山涧旁，一个蓬头垢面的老酒鬼横卧石上，酒葫芦滚在一旁。他醉眼惺忪地瞥了你一眼：「小娃娃，你身上灵气淤塞——再这么练下去，三十岁必走火入魔。」你一愣，他却又打起了呼噜。', once:true, chainId:'laojiugui', chainStart:true, step:'ljg1', w:0.25,
+   opts:[{label:'留步请教', eff:{npcAff:{npc:'laojiugui',val:15}, 悟性:1}, txt:'你在他身旁坐了下来。他嘟囔了几句胡话，却隐隐暗合行气之理——这老人，绝不简单。'},
+         {label:'摇头离开', eff:{npcAff:{npc:'laojiugui',val:-10}}, txt:'你只当他是个疯癫醉汉，摇摇头径自走了。身后传来他含混的嘟囔：「年轻娃娃，不信老人言……」'}]},
+
+  {band:1, q:'common', minAge:22, name:'酒鬼蹭饭', text:'老酒鬼不知从哪冒出来，一屁股坐在你对面，指了指你的酒壶："小娃娃，一个人喝酒多没意思——分我一口？"他嬉皮笑脸，全然不顾旁人侧目。', chainId:'laojiugui', step:'ljg2', req:{aff:{npc:'laojiugui', min:40}},
+   opts:[{label:'与他同饮', eff:{npcAff:{npc:'laojiugui',val:10}, 道心:1}, txt:'两人喝到月上中天。他醉了，嘴里哼着谁也听不懂的调子，你却从中听出几分真意。临走他拍你肩："下次我带酒。"'},
+         {label:'不肯给', eff:{npcAff:{npc:'laojiugui',val:-8}}, txt:'你把酒杯护在怀里。他撇撇嘴："小气。"摇摇晃晃地走了，走了两步又回头，"……真不给？"'}]},
+
+  {band:2, q:'rare', minAge:35, name:'醉汉指点', text:'瓶颈多年，你独坐山巅苦思不得其解。忽然闻到一股酒气——老酒鬼不知何时坐在你身后，灌了口酒道：「你这是在钻牛角尖。道如流水，不争先、不滞后——你那套功法，第三层行气根本就是错的。」他打了个酒嗝，眼神却清明得可怕。', chainId:'laojiugui', step:'ljg3', req:{aff:{npc:'laojiugui', min:50}},
+   opts:[{label:'闻言顿悟', need:{attr:{悟性:20}}, roll:{chance:0.6, extra:0.05, succ:{悟性:4, 修为:0.06, npcAff:{npc:'laojiugui',valval:10}}, succText:'他一句话如醍醐灌顶！你当场重新行气，淤塞多年的经脉豁然贯通。老酒鬼眯眼笑了：「孺子可教——来，陪我喝一壶。」', fail:{悟性:1, npcAff:{npc:'laojiugui',val:5}}, failText:'你似懂非懂，却隐约抓住了一丝方向。他摇摇头，又灌了口酒。'}},
+         {label:'半信半疑', eff:{npcAff:{npc:'laojiugui',val:5}}, txt:'你将信将疑，他却醉醺醺地哼着小调走了。你记着他的话，回去一试——果然暗合至理。'}]},
+
+  {band:2, q:'rare', minAge:45, name:'醉酒真言', text:'老酒鬼喝得酩酊大醉，坐在你身边嘟囔："我年轻时……也像你一样，什么都不信。后来啊……"他忽然抓住你的袖子，眼神清明了一瞬，"修仙这条路，别走太急。有些东西，比修为重要。"', chainId:'laojiugui', step:'ljg4', req:{aff:{npc:'laojiugui', min:60}},
+   opts:[{label:'认真倾听', eff:{道心:3, npcAff:{npc:'laojiugui',val:10}}, txt:'他说完就醉倒了，你却把这番话记在了心里。月光下他的侧脸苍老而平静，像一口古井。'},
+         {label:'当他醉话', eff:{npcAff:{npc:'laojiugui',val:-5}}, txt:'你笑了笑，没当回事。他在睡梦中翻了个身，嘟囔了一句你没听清的话——也许是"可惜"。'}]},
+
+  {band:2, q:'epic', minAge:50, name:'醉酒传功', text:'老酒鬼忽然拦住你的去路，酒葫芦往你怀里一塞：「陪我喝三碗，我传你一套吐纳法——别嫌我醉，我这套东西，比你宗门藏经阁里的破烂强十倍。」他打了个酒嗝，眼神却清明得可怕。', chainId:'laojiugui', step:'ljg5', req:{aff:{npc:'laojiugui', min:65}},
+   opts:[{label:'与他共饮', need:{attr:{悟性:24}}, roll:{chance:0.55, extra:0.06, succ:{悟性:4, 神识:5, 修为:0.07, npcAff:{npc:'laojiugui',valval:10}}, succText:'三碗酒下肚，他手指在你眉心一点——一套玄妙无比的吐纳法涌入识海。你运转一周天，只觉神清气爽！老酒鬼咧嘴一笑：「这才像话。」', fail:{悟性:2, npcAff:{npc:'laojiugui',val:5}}, failText:'你只承得他功法的皮毛，却已受益匪浅。他拍了拍你的肩：「急不得。」'}},
+         {label:'婉拒美意', eff:{npcAff:{npc:'laojiugui',val:-10}, 道心:2}, txt:'你拱手谢过，不敢承此大礼。他也不勉强，只是咧嘴一笑：「可惜了。」转身踉跄而去。'}]},
+
+  {band:3, q:'legend', minAge:65, name:'高人不露', text:'你终于得知——那老酒鬼，三百年前曾是纵横一方的化神大能。他因厌倦纷争而装疯卖傻，遁迹山林。这日他又坐回那块大石头上，见你前来，扔过来一个新酒葫芦：「小子，这葫芦里的酒，够你喝到飞升。」', chainId:'laojiugui', step:'ljg6', chainEnd:true, req:{aff:{npc:'laojiugui', min:80}},
+   opts:[{label:'拜谢师恩', need:{attr:{声望:40}}, roll:{chance:0.6, extra:0.05, succ:{声望:15, 悟性:4, 气运:2, 修为:0.06, npcAff:{npc:'laojiugui',valval:10}}, succText:'你长跪不起。他摆摆手：「不必谢我，你自己的道，终究要自己走。」说罢飘然而去，再无踪迹。只留下那壶酒，和一句"下次见面，可别再认不出我了"。', fail:{悟性:2, npcAff:{npc:'laojiugui',val:5}}, failText:'他受了你一礼，又扔给你一枚护身玉符，然后晃晃悠悠走了。'}},
+         {label:'与他对饮', need:{attr:{悟性:30}}, roll:{chance:0.5, extra:0.06, succ:{悟性:5, 道心:5, 神识:4, npcAff:{npc:'laojiugui',valval:10}}, succText:'你与他对饮一夜，从天道聊到酒道。天明时他醉倒石上，你却已心境澄明，仿佛又看透了一层。他嘟囔道："你这小子……喝酒倒是有点意思。"', fail:{悟性:2, npcAff:{npc:'laojiugui',val:5}}, failText:'你酒量不及他，先醉倒了。醒来时他已不在，只留下半葫芦酒。'}}]},
+  /* --- NPC 日常事件：小概率随机触发的风味事件，根据好感度给不同反应 --- */
+  {band:1, q:'common', minAge:25, name:'墨白煮茶', text:'林墨白在他的小屋前煮了一壶灵茶，见你路过便招手：「刚煮的，尝尝？」茶香袅袅，他坐姿端正，连倒茶的动作都像一幅画。', w:0.1,
+   opts:[{label:'坐下同饮', eff:{npcAff:{npc:'linmobai',val:3}, 神识:1}, txt:'茶是好茶，人也是好人。他与你聊了些宗门琐事，时光悠然。'},
+         {label:'赶路要紧', eff:{npcAff:{npc:'linmobai',val:-3}}, txt:'你摆摆手继续赶路。他也不恼，只是自己慢慢饮完。'}]},
+
+  {band:1, q:'common', minAge:30, name:'无极限练剑', text:'天还没亮，你便听到后山传来剑风破空之声。赵无极独自在崖边练剑，一遍又一遍，衣袍尽湿。他察觉到你，头也不回：「看什么看！没见过人练剑？」', w:0.1,
+   opts:[{label:'陪他练剑', eff:{npcAff:{npc:'zhaowuji',val:3}, 灵动:1}, txt:'你拔剑陪他对练了半个时辰。他收剑时脸色微红——不知是累的，还是不好意思。'},
+         {label:'远远看着', eff:{npcAff:{npc:'zhaowuji',val:-2}}, txt:'你没上前，悄悄回了屋。第二天他看你的眼神有点怪。'}]},
+
+  {band:1, q:'common', minAge:25, name:'酒鬼醉卧', text:'老酒鬼又醉倒在路边，酒葫芦滚在一旁。几个路过的弟子窃笑不已，他却鼾声如雷，浑然不觉。', w:0.12,
+   opts:[{label:'扶他回家', eff:{npcAff:{npc:'laojiugui',val:5}}, txt:'你把他扶回他那间破茅屋。他迷迷糊糊塞给你一颗丹药："拿着……下次别再走火入魔了。"'},
+         {label:'绕路走过', eff:{npcAff:{npc:'laojiugui',val:-3}}, txt:'你摇摇头绕路走了。身后传来他含混的嘟囔："世风日下啊……"'}]},
+
+  {band:2, q:'uncommon', minAge:40, name:'墨白修剑', text:'林墨白的木剑裂了一道缝，他坐在石阶上，用细砂纸慢慢打磨，神情专注得像在对待一件稀世珍宝。「这剑跟了我二十年，」他淡淡道，「该换了，又舍不得。」', req:{aff:{npc:'linmobai', min:60}}, w:0.08,
+   opts:[{label:'帮他修剑', eff:{npcAff:{npc:'linmobai',val:4}, 神识:1}, txt:'你帮他磨了半日。剑修好后他拿在手中端详许久，忽然笑了：「又能陪我走一段了。」'},
+         {label:'送他新剑', eff:{灵石:-200, npcAff:{npc:'linmobai',val:5}}, txt:'你送了他一柄新剑。他推辞不过收下，郑重道谢——你看得出他是真喜欢。'}]},
+
+  {band:2, q:'uncommon', minAge:45, name:'无极论剑', text:'赵无极在剑庐中磨剑，见你来了，把剑一扔：「来，接我三剑——看看你这些年有没有长进。」他眼中战意熊熊，却又留了三分余地。', req:{aff:{npc:'zhaowuji', min:60}}, w:0.08,
+   opts:[{label:'接他三剑', need:{attr:{灵动:25}}, roll:{chance:0.5, extra:0.05, succ:{灵动:4, 力量:2, npcAff:{npc:'zhaowuji',valval:10}}, succText:'你接了他三剑，虽然狼狈，却没倒下。他哈哈一笑：「不错不错，总算不是废物了！」', fail:{气血:-5, npcAff:{npc:'zhaowuji',val:2}}, failText:'你被他第三剑震退数步。他收剑而立，嘴上说"就这？"，眼底却有欣慰。'}},
+         {label:'婉拒', eff:{npcAff:{npc:'zhaowuji',val:-3}}, txt:'你今日不适。他哼了一声：「怂了。」却没勉强你。'}]},
+
+  {band:2, q:'uncommon', minAge:50, name:'酒佛教画', text:'老酒鬼用树枝在地上画了一幅歪歪扭扭的山水图。「你看这山，」他醉醺醺地说，「像不像你练的那套功法？拐来拐去，其实就一条路。」你凝神一看，果然暗合行气之理。', req:{aff:{npc:'laojiugui', min:60}}, w:0.08,
+   opts:[{label:'悟其意', eff:{悟性:2, npcAff:{npc:'laojiugui',val:3}}, txt:'你对着那幅图看了半宿，第二天醒来时图已不见，意境却留在了识海。'},
+         {label:'没看懂', eff:{npcAff:{npc:'laojiugui',val:-2}}, txt:'你看了半天只看出一团乱。他撇撇嘴，把图踩花了。'}]},
+  /* ==== 4.364d 第二批 NPC：沈青衣/叶孤鸿/苏小荷 ==== */
+
+  /* --- 沈青衣：高冷丹道师姐，外冷内热，不苟言笑却暗中提携后辈 --- */
+  {band:1, q:'rare', minAge:16, name:'药庐初遇', text:'药庐中烟气缭绕，一位青衣女子背对你分拣药材，手法精准如外科手术刀。她头也不回：「药材别碰，丹炉别开，看完就走。」声音清冷如玉石相击。', once:true, chainId:'shenqingyi', chainStart:true, step:'sqy1', req:{org:'灵宝阁'}, w:0.18,
+   opts:[{label:'恭敬请教', eff:{npcAff:{npc:'shenqingyi',val:12}, 神识:1}, txt:'你毕恭毕敬问了一个炼丹基础问题。她沉默片刻，淡淡答了一句——简洁至极，却字字珠玑。'},
+         {label:'好奇触碰', eff:{npcAff:{npc:'shenqingyi',val:-12}}, txt:'你忍不住伸手去碰丹炉。她反手一掌拍开你的手，力道拿捏得恰到好处——不重，但足以让你记住。「说了别碰。」'}]},
+
+  {band:1, q:'uncommon', minAge:22, name:'青衣赠丹', text:'沈青衣在你路过时丢下一个瓷瓶，面无表情：「上个月你筑基时气血虚浮，这瓶培元丹拿着。」说完就走，耳根却微微泛红。', chainId:'shenqingyi', step:'sqy2', req:{aff:{npc:'shenqingyi', min:40}},
+   opts:[{label:'道谢收下', eff:{npcAff:{npc:'shenqingyi',val:10}, 气血:8}, txt:'丹药确实管用。你想道谢，她已经走远，只留下一个清冷的背影。'},
+         {label:'推辞不受', eff:{npcAff:{npc:'shenqingyi',val:-8}}, txt:'你说自己丹药充足。她看了你一眼，没说话，把瓷瓶收回袖中。走了两步淡淡道：「随你。」'}]},
+
+  {band:2, q:'rare', minAge:30, name:'青衣论丹', text:'丹房之中，沈青衣正在开炉，丹香四溢。她瞥了你一眼：「你那套聚气丹的方子，火候差了三成——第三转该用文火，不是武火。」', chainId:'shenqingyi', step:'sqy3', req:{aff:{npc:'shenqingyi', min:50}},
+   opts:[{label:'虚心受教', need:{attr:{悟性:18}}, roll:{chance:0.6, extra:0.05, succ:{悟性:3, 神识:2, npcAff:{npc:'shenqingyi',valval:10}}, succText:'你依言调整火候，果然丹成率大增。她难得点了点头：「孺子可教。」——这大概是她说过最温和的话。', fail:{悟性:1, npcAff:{npc:'shenqingyi',val:5}}, failText:'你似懂非懂，但记下了。她看你表情，又多说了两句。'}},
+         {label:'坚持己见', eff:{npcAff:{npc:'shenqingyi',val:-10}}, txt:'你认为自己的方子没错。她不再多说，只是冷着脸把丹炉一关：「那你自便。」'}]},
+
+  {band:2, q:'epic', minAge:40, name:'丹炉炸裂', text:'沈青衣炼丹时丹炉忽然炸裂！浓烟滚滚，她被气浪掀翻在地，眉角流血。你冲进去时，她正挣扎着护住炉中那枚即将成形的丹药。', chainId:'shenqingyi', step:'sqy4', req:{aff:{npc:'shenqingyi', min:60}},
+   opts:[{label:'救人护丹', need:{attr:{气血:20}}, roll:{chance:0.5, extra:0.06, succ:{气血:-5, 神识:3, 功德:5, npcAff:{npc:'shenqingyi',valval:10}}, succText:'你将她拖出丹房，又折回去抢出那枚丹药。她坐在地上愣了许久，终于低声道：「……多谢。」这是她第一次正眼看你。', fail:{气血:-10, npcAff:{npc:'shenqingyi',val:5}}, failText:'你也被烫伤了，但好歹把她拖了出来。她包扎时忽然说：「你不欠我的。」——语气软了三分。', death:0.03, deathText:'丹炉炸裂，葬身火海'}},
+         {label:'先救人', eff:{气血:-3, npcAff:{npc:'shenqingyi',val:10}}, txt:'你先把她拖出丹房，丹药炸了就炸了。她沉默了许久，终于轻声道：「丹药没了可以再炼，人……你倒是比丹药重要。」说完别过脸去。'}]},
+
+  {band:2, q:'epic', minAge:50, name:'丹成赠药', text:'沈青衣花了三年炼制一炉"凝神丹"，丹成之日她递给你一瓶：「我知道你修炼神识损耗大，这药你拿着。」她仍旧面无表情，但递药的动作比往日温柔了几分。', chainId:'shenqingyi', step:'sqy5', req:{aff:{npc:'shenqingyi', min:65}},
+   opts:[{label:'郑重收下', eff:{npcAff:{npc:'shenqingyi',val:12}, 神识:5, 功德:3}, txt:'丹药品质极佳。你道了声谢，她"嗯"了一声转身就走，走到门口忽然停下：「下次……别再那么拼命炼丹了。」'},
+         {label:'回赠灵药', eff:{灵石:-500, npcAff:{npc:'shenqingyi',val:8}}, txt:'你寻了一株百年灵药回赠。她接过时手微微一顿，难得露出一丝极淡的笑意——如冰雪初融。'}]},
+
+  {band:3, q:'legend', minAge:65, name:'丹道相承', text:'沈青衣决定闭关冲击丹道宗师。她将一枚丹方和一本手札交给你，语气依旧清冷：「这本手札里是我毕生炼丹心得。你若有缘，便拿去；若无缘……」她顿了顿，「就当我从来没给过你。」', chainId:'shenqingyi', step:'sqy6', chainEnd:true, req:{aff:{npc:'shenqingyi', min:80}},
+   opts:[{label:'承其道统', need:{attr:{悟性:32, 神识:28}}, roll:{chance:0.55, extra:0.06, succ:{悟性:4, 神识:5, 修为:0.05, 功德:8, npcAff:{npc:'shenqingyi',valval:10}}, succText:'你翻阅手札，如醍醐灌顶！她闭关三载，终成丹道宗师。出关那日她先来找你，把一枚新炼的丹药递给你：「试试。」——这大概是她表达感谢的方式。', fail:{悟性:2, npcAff:{npc:'shenqingyi',val:5}}, failText:'手札深奥，你只悟得三成。她听完你的理解，难得点评了两句，每句都直指要害。'}},
+         {label:'与她同修丹道', need:{attr:{悟性:28}}, roll:{chance:0.5, extra:0.05, succ:{悟性:3, 神识:4, 灵石:1000, npcAff:{npc:'shenqingyi',valval:10}}, succText:'你与她闭关同修，互相切磋丹道。出关时她看你的眼神已大不相同——不再是看一个晚辈，而是看一个同道。她淡淡道：「你的丹术……已有我七分火候。」', fail:{神识:1, npcAff:{npc:'shenqingyi',val:5}}, failText:'同修虽未竟全功，却让你丹术大进。她临走时丢下一句：「下次丹会，我替你报名。」'}}]},
+
+  /* --- 叶孤鸿：亦正亦邪的散修剑客，行事不拘正邪，亦敌亦友 --- */
+  {band:1, q:'rare', minAge:18, name:'路遇散修', text:'山路上一个黑衣散修拦住去路，腰间挂着一柄无鞘铁剑，嘴角挂着玩世不恭的笑：「道友身上灵石不少？借点花花？」他眼神却不正经地上下打量你——像是在评估你值不值得动手。', once:true, chainId:'yeguhong', chainStart:true, step:'ygh1', w:0.18,
+   opts:[{label:'拔剑对峙', eff:{npcAff:{npc:'yeguhong',val:10}, 力量:1}, txt:'你拔剑出鞘。他眼睛一亮，大笑道：「有意思！」退后两步拱手，「开玩笑的——叶孤鸿，散修一个。」'},
+         {label:'忍气破财', eff:{灵石:-100, npcAff:{npc:'yeguhong',val:-10}}, txt:'你给了他一百灵石。他掂了掂，撇嘴道：「真小气。」扬长而去。'}]},
+
+  {band:1, q:'uncommon', minAge:25, name:'黑市交易', text:'地下黑市中，你又遇叶孤鸿。他正蹲在地上摆地摊，面前铺一块破布，上面零零散散摆着些来路不明的物件。他见你便挤眉弄眼：「道友，看看？这把短剑，前朝的——白送你，交个朋友。」', chainId:'yeguhong', step:'ygh2', req:{aff:{npc:'yeguhong', min:35}},
+   opts:[{label:'与他交易', eff:{灵石:200, npcAff:{npc:'yeguhong',val:10}, 灵动:1}, txt:'他给你的东西确实值这个价——甚至还多送了你一张地图。他嘿嘿笑道：「你这人，比那些假正经的宗门弟子有意思多了。」'},
+         {label:'敬而远之', eff:{npcAff:{npc:'yeguhong',val:-8}}, txt:'你转身就走。他在身后喊道：「哎！下次有好事还想着你呢！」'}]},
+
+  {band:2, q:'rare', minAge:35, name:'共斗强敌', text:'你和叶孤鸿在野外同时遭遇一头魔道修士——对方祭出魔幡，黑雾弥漫。叶孤鸿长剑出鞘，冲你笑道：「并肩干一票？打完各走各的，互不欠人情！」', chainId:'yeguhong', step:'ygh3', req:{aff:{npc:'yeguhong', min:45}},
+   opts:[{label:'并肩作战', need:{attr:{力量:22, 气血:20}}, roll:{chance:0.5, extra:0.06, succ:{力量:4, 气血:3, 灵石:500, 声望:5, npcAff:{npc:'yeguhong',valval:10}}, succText:'你二人配合意外默契——他主攻，你牵制，那魔道修士落荒而逃。他拍你肩膀大笑：「痛快！你是第一个让我觉得「搭档」这词不那么烦的人。」', fail:{气血:-8, npcAff:{npc:'yeguhong',val:5}}, failText:'魔道修士太强，你二人边打边退。他骂了句"妈的"，居然还笑得出来。', death:0.04, deathText:'殒命于魔道修士之手'}},
+         {label:'独自撤离', eff:{npcAff:{npc:'yeguhong',val:-12}}, txt:'你转身就走。他回头看你一眼，没说什么，独自迎战——后来听说他重伤逃了回来，再没找过你。'}]},
+
+  {band:2, q:'rare', minAge:45, name:'身世揭秘', text:'叶孤鸿酒后吐真言：「我本是正道大宗弟子，师父被魔道害死，我却被诬陷是内奸……」他灌了口酒，自嘲一笑，「所以你看，正道魔道，在我眼里也就那么回事。」', chainId:'yeguhong', step:'ygh4', req:{aff:{npc:'yeguhong', min:60}},
+   opts:[{label:'认真倾听', eff:{道心:2, npcAff:{npc:'yeguhong',val:10}}, txt:'他说完又恢复了那副玩世不恭的样子，但你知道，他信了你这个朋友。'},
+         {label:'劝他回正道', eff:{npcAff:{npc:'yeguhong',val:-8}}, txt:'你劝他澄清冤屈。他脸色一沉，冷笑一声：「站着说话不腰疼。」第二天就消失了。'}]},
+
+  {band:2, q:'epic', minAge:55, name:'邪道试探', text:'叶孤鸿深夜来访，丢给你一卷功法：「这是魔道功法，练了功力大涨——但有损道行。你要不要？」他歪着头看你，眼神复杂：「我就随口一问，别多想。」', chainId:'yeguhong', step:'ygh5', req:{aff:{npc:'yeguhong', min:65}},
+   opts:[{label:'严词拒绝', eff:{道心:3, 功德:3, npcAff:{npc:'yeguhong',val:8}}, txt:'你正色拒绝。他愣了一下，随即大笑：「好！我就知道你不会——我也就是试试你。」说完把功法烧了。'},
+         {label:'接过看看', need:{attr:{悟性:25}}, roll:{chance:0.4, extra:0.05, succ:{悟性:2, 业力:3, npcAff:{npc:'yeguhong',valval:10}}, succText:'你翻看了几页便归还，并未修炼。他松了口气，拍你肩膀：「吓我一跳——我还怕你真走火入魔。」', fail:{业力:5, 道心:-1, npcAff:{npc:'yeguhong',val:-5}}, failText:'你一时好奇练了个入门，果然心神不宁。他脸色一沉：「你怎么这么糊涂？」'}}]},
+
+  {band:3, q:'legend', minAge:70, name:'道心相印', text:'白首之年，叶孤鸿终于洗清冤屈，却已是两鬓斑白。他提着两坛老酒来找你：「我要走了，去南疆找一个老朋友。」他难得正色道，「这辈子认识的人不少，能一起喝到今天的，也就你了。」', chainId:'yeguhong', step:'ygh6', chainEnd:true, req:{aff:{npc:'yeguhong', min:80}},
+   opts:[{label:'与他对饮', need:{attr:{悟性:30}}, roll:{chance:0.55, extra:0.05, succ:{悟性:3, 道心:4, 气运:2, 修为:0.05, npcAff:{npc:'yeguhong',valval:10}}, succText:'你与他喝到天明。他醉倒前留下一句话：「下次见面，我们再打一架——谁赢谁请酒。」说完飘然而去，再无音讯。', fail:{悟性:1, npcAff:{npc:'yeguhong',val:5}}, failText:'你酒量不如他，先醉了。醒来时他已走了，桌上留着那把无鞘铁剑——和一张字条：「剑送你了，别弄丢。」'}},
+         {label:'赠他盘缠', eff:{灵石:-1000, 声望:5, npcAff:{npc:'yeguhong',val:8}}, txt:'你塞给他一袋子灵石。他推了两下便收下，嘿嘿一笑：「够意思——下次回来，我请你喝最好的酒。」'}]},
+
+  /* --- 苏小荷：活泼药庐小师妹，天真烂漫，关键时刻可靠 --- */
+  {band:1, q:'uncommon', minAge:15, name:'药庐小师妹', text:'药庐中一个扎着双髻的少女正踩着板凳够高处的药草，你一进门她差点摔下来——你扶住她，她吐了吐舌头：「谢啦！我叫苏小荷，负责药庐分拣。你要什么药？」', once:true, chainId:'suxiaohe', chainStart:true, step:'sxh1', req:{org:'紫霄学宫'}, w:0.2,
+   opts:[{label:'帮她够药草', eff:{npcAff:{npc:'suxiaohe',val:12}, 神识:1}, txt:'你帮她取下高处的药草。她开心地分给你一小包灵茶：「这个泡着喝，对修炼好！」笑容像阳光一样。'},
+         {label:'面无表情走过', eff:{npcAff:{npc:'suxiaohe',val:-8}}, txt:'你面无表情走过去。她在身后嘟囔：「什么人嘛……」'}]},
+
+  {band:1, q:'common', minAge:22, name:'采药同行', text:'苏小荷蹦蹦跳跳跑来：「后山新长了一批灵草！我一个人不敢去，你陪我好不好？」她眼睛亮晶晶地看着你，像一只期待被夸奖的小动物。', chainId:'suxiaohe', step:'sxh2', req:{aff:{npc:'suxiaohe', min:40}},
+   opts:[{label:'欣然陪同', eff:{npcAff:{npc:'suxiaohe',val:10}, 气血:3, 神识:1}, txt:'你们采了一上午药草。她一路叽叽喳喳，讲药庐的趣事，你竟觉得修炼之外多了几分烟火气。'},
+         {label:'推辞没空', eff:{npcAff:{npc:'suxiaohe',val:-8}}, txt:'你说修炼要紧。她低下头"哦"了一声，独自走了，背影有点小委屈。'}]},
+
+  {band:2, q:'rare', minAge:35, name:'小师妹遇险', text:'你接到传讯——苏小荷在采药时被一条百年毒蛇咬伤，已昏迷在山涧边。你赶到时，她嘴唇发紫，怀里还紧紧抱着那株刚采到的灵草。', chainId:'suxiaohe', step:'sxh3', req:{aff:{npc:'suxiaohe', min:50}},
+   opts:[{label:'吸毒急救', need:{attr:{气血:20}}, roll:{chance:0.6, extra:0.05, succ:{气血:-5, npcAff:{npc:'suxiaohe',val:15}, 功德:5}, succText:'你替她吸出毒血，她悠悠转醒，第一句话是：「药草……没事吧？」你又气又笑，把药草递给她。她眼眶一红，「谢谢师兄/师姐……」', fail:{气血:-10, npcAff:{npc:'suxiaohe',val:8}}, failText:'你为她吸毒也中了点毒，二人互相搀扶着回到宗门。她照顾了你三天三夜，眼睛都哭肿了。', death:0.03, deathText:'为救小师妹，身中蛇毒不治'}},
+         {label:'背她回宗', eff:{气血:-3, npcAff:{npc:'suxiaohe',val:10}}, txt:'你背起她飞奔回宗。她在你背上虚弱地说：「药草……别丢了……」你鼻子一酸，答应了。'}]},
+
+  {band:2, q:'uncommon', minAge:45, name:'炼丹互助', text:'苏小荷的炼丹技术进步很快，但总是在最后一步"凝丹"上失败。她委屈巴巴地找你：「师兄/师姐，你能不能教我？我练了十次都失败了……」', chainId:'suxiaohe', step:'sxh4', req:{aff:{npc:'suxiaohe', min:60}},
+   opts:[{label:'悉心指导', need:{attr:{悟性:20}}, roll:{chance:0.55, extra:0.05, succ:{悟性:2, 神识:2, npcAff:{npc:'suxiaohe',valval:10}}, succText:'你一步步教她凝丹的要诀——第十一次，终于成了！她高兴得跳起来抱了你一下，又红着脸松开。', fail:{神识:1, npcAff:{npc:'suxiaohe',val:5}}, failText:'她还是没成功，但你教得很耐心。她临走时说：「下次我一定行！」'}},
+         {label:'嫌她笨', eff:{npcAff:{npc:'suxiaohe',val:-10}}, txt:'你说她基础太差。她眼圈一红，默默走了，好几天没跟你说话。'}]},
+
+  {band:2, q:'rare', minAge:55, name:'心境陪伴', text:'你修炼遇到瓶颈，心烦意乱地走到后山。苏小荷不知何时跟来，默默坐在你身边，递来一颗灵果：「我也不知道怎么帮你，但……我陪着你。」她不再是那个叽叽喳喳的小丫头了。', chainId:'suxiaohe', step:'sxh5', req:{aff:{npc:'suxiaohe', min:65}},
+   opts:[{label:'静享陪伴', eff:{道心:4, 神识:2, npcAff:{npc:'suxiaohe',val:10}}, txt:'你们坐了一下午，她安安静静地剥灵果。你心境渐渐平和，瓶颈竟松动了一丝。'},
+         {label:'让她走开', eff:{npcAff:{npc:'suxiaohe',val:-8}}, txt:'你说想一个人静静。她默默站起来走了，走了几步回头：「那我把灵果放这了……记得吃。」'}]},
+
+  {band:3, q:'epic', minAge:70, name:'临别赠药', text:'苏小荷要下山历练了。她把一个包袱塞给你，眼眶红红的：「这里面是我炼了十年的丹药，留着给你应急。」她长大了，不再是那个蹦蹦跳跳的小丫头，但笑起来还是像阳光。', chainId:'suxiaohe', step:'sxh6', chainEnd:true, req:{aff:{npc:'suxiaohe', min:80}},
+   opts:[{label:'赠她护身符', eff:{功德:8, 声望:5, npcAff:{npc:'suxiaohe',val:8}}, txt:'你把一枚护身符塞给她。她破涕为笑：「你怎么跟我一样爱瞎操心。」转身走了三步又回头挥手，直到看不见你了才消失。'},
+         {label:'送她一程', need:{attr:{神识:25}}, roll:{chance:0.6, extra:0.04, succ:{神识:3, 道心:2, npcAff:{npc:'suxiaohe',valval:10}}, succText:'你送她到山门口。她一路走一路回头，最后一次挥手后终于消失在山道尽头。你站在原地许久，忽然觉得修行路上，有些人虽不在身边，却一直在心里。', fail:{神识:1, npcAff:{npc:'suxiaohe',val:5}}, failText:'你送了她十里。她在十里亭停下：「就送到这吧。」说完转身，没让你看见她擦眼睛。'}}]},
+
+  /* --- 新NPC日常事件 --- */
+  {band:1, q:'common', minAge:30, name:'青衣煮茶', text:'沈青衣在丹房外摆了一套茶具，见你路过便淡淡道：「坐。」她煮茶的动作和炼丹一样精准——水温、火候、时辰，分毫不差。', w:0.1,
+   opts:[{label:'坐下品茶', eff:{npcAff:{npc:'shenqingyi',val:3}, 神识:1}, txt:'茶是好茶。她难得说了句"这茶新采的，你尝尝"。虽然语气还是淡淡的，但已是她最大的温柔。'},
+         {label:'赶路要紧', eff:{npcAff:{npc:'shenqingyi',val:-2}}, txt:'你拱手告辞。她点点头，自己慢慢品茶，看不出喜怒。'}]},
+
+  {band:1, q:'common', minAge:30, name:'孤鸿留书', text:'你在住处门下发现一张纸条，字迹潦草：「黑市新到批好货，今晚子时老地方——叶。」', w:0.1,
+   opts:[{label:'赴约', eff:{灵石:100, npcAff:{npc:'yeguhong',val:3}}, txt:'你去了，他果然淘到点好东西，分给你一份。他嘿嘿一笑：「你这人，靠谱。」'},
+         {label:'不去', eff:{npcAff:{npc:'yeguhong',val:-2}}, txt:'你没去。第二天他见到你哼了一声：「不够意思。」'}]},
+
+  {band:1, q:'common', minAge:25, name:'小荷送糕', text:'苏小荷端着一碟糕点蹦蹦跳跳跑来：「我新学做的灵糕！你尝尝？」她满脸期待，像一只摇尾巴的小狗。', w:0.12,
+   opts:[{label:'尝一块', eff:{气血:2, npcAff:{npc:'suxiaohe',val:3}}, txt:'糕点甜而不腻，灵气隐隐。她高兴得拍手：「太好了！下次我给你做别的！」'},
+         {label:'说在修炼不吃', eff:{npcAff:{npc:'suxiaohe',val:-3}}, txt:'你摆手说修炼期辟谷。她瘪了瘪嘴，自己端走了。'}]},
+
+  {band:2, q:'uncommon', minAge:45, name:'青衣论方', text:'沈青衣在翻一本丹方古籍，眉头微蹙。她见你来了，难得主动开口：「这方子的第三味药，你怎么看？」', req:{aff:{npc:'shenqingyi', min:60}}, w:0.08,
+   opts:[{label:'与她讨论', eff:{悟性:2, npcAff:{npc:'shenqingyi',val:3}}, txt:'你俩讨论了半个时辰。她难得说了句"有点意思"——从她嘴里说出来，已是极高的评价。'},
+         {label:'说不懂', eff:{npcAff:{npc:'shenqingyi',val:-2}}, txt:'你说不懂丹道。她"嗯"了一声继续看书，没再说话。'}]},
+
+  {band:2, q:'uncommon', minAge:50, name:'孤鸿约战', text:'叶孤鸿在山门口等你，手里拎着两坛酒：「一个月没打了，手生得很——敢不敢比划比划？」', req:{aff:{npc:'yeguhong', min:60}}, w:0.08,
+   opts:[{label:'陪他过招', need:{attr:{力量:25}}, roll:{chance:0.5, extra:0.05, succ:{力量:3, 灵动:2, npcAff:{npc:'yeguhong',valval:10}}, succText:'你二人拆了百招，以平手收场。他大笑举杯：「好酒！下次再打！」', fail:{气血:-5, npcAff:{npc:'yeguhong',val:2}}, failText:'你输了半招。他拍你肩膀：「还差得远呢！」语气却并无轻蔑。'}},
+         {label:'今日不战', eff:{npcAff:{npc:'yeguhong',val:-2}}, txt:'你说今日状态不佳。他也不勉强：「那改日——酒我先存着。」'}]},
+
+  {band:2, q:'uncommon', minAge:40, name:'小荷采药归来', text:'苏小荷背著一大筐药草回来，累得小脸通红。她见到你就笑：「你看！我采到了百年紫芝！」', req:{aff:{npc:'suxiaohe', min:60}}, w:0.08,
+   opts:[{label:'帮她背筐', eff:{npcAff:{npc:'suxiaohe',val:4}, 神识:1}, txt:'你接过药筐，比想象中重。她跟在你身后蹦蹦跳跳，一路说着采药的趣事。'},
+         {label:'夸她厉害', eff:{npcAff:{npc:'suxiaohe',val:3}}, txt:'你夸她能干。她笑得眼睛眯成月牙：「那是！我可是药庐第一采药能手！」'}]},
+  /* ==== 4.364g 第三批 NPC：楚天机/寒月/赤练 ==== */
+
+  /* --- 楚天机：天机阁推演大师兄，算无遗策，温文尔雅却总在推算人心 --- */
+  {band:1, q:'rare', minAge:18, name:'天机初遇', text:'天机阁观星台上，一位青衫男子对着星盘凝神推算，头也不抬：「你命宫带文曲，本不该来天机阁——但既来了，便是有缘。」他推了推星盘，「我叫楚天机，阁中排行第七。」', once:true, chainId:'chutianji', chainStart:true, step:'ctj1', req:{org:'天机阁'}, w:0.18,
+   opts:[{label:'请教推命', eff:{npcAff:{npc:'chutianji',val:12}, 悟性:1}, txt:'他淡淡推了一卦，说了几句不咸不淡的话——事后你才发现，句句应验。'},
+         {label:'不信天命', eff:{npcAff:{npc:'chutianji',val:-8}}, txt:'你说命由己造。他抬眼看了你一眼，似笑非笑：「有意思——那我们走着瞧。」'}]},
+
+  {band:1, q:'uncommon', minAge:25, name:'天机赠言', text:'楚天机在走廊拦住你：「三日后你有一劫，切记走东门，别走西门。」他说这话时面无表情，仿佛在陈述天气。', chainId:'chutianji', step:'ctj2', req:{aff:{npc:'chutianji', min:40}},
+   opts:[{label:'依言而行', eff:{npcAff:{npc:'chutianji',val:10}, 气运:2}, txt:'三日后西门果然塌了一角。你后背发凉，对他多了几分敬畏。'},
+         {label:'偏走西门', eff:{气血:-5, npcAff:{npc:'chutianji',val:-5}}, txt:'你偏走西门，被落石砸伤。他听说后只是摇头：「命数如此。」'}]},
+
+  {band:2, q:'rare', minAge:35, name:'卜卦问劫', text:'楚天机主动找你：「我推到你下一劫有变数，想不想知道？」他手里转着一枚铜钱，眼神深邃。', chainId:'chutianji', step:'ctj3', req:{aff:{npc:'chutianji', min:50}},
+   opts:[{label:'请他指点', need:{attr:{悟性:22}}, roll:{chance:0.6, extra:0.05, succ:{悟性:3, 神识:2, npcAff:{npc:'chutianji',valval:10}}, succText:'他低声说了几句机宜。渡劫时你依言而行，果然化险为夷。他难得露出笑意：「你我投缘。」', fail:{神识:1, npcAff:{npc:'chutianji',val:5}}, failText:'他说了个大概，你半懂不懂。但渡劫时那一丝提示确实救了你。'}},
+         {label:'自己摸索', eff:{npcAff:{npc:'chutianji',val:-5}}, txt:'你说信自己。他也不勉强，只是点点头。'}]},
+
+  {band:2, q:'epic', minAge:45, name:'天机泄露', text:'楚天机深夜来找你，脸色凝重：「天机不可泄露，但你我交情非同一般——我推到你有一大劫，比寻常人凶险三倍。」他递给你一张符，「此符可挡一次，但只能用一次。」', chainId:'chutianji', step:'ctj4', req:{aff:{npc:'chutianji', min:60}},
+   opts:[{label:'收下灵符', eff:{npcAff:{npc:'chutianji',val:12}, 气运:3, 道心:2}, txt:'你郑重收下。他叹了口气：「我泄露天机，自己也要受反噬——但你值得。」'},
+         {label:'婉拒', eff:{npcAff:{npc:'chutianji',val:-8}}, txt:'你说命该如此。他收回灵符，看了你许久：「你比我想的更倔强。」'}]},
+
+  {band:2, q:'epic', minAge:55, name:'命数相搏', text:'你果然遇到了大劫！雷劫中楚天机现身替你挡了一击，他嘴角溢血，却笑道：「我算过——今日你我皆有一劫，我替你挡这一次，你欠我一条命。」', chainId:'chutianji', step:'ctj5', req:{aff:{npc:'chutianji', min:70}},
+   opts:[{label:'拼死护他', need:{attr:{气血:30}}, roll:{chance:0.55, extra:0.05, succ:{气血:-5, npcAff:{npc:'chutianji',val:15}, 道心:3}, succText:'你扛下余下雷劫，二人皆重伤但活了下来。他躺在地上笑了：「我算到你会拼命——这是我唯一算错的地方，也是最好的错。」', fail:{气血:-12, npcAff:{npc:'chutianji',val:8}}, failText:'你勉强护他杀出雷区。他养伤时第一次对你说出真心话：「天机阁上下，你是我唯一算不准的人。」', death:0.05, deathText:'雷劫中灰飞烟灭'}},
+         {label:'听他安排', eff:{npcAff:{npc:'chutianji',val:8}}, txt:'他布阵带你杀出重围。你事后问他：「你早算到了？」他笑而不答。'}]},
+
+  {band:3, q:'legend', minAge:70, name:'天道预言', text:'楚天机闭关三月，出关后找到你，神色前所未有地认真：「我推到你的终局——」他顿了顿，「你会走出一条前所未有的路。天机阁的星盘上，你的命星已经不在棋盘上了。」', chainId:'chutianji', step:'ctj6', chainEnd:true, req:{aff:{npc:'chutianji', min:80}},
+   opts:[{label:'与他推演终局', need:{attr:{悟性:35, 神识:30}}, roll:{chance:0.5, extra:0.06, succ:{悟性:5, 神识:4, 气运:4, 修为:0.05, npcAff:{npc:'chutianji',valval:10}}, succText:'你二人推命三日三夜，他终于算出你的道途。临别时他说：「我算尽天下，唯独你——我不算了。道阻且长，好自为之。」', fail:{悟性:2, npcAff:{npc:'chutianji',val:5}}, failText:'你悟性不够，只悟得三成。他将手札赠你：「剩下的，你自己去走。」'}},
+         {label:'笑而受之', eff:{npcAff:{npc:'chutianji',val:8}, 气运:3}, txt:'你听完只是一笑。他愣了愣，随即也笑了：「也是——算太多，不如走一步看一步。」'}]},
+
+  /* --- 寒月：太阴宫月宫师姐，清冷孤高，如月宫仙子 --- */
+  {band:1, q:'rare', minAge:17, name:'月下初遇', text:'月夜之下，太阴宫的月华池中，一位白衣女子背对你望月而立。她发丝如雪，周身笼罩淡淡银光。你走近时她淡淡道：「太阴宫禁地，外人不得擅入。」声音清冷如月。', once:true, chainId:'yuehua', chainStart:true, step:'hy1', req:{org:'太阴宫'}, w:0.18,
+   opts:[{label:'赔礼退出', eff:{npcAff:{npc:'yuehua',val:10}, 神识:1}, txt:'你躬身退下。她忽然说：「站住——你灵根属水，倒是可入太阴宫。」'},
+         {label:'辩解好奇', eff:{npcAff:{npc:'yuehua',val:-8}}, txt:'你说只是赏月。她冷冷看你一眼，袖袍一挥将你送出月华池。'}]},
+
+  {band:1, q:'uncommon', minAge:25, name:'月华赠药', text:'寒月师姐在月华池畔递给你一瓶丹药，面无表情：「你近日修炼走了岔路，月华丹可平气。」说完转身就走，长发在月光下如银色瀑布。', chainId:'yuehua', step:'hy2', req:{aff:{npc:'yuehua', min:40}},
+   opts:[{label:'道谢服用', eff:{npcAff:{npc:'yuehua',val:10}, 神识:2}, txt:'丹药果然神效。你想道谢，她已消失在月色中。'},
+         {label:'推辞不受', eff:{npcAff:{npc:'yuehua',val:-5}}, txt:'你说不劳师姐费心。她脚步顿了顿，没回头。'}]},
+
+  {band:2, q:'rare', minAge:35, name:'月宫论道', text:'满月之夜，寒月师姐邀你同观月华。她坐在池中石上，白衣胜雪：「太阴之道，在于守静——你近日心浮气躁，可懂？」', chainId:'yuehua', step:'hy3', req:{aff:{npc:'yuehua', min:50}},
+   opts:[{label:'与她论道', need:{attr:{神识:25}}, roll:{chance:0.55, extra:0.05, succ:{神识:4, 道心:2, npcAff:{npc:'yuehua',valval:10}}, succText:'你与她论道一夜，月华如水。她难得点头：「你悟性不差——比那些粗鄙武夫强多了。」', fail:{神识:1, npcAff:{npc:'yuehua',val:5}}, failText:'你似懂非懂，但那一夜的月华让你心境澄明了许多。'}},
+         {label:'自认心浮', eff:{npcAff:{npc:'yuehua',val:5}}, txt:'你老实承认。她微微颔首：「知道不足，便是进境之始。」'}]},
+
+  {band:2, q:'epic', minAge:45, name:'月蚀危机', text:'天狗食月之夜，太阴宫月华大阵骤暗！寒月师姐独自镇守阵眼，你赶到时她已力竭，月华在她周围摇摇欲坠。', chainId:'yuehua', step:'hy4', req:{aff:{npc:'yuehua', min:60}},
+   opts:[{label:'替她守阵', need:{attr:{神识:30, 道心:15}}, roll:{chance:0.5, extra:0.06, succ:{神识:5, 道心:3, 功德:5, npcAff:{npc:'yuehua',valval:10}}, succText:'你将自身神识注入阵眼，大阵重新亮起。寒月师姐看着你，清冷的眸中第一次有了温度：「……多谢。」', fail:{神识:-5, npcAff:{npc:'yuehua',val:8}}, failText:'你也被反噬，但大阵总算稳住。她默默替你疗伤，一夜无话。', death:0.04, deathText:'月华反噬，神形俱灭'}},
+         {label:'护她撤离', eff:{气血:-5, npcAff:{npc:'yuehua',val:10}}, txt:'你护着她退出阵眼。她皱眉道：「阵眼不能无人……」但你已将她拖出危险范围。'}]},
+
+  {band:2, q:'epic', minAge:55, name:'太阴传承', text:'寒月师姐决定闭关冲击太阴宗师，她将一卷太阴心经交给你：「此经是我太阴宫不传之秘。你若……不，你且拿去参悟。」她别过脸，「就当……是谢你守阵之恩。」', chainId:'yuehua', step:'hy5', req:{aff:{npc:'yuehua', min:70}},
+   opts:[{label:'参悟心经', need:{attr:{神识:30}}, roll:{chance:0.5, extra:0.05, succ:{神识:4, 道心:3, 修为:0.03, npcAff:{npc:'yuehua',valval:10}}, succText:'你闭关参悟，太阴心经果然深奥。她出关后来看你，见你已入门，清冷的脸上难得浮现一丝笑意：「你……比我想的更有天赋。」', fail:{神识:1, npcAff:{npc:'yuehua',val:5}}, failText:'心经深奥，你只悟得皮毛。她听完你的理解，难得多讲了两句。'}},
+         {label:'与她同修', eff:{神识:2, npcAff:{npc:'yuehua',val:8}}, txt:'你与她在月华下同修一夜。月光洒在两人身上，她罕见地没有避开。'}]},
+
+  {band:3, q:'legend', minAge:70, name:'月华同辉', text:'寒月师姐已成太阴宗师，她在满月之夜邀你同登望月台。月华如水，她站在台上，白衣临风：「我守了太阴宫一辈子，今日……」她转头看你，「你可愿陪我看这最后一次月华？」', chainId:'yuehua', step:'hy6', chainEnd:true, req:{aff:{npc:'yuehua', min:80}},
+   opts:[{label:'陪她望月', need:{attr:{神识:35, 道心:25}}, roll:{chance:0.55, extra:0.05, succ:{神识:5, 道心:5, 修为:0.05, npcAff:{npc:'yuehua',valval:10}}, succText:'你与她并肩望月，月华笼罩二人。她轻声道：「月华千年，见过无数人——你是第一个陪我看到现在的。」说罢，她转身走入月华深处，再未回头。', fail:{神识:2, npcAff:{npc:'yuehua',val:5}}, failText:'你修为尚浅，看不清她眼中的情绪。但那一夜的月华，你毕生难忘。'}},
+         {label:'问她何去何从', eff:{npcAff:{npc:'yuehua',val:8}, 道心:3}, txt:'你问她要去哪里。她望着月亮，淡淡道：「太阴无常，如月有盈亏——你懂吗？」你似懂非懂，但她已飘然远去。'}]},
+
+  /* --- 赤练：血煞宗火辣魔女，亦正亦邪，行事霸道但讲义气 --- */
+  {band:1, q:'rare', minAge:18, name:'魔道初遇', text:'血煞宗的血池旁，一个红衣女子正在炼体，她浑身浴血却笑得灿烂：「新来的？过来让姐姐看看——嗯，灵根还行，跟我混吧，亏不了你。」她拍着你的肩膀，力道大得让你踉跄。', once:true, chainId:'chilian', chainStart:true, step:'cl1', req:{org:'血煞宗'}, w:0.2,
+   opts:[{label:'恭敬应下', eff:{npcAff:{npc:'chilian',val:12}, 力量:1}, txt:'她哈哈大笑，拍着你的背：「好！以后跟姐混，没人敢欺负你！」'},
+         {label:'暗自警惕', eff:{npcAff:{npc:'chilian',val:-8}}, txt:'你客客气气保持距离。她眯眼笑了笑：「小滑头，姐姐我见得多了。」'}]},
+
+  {band:1, q:'uncommon', minAge:25, name:'血池试炼', text:'赤练师姐把你推到血池边：「血煞宗的规矩——不入血池，不算血煞人。」她扔给你一枚丹丸，「含着这个，扛过去就是自己人。」', chainId:'chilian', step:'cl2', req:{aff:{npc:'chilian', min:40}},
+   opts:[{label:'跳入血池', need:{attr:{气血:20}}, roll:{chance:0.55, extra:0.05, succ:{气血:5, 力量:2, npcAff:{npc:'chilian',valval:10}}, succText:'你在血池中咬牙坚持，出来时浑身血气翻涌。她满意地点头：「好样的！没给姐姐丢人！」', fail:{气血:-8, npcAff:{npc:'chilian',val:5}}, failText:'你差点没扛住，是她把你捞出来的。她骂道：「就这点本事？下次多吃点再来！」'}},
+         {label:'犹豫退缩', eff:{npcAff:{npc:'chilian',val:-8}}, txt:'你犹豫了。她翻个白眼：「算了算了，姐姐不勉强你——但你永远成不了真正的血煞人。」'}]},
+
+  {band:2, q:'rare', minAge:35, name:'魔女相邀', text:'赤练师姐深夜来访，一身红衣换了便装：「走，姐带你去个好地方——坊市新开了家酒肆，魔道中人也能去！」她难得正经了一秒，「放心，不杀人。」', chainId:'chilian', step:'cl3', req:{aff:{npc:'chilian', min:50}},
+   opts:[{label:'跟她去', eff:{npcAff:{npc:'chilian',val:10}, 气血:2, 灵石:100}, txt:'你二人喝到三更。她酒量惊人，最后还清醒，你却先倒了。第二天她到处笑你：「就这点酒量？」'},
+         {label:'宗门打坐', eff:{npcAff:{npc:'chilian',val:-5}}, txt:'你说要打坐修炼。她撇嘴：「没劲，跟那些老古板一个德行。」'}]},
+
+  {band:2, q:'epic', minAge:45, name:'血魔反噬', text:'赤练师姐修炼血煞大法出了岔子！血气暴走，她双目赤红，几乎要入魔。你冲上去时，她嘶吼着让你滚——但手上的力道已经不受控制。', chainId:'chilian', step:'cl4', req:{aff:{npc:'chilian', min:60}},
+   opts:[{label:'强行唤醒她', need:{attr:{力量:30, 道心:15}}, roll:{chance:0.45, extra:0.06, succ:{力量:4, npcAff:{npc:'chilian',val:15}, 业力:2}, succText:'你一掌拍在她眉心，她眼中赤红渐退。她清醒后愣了许久，忽然抱住你哭了——这是你第一次见她哭。', fail:{气血:-10, npcAff:{npc:'chilian',val:8}}, failText:'你也被她的血气震伤，但总算让她清醒了。她包扎时不发一言，难得安静。', death:0.05, deathText:'被暴走的血煞魔女一掌击毙'}},
+         {label:'找长老来', eff:{npcAff:{npc:'chilian',val:5}}, txt:'你飞奔去找长老。等你们回来时，她已勉强压制住血气，脸色苍白。她看了你一眼，没说话。'}]},
+
+  {band:2, q:'epic', minAge:55, name:'魔道同心', text:'正道围杀血煞宗！赤练师姐浑身是血地站在你面前，红衣染成黑色：「今天可能就是咱姐俩的死期——怕不怕？」她笑得却比任何时候都灿烂。', chainId:'chilian', step:'cl5', req:{aff:{npc:'chilian', min:70}},
+   opts:[{label:'并肩死战', need:{attr:{力量:35, 气血:40}}, roll:{chance:0.45, extra:0.06, succ:{力量:5, 气血:5, 声望:8, npcAff:{npc:'chilian',val:15}, 业力:2}, succText:'你二人背靠背杀出重围。她浑身是血却大笑：「痛快！这才是魔道！」战后她递给你一壶酒，「活着真好——有你陪着更好。」', fail:{气血:-15, npcAff:{npc:'chilian',val:10}}, failText:'你们杀出重围但都重伤。她靠在你肩上喘气：「姐这条命……今天算你救的。」', death:0.06, deathText:'战死在正道围杀中'}},
+         {label:'带她突围', eff:{气血:-8, npcAff:{npc:'chilian',val:10}}, txt:'你拉着她杀出一条血路。她骂骂咧咧但没挣脱你的手。'}]},
+
+  {band:3, q:'legend', minAge:70, name:'血煞飞升', text:'赤练师姐修成血煞大法圆满，她站在血池之上，红衣烈烈：「我要飞升了——此去仙魔未卜，你……」她难得正经地看着你，「好好活着，别给姐姐丢人。」', chainId:'chilian', step:'cl6', chainEnd:true, req:{aff:{npc:'chilian', min:80}},
+   opts:[{label:'送她飞升', need:{attr:{力量:40}}, roll:{chance:0.5, extra:0.05, succ:{力量:5, 气血:5, 修为:0.05, 业力:-5, npcAff:{npc:'chilian',valval:10}}, succText:'你为她护法，血池冲天而起。她飞升前最后一句是：「下次见面，姐姐请你喝酒！」红光散去，血池边只剩你一人。', fail:{气血:-5, npcAff:{npc:'chilian',val:5}}, failText:'你修为尚浅，被血池反冲震退。但她成功飞升了，最后回头看你一眼，笑了。'}},
+         {label:'赠她妖丹', eff:{灵石:-2000, npcAff:{npc:'chilian',val:8}}, txt:'你把珍藏的妖丹塞给她。她愣了一下，大笑收下：「够意思！姐姐欠你个人情！」说罢红光一卷，破空而去。'}]},
+
+  /* --- 第三批NPC日常事件 --- */
+  {band:1, q:'common', minAge:30, name:'天机观星', text:'观星台上，楚天机对着星盘出神。见你来了，他头也不抬：「来看看？今日紫微星动，主……」他顿了顿，「算了，天机不可泄露。」', req:{org:'天机阁'}, w:0.1,
+   opts:[{label:'陪他观星', eff:{npcAff:{npc:'chutianji',val:3}, 悟性:1}, txt:'你陪他看了一夜星星。他难得说了些天机阁的趣事——原来算无遗策的大师兄也有烦恼。'},
+         {label:'告辞修炼', eff:{npcAff:{npc:'chutianji',val:-2}}, txt:'你说修炼要紧。他点点头，继续看星盘。'}]},
+
+  {band:1, q:'common', minAge:30, name:'月华小坐', text:'月华池畔，寒月师姐独自坐着望月。她见你来了，沉默片刻，拍了拍身边的石头：「坐吧。」', req:{org:'太阴宫'}, w:0.1,
+   opts:[{label:'坐下望月', eff:{npcAff:{npc:'yuehua',val:3}, 神识:1}, txt:'你们安静地坐了一会儿。月光洒在她身上，她清冷的侧脸柔和了几分。'},
+         {label:'不打扰她', eff:{npcAff:{npc:'yuehua',val:-2}}, txt:'你躬身退下。她微微颔首，继续望月。'}]},
+
+  {band:1, q:'common', minAge:30, name:'魔女约酒', text:'赤练师姐扛着两坛酒路过，见你便挤眉弄眼：「走走走，喝酒去！今天我请——别跟我抢！」', req:{org:'血煞宗'}, w:0.12,
+   opts:[{label:'陪她喝酒', eff:{npcAff:{npc:'chilian',val:4}, 气血:2}, txt:'你二人喝得大醉。她搂着你的肩膀唱魔道调子，跑调跑到天外。'},
+         {label:'说在修炼', eff:{npcAff:{npc:'chilian',val:-3}}, txt:'你摆手说修炼期不饮酒。她撇嘴：「真没劲！」自己扛着酒走了。'}]},
 ]

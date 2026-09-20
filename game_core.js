@@ -1793,6 +1793,12 @@ function woundDanNeed(){ // 疗伤丹所需颗数——境界越高药力越弱�
 }
 function woundName(){ const _w=G.wound||0; return _w>=3?'濒危':_w===2?'重伤':_w===1?'轻伤':''; }
 function power(){ return powerBreakdown().total * woundMult(); } // 伤势折算道行
+function fmtPower(v){ // v4.366 道行显示——消除浮点尾差：<100 保留两位小数，>=100 取整
+  v = (typeof v==='number' && isFinite(v)) ? v : (power()||0);
+  if(v < 0) v = 0;
+  if(v >= 100) return String(Math.round(v));
+  var _n = Math.round(v*100); var _s = Math.floor(_n/100) + ''; var _f = _n % 100; if(_f===0) return _s; if(_f%10===0) return _s + '.' + (_f/10); return _s + '.' + ('0' + _f).slice(-2);
+}
 /* 道行构成面板（DL_RS_4.42）：属性面板「道行」旁的「构成」按钮，展开六项明细，
    让玩家明确成长方向——基础四维/道胎/神通/境界倍率/灵根品质系数各贡献多少。 */
 function togglePowerBrk(){
@@ -2602,6 +2608,7 @@ function initLifeFields(){ // 投胎/觉醒合并——开局字段初始化（�
   // 修仙版：新游戏重置事件多分支状态（防止跨局残留）
   G._marryFocus = false; // _mutateMode/_marryMode 死字段清除（变异机制已废除）
   G.recentEvents = []; // _mutTriggerMult/_mutGoodBonus 死字段清除（变异机制已废除）
+  G.npcAff = {}; // 4.364 NPC好感度 {linmobai:50, zhaowuji:50, laojiugui:50}，默认50平淡
   G.shaKills = 0; G.shaGate = null; G.shaRound = 0; G.shaDone = false; G.shaFailed = false; G.shaRouteDone = false; // 幽冥魔渊百胜计数；DL_RS_4.207：入口标记/杀戮场轮次/百胜/失败退出/地狱路完成
   // 清理旧版神劫兼容遗留字段（_godTrial/_qualNotified，无读取点）
   // 来世天赋——指定一次高品质事件（本局必触发）
@@ -2855,7 +2862,30 @@ function showToast(txt, color, bg, size){ // 4.359 size='lg' 大横幅模式（�
   setTimeout(()=>{ d.classList.add('out'); setTimeout(()=>d.remove(), 450); }, size==='lg' ? 3200 : 1800); // 大横幅驻留更久；普通飘字 1800ms
 }
 /* 境界大突破检测：跨大境界（元婴→化神等）时飘字提示一次；降级不提示 */
-const _REALM_ORDER = ['炼体','炼气','筑基','金丹','元婴','化神','炼虚','合体','大乘','渡劫·一劫','渡劫·二劫','渡劫·三劫','渡劫·四劫','渡劫·五劫','渡劫·六劫','渡劫·七劫','渡劫·八劫','渡劫·九劫','真仙'];
+const _REALM_ORDER = ['炼体','炼气','筑基','金丹','元婴','化神','炼虚','合体','大乘','渡劫·一劫','渡劫·二劫','渡劫·三劫','渡劫·四劫','渡劫·五劫','渡劫·六劫','渡劫·七劫','渡劫·八劫','渡劫·九劫','真仙'];// v4.365 NPC境界与寿元：NPC按灵根资质(growth)自然成长，每境需在寿元上限内突破，否则寿尽
+const _NPC_REALMS = ['炼体','炼气','筑基','金丹','元婴','化神','炼虚','合体','大乘','渡劫','真仙'];
+const _NPC_CAP = [100,150,200,500,1000,2000,4000,7000,12000,12000,99999]; // 与 lifeCapOf 寿元表一致
+const _NPC_YEARS = [20,50,100,250,500,1000,2000,3000,5000,999999]; // growth=1 时突破到下一境所需年数（早期快、后期指数增长）
+function npcRealmInfo(k, age){
+  const c = (typeof CHAINS!=='undefined' && CHAINS[k]) || (typeof META!=='undefined' && META.CHAINS && META.CHAINS[k]) || {};
+  if(c.realmStart===undefined) return {realm:'', dead:false, idx:0, deathAge:null};
+  age = (age===undefined || age===null) ? ((typeof G!=='undefined'&&G.age)||0) : age;
+  const growth = c.growth||1;
+  if(age <= c.realmAge) return {realm:_NPC_REALMS[c.realmStart], dead:false, idx:c.realmStart, deathAge:null};
+  let idx = c.realmStart, curAge = c.realmAge;
+  while(idx < _NPC_YEARS.length){
+    const nextAge = curAge + _NPC_YEARS[idx]/growth;
+    if(nextAge > _NPC_CAP[idx]){ // 无法在本境寿元内突破 → 寿尽
+      if(age > _NPC_CAP[idx]) return {realm:_NPC_REALMS[idx], dead:true, idx:idx, deathAge:_NPC_CAP[idx]};
+      return {realm:_NPC_REALMS[idx], dead:false, idx:idx, deathAge:_NPC_CAP[idx]};
+    }
+    if(age < nextAge) return {realm:_NPC_REALMS[idx], dead:false, idx:idx, deathAge:null};
+    curAge = nextAge; idx++;
+    if(idx >= _NPC_REALMS.length-1) return {realm:'真仙', dead:false, idx:_NPC_REALMS.length-1, deathAge:null};
+  }
+  return {realm:_NPC_REALMS[Math.min(idx,_NPC_REALMS.length-1)], dead:false, idx:idx, deathAge:null};
+}
+function npcDead(k, age){ return npcRealmInfo(k, age).dead; }
 function checkRealmBreak(g){
   if(!g || !g.soul) return;
   const k = realmKey(); // realmKey 4.195 已直接读 g.realm（挂起返回 X·巅峰 不在 _REALM_ORDER，不误飘）
@@ -3220,7 +3250,7 @@ function renderCompactStats(){
      <span>悟性<b${hl('悟性')}>${Math.floor(a.悟性)}</b></span>
      <span>家境<b${hl('家境')}>${Math.floor(a.家境)}</b></span>
      <span>气运<b${hl('气运')}>${Math.floor(a.气运)}</b></span>
-     <span class="cs-power">道行<b${hl('道行')}>${power()}</b></span>`;
+     <span class="cs-power">道行<b${hl('道行')}>${fmtPower(power())}</b></span>`;
   _prevAttrs = cur;
 }
 // 挂机渲染节流——AUTO 挂机时同一帧内多次 renderGame 合并为一次
@@ -3287,7 +3317,7 @@ function rgtStats(g, lifeCap, remain, lowLife){ // 顶部状态胶囊——姓�
      <span class="statpill" title="性格 ${escapeHtml(g.personality)} · 性别 ${escapeHtml(g.gender)||'男'}">${escapeHtml(g.gender)||'男'} · <b>${escapeHtml(g.personality)}</b></span>
      <span class="statpill">境界 <b>${escapeHtml(subRealm().name)}</b></span>
      <span class="statpill" title="修为进度（小境界累积）">修为 <b>${subRealm().subProg<0?'锁定':fmtW(subRealm().cur)+'/'+fmtW(subRealm().need)}</b></span>
-     <span class="statpill">道行 <b>${power()}</b></span>
+     <span class="statpill">道行 <b>${fmtPower(power())}</b></span>
      <span class="statpill ${lowLife?'warn':''}" title="当前 ${g.age} 岁，寿元上限 ${lifeCap} 岁，余 ${remain} 年" onclick="showLifeTip()" style="cursor:pointer">寿元 <b>${g.age}/${lifeCap}岁</b></span>
      <span class="statpill">灵石 <b>${Math.floor(g.money)}</b></span>
      <span class="statpill">声望 <b>${Math.floor(g.prestige)}</b></span>${(g.wound||0)>0 ? ' <span class="statpill" style="color:#e07777;cursor:pointer" title="伤势影响道行（当前 ×'+Math.round(woundMult()*100)+'%）：调养'+woundHealNeed()+'次-1 · 疗伤丹'+woundDanNeed()+'颗-1 · 自愈'+woundHealYears()+'年" onclick="showWoundTip()">伤·'+woundName()+'</span>' : ''} <!-- XL_RS 4.199/4.203：伤势显示+悬停减益提示 -->
@@ -3338,7 +3368,7 @@ function rgaVirtueRow(g){ // 功德/业力行——正魔道业仅影响渡劫 +
   return '<div style="grid-column:1/-1;margin-top:2px;padding-top:4px;border-top:1px dashed var(--line);font-size:11.5px;color:var(--dim)">功德 <b style="color:#7ecb7e">'+(g.功德||0)+'</b> · 业力 <b style="color:#e77">'+(g.业力||0)+'</b> <span style="opacity:.65">（正魔道业，仅影响渡劫）</span> <button class="btn mini" style="margin-left:6px;padding:0 8px;font-size:10px" title="查看渡劫成功率构成：基础/法宝/功德业力/气运/庇护/灵根/势力/功法" onclick="openTribModal()">渡劫构成</button> <button class="btn mini" style="padding:0 8px;font-size:10px" title="查看大境界突破成功率与失败后果、小境界突破成功率（与代码同源）" onclick="openBreakModal()">突破构成</button></div>';
 }
 function rgaPowerRow(){ // 道行构成行——道行终值 + 构成按钮 + 明细容器
-  return '<div style="grid-column:1/-1;margin-top:8px;padding-top:6px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:10px"><span style="font-size:14px;color:var(--dim)">道行</span><span style="font-size:20px;font-weight:800;color:var(--gold)">'+power()+'</span><button class="btn mini" onclick="togglePowerBrk()">构成</button></div>' + '<div id="powerBrk" style="grid-column:1/-1;margin-top:2px"></div>';
+  return '<div style="grid-column:1/-1;margin-top:8px;padding-top:6px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:10px"><span style="font-size:14px;color:var(--dim)">道行</span><span style="font-size:20px;font-weight:800;color:var(--gold)">'+fmtPower(power())+'</span><button class="btn mini" onclick="togglePowerBrk()">构成</button></div>' + '<div id="powerBrk" style="grid-column:1/-1;margin-top:2px"></div>';
 }
 function renderGameAttrsTip(_sub, g){ // 突破卡点提示——渡劫期/已满可突破/距下一境界年数/灵根所限
   if(_sub.subProg < 0) return '';
@@ -3407,8 +3437,29 @@ function renderGameLife(g){ // 事件链 + 人生轨迹
   if(g.children>0){ lf += '子嗣 '+g.children+' 人'; const _ks=(g.kids||[]).filter(k=>k.done&&k.succ); if(_ks.length>0) lf += '（'+_ks.map(k=>k.name+'·成才').join('、')+'）'; lf += _sep; } // 子嗣个体化显示成才子嗣
   if(g.godTitle) lf += '仙位 · '+g.godTitle+_sep;
   if(g.godArtifact) lf += '神器 · '+g.godArtifact+_sep; // 成仙凝聚的仙装展示
+  // 4.364 NPC好感度显示——仅显示有互动的NPC
+  if(g.npcAff){
+    const _npcNames = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练'};
+    const _npcTiers = v => v>=90?'生死之交':v>=70?'知己':v>=50?'友善':v>=30?'平淡':'冷淡';
+    const _npcColor = v => v>=70?'var(--gold)':v>=50?'var(--text)':v>=30?'var(--dim)':'var(--red)';
+    const _npcChain = k => (CHAINS[k]||{});
+    const _npcs = Object.keys(g.npcAff).filter(k=>g.npcAff[k]!==undefined && g.npcAff[k]!==50);
+    if(_npcs.length){
+      lf += '同道：' + _npcs.map(k=>{
+        const cn = _npcNames[k], c = _npcChain(k), id = (c.identity||'');
+        const _ri = npcRealmInfo(k, g.age);
+        const rl = _ri.realm;
+        if(_ri.dead){
+          const dlabel = cn + (id?'·'+id:'') + (c.root?'·'+c.root:'') + (rl?'·'+rl:'') + '（已故）';
+          return '<span style="color:var(--dim);opacity:.75">'+dlabel+'</span>';
+        }
+        const label = cn + (id?'·'+id:'') + (c.root?'·'+c.root:'') + (rl?'·'+rl:'') + ' '+_npcTiers(g.npcAff[k])+'('+g.npcAff[k]+')';
+        return '<span style="color:'+_npcColor(g.npcAff[k])+'">'+label+'</span>';
+      }).join('　') + _sep;
+    }
+  }
   const _hl = $('hudLife');
-  const _lsig = (g.org||'')+'|'+(g.master||'')+'|'+(g.spouse||'')+'|'+(g.children||0)+'|'+(g.godTitle||'')+'|'+(g.godArtifact||'');
+  const _naf = g.npcAff ? JSON.stringify(g.npcAff) : ''; const _lsig = (g.org||'')+'|'+(g.master||'')+'|'+(g.spouse||'')+'|'+(g.children||0)+'|'+(g.godTitle||'')+'|'+(g.godArtifact||'')+'|'+_naf;
   if(_hl && _hl._sig !== _lsig){ _hl._sig = _lsig; _hl.innerHTML = lf || '前路未定。'; }
 }
 function trendDesc(cat){
@@ -6283,6 +6334,12 @@ function prBasic(g, a, r){ // 基础门槛——等级/年龄/属性/事件联�
   if(r.notEv && g.evFlags && g.evFlags[r.notEv]) return false;   //  事件联动：需未经历特定机缘
   if(r.org && g.org!==r.org) return false;
   if(r.hasOrg && !g.org) return false;
+  if(r.aff){ // 4.364 NPC好感度门槛：{npc:'linmobai', min:60}
+    if(npcDead(r.aff.npc)) return false; // v4.365 已故NPC事件不再触发
+    const _affVal = (g.npcAff && g.npcAff[r.aff.npc]!==undefined) ? g.npcAff[r.aff.npc] : 50;
+    if(_affVal < r.aff.min) return false;
+    if(r.aff.max !== undefined && _affVal > r.aff.max) return false;
+  }
   if(r.post && g.post!==r.post) return false; // 职务门槛（掌门专属事件）
   if(r.notOrg){ if(typeof r.notOrg==='string'){ if(g.org===r.notOrg) return false; } else if(g.org) return false; }   // notOrg=true 要求无势力；notOrg='某宗' 要求非该宗成员
   if(r.orgIn && r.orgIn.indexOf(g.org||'')<0) return false; // 势力白名单（''=散修），异宗不可触发（元始宗功法仅散修/元始宗可参悟）
@@ -6451,6 +6508,8 @@ const EVENT_TRIGGER_HOOKS = [
   // ⑩ 事件链——激活中的链下一步骤强制出现（不可跳过），链尽则清空
   function evHookChain(g){
     if(g.chain){
+      const _cdDead = CHAINS[g.chain.id];
+      if(_cdDead && _cdDead.realmStart!==undefined && npcDead(g.chain.id)){ g.chain=null; return false; } // v4.365 链主NPC身故，链随人亡
       const ev = chainNextEvent(g.chain);
       if(ev){
         if(ev.needOrg && g.org!==ev.needOrg){ // 4.336 宗门机缘随宗而止——换宗后宗门专属链不再续接（防「元始宗弟子受风雷谷传承」逻辑矛盾）
@@ -6632,6 +6691,8 @@ function tepPool(g, band, q, _capNow){ // 事件池构建——品质/年龄带�
     const _t = ORG_TENSION[g.org];
     pb = pb.filter(e=> !(e.chainId && e.chainStart && CHAINS[e.chainId] && CHAINS[e.chainId].org && _t.indexOf(CHAINS[e.chainId].org)>=0));
   }
+  // v4.365 NPC寿元——已故NPC的链起点与日常事件不再触发（链中途NPC身故则其链自然中止，见 chain 驱动）
+  pb = pb.filter(e=> !(e.chainId && CHAINS[e.chainId] && CHAINS[e.chainId].realmStart!==undefined && npcDead(e.chainId)));
   pb = pb.filter(e=> e.name!=='元始宗传承'); // 元始宗传承只由「六枚元始令集齐」钩子触发，不可随机抽取
   // 元始令缺口加权——已集令越多，未得令权重越高（温和补缺，避免隐藏势力永远差最后一枚）
   if((g.yuanshiLing||[]).length>0 && (g.yuanshiLing||[]).length<6){
@@ -7055,6 +7116,14 @@ function resolveEventEff(g, a, ev, o){ // 固定效果——事件共鸣倍率�
       else if(k==='功德'||k==='业力'){ reeVirtue(g, k, o.eff[k]); } // 4.248：功德/业力（境界加权）抽子函数
       else if(k==='子嗣'||k==='kidDao'||k==='enemyAdd'||k==='promote'||k==='bond'||k==='spouseLv'||k==='spouseLost'){ reeLife(g, k, o.eff[k], m); } // 4.248：人生类副作用（子嗣/道侣/擢升/结怨）抽子函数
       else if(k==='cult'){ reeCult(g, o.eff[k]); } // 链环节修炼补偿——考核年份折算为一次修炼推进（过考修为大进，抵消长链占年损失） // 4.248：链环节补偿抽子函数
+      else if(k==='npcAff'){ // 4.364 NPC好感度 {npc:'linmobai', val:10}
+        const _npc = o.eff.npcAff.npc, _dv = o.eff.npcAff.val;
+        g.npcAff = g.npcAff || {};
+        const _oldAff = g.npcAff[_npc]!==undefined ? g.npcAff[_npc] : 50;
+        g.npcAff[_npc] = Math.max(0, Math.min(100, _oldAff + _dv));
+        const _npcNames = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练'};
+        addLog((_npcNames[_npc]||_npc)+' 好感度 '+_oldAff+' → '+g.npcAff[_npc]+'（'+(_dv>0?'+':'')+_dv+'）','note');
+      }
       else { if(typeof console!=='undefined' && console.warn && !['力量','灵动','气血','神识','悟性','家境','气运'].includes(k)) console.warn('[resolveEventEff] 未消费eff键: '+k+'='+o.eff[k]); let v=Math.round(o.eff[k]*m*orgTrend(k)); if(k==='悟性' && v>0) v=gainWu(v); a[k]+=v; addLog(`${k} ${v>0?'+':''}${v}${synTxt}`,'sys'); }
     });
   }
@@ -7213,6 +7282,14 @@ function rerApply(g, a, key, v, isSucc){ // roll 奖励/代价键路由——灵
   else if(key==='materials'){ g.materials=(g.materials||0)+Math.round(v); addLog(`妖材 +${Math.round(v)}。`,'good'); } // 4.355 妖材（同 herbs）
   else if(key==='lv'){ reeLvGain(g, v); } // 4.355 修为等级键（上古传承/战场传承 roll 成功奖励原落 a.lv 无效字段）
   else if(key==='寿元'){ g._lifeBonus=(isFinite(g._lifeBonus)?g._lifeBonus:0)+Math.round(v); lifeCapOf(); addLog(`寿元上限 +${Math.round(v)}。`,'good'); } // 4.355 寿元（古仙残念隐藏结局 roll 成功奖励原落 a.寿元 无效字段）
+  else if(key==='npcAff'){ // 4.364 NPC好感度变化（roll成功/失败路径）
+    g.npcAff = g.npcAff || {};
+    const _np = v.npc, _nv = v.val;
+    const _oldA = g.npcAff[_np]!==undefined ? g.npcAff[_np] : 50;
+    g.npcAff[_np] = Math.max(0, Math.min(100, _oldA + _nv));
+    const _nn = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼'};
+    addLog((_nn[_np]||_np)+' 好感度 '+_oldA+' → '+g.npcAff[_np]+'（'+(_nv>0?'+':'')+_nv+'）','note');
+  }
   else { if(typeof console!=='undefined' && console.warn && !['力量','灵动','气血','神识','悟性','家境','气运'].includes(key)) console.warn('[rerApply] 未消费roll奖励键: '+key+'='+v); // 4.355 开发期告警——未知键静默失效防再犯
     let _vv=v; if(key==='悟性' && _vv>0 && isSucc) _vv=gainWu(_vv); a[key]+=_vv; }
 }
@@ -8189,7 +8266,7 @@ function finishLifeHead(g, force, rew, _b, endTitle, endClass, s, qw, title){ //
   const sc = endScoreOf();
   $('endScore').innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
       <span class="score-big">${sc}</span>
-      <span style="text-align:left">综合评分 · 无上限<br><span class="muted" style="font-size:13px">${force ? '神寿无尽' : `享年 <b>${g.age}</b> 岁`} · 修为 <b>${escapeHtml(realmName())}</b> · 道行 <b>${power()}</b> · ${escapeHtml(s.name)}${qw!==s.name ? '（'+qw+'）' : ''}${title?' · 道号「'+title+'」':''}</span></span>
+      <span style="text-align:left">综合评分 · 无上限<br><span class="muted" style="font-size:13px">${force ? '神寿无尽' : `享年 <b>${g.age}</b> 岁`} · 修为 <b>${escapeHtml(realmName())}</b> · 道行 <b>${fmtPower(power())}</b> · ${escapeHtml(s.name)}${qw!==s.name ? '（'+qw+'）' : ''}${title?' · 道号「'+title+'」':''}</span></span>
     </div>
     <div class="muted" style="margin-top:8px">轮回点 <b class="cost">+${rew}</b> <span style="font-size:12px">（按境界+评分，详情见「查看评分构成」）</span></div>
     <div style="margin-top:8px"><button class="btn mini" onclick="showScoreDetail()">查看评分构成</button> <span style="font-size:11px;color:var(--dim)">逐项评分与轮回点上浮</span></div>
@@ -8251,7 +8328,7 @@ function flsBlock2(g){ // 区块二——最终属性（战斗四维高亮 + 功
   });
   sum += `<span class="es-attr gd">功德<b> ${Math.floor(g.功德||0)}</b></span>`; // 最终属性增功德/业力
   sum += `<span class="es-attr ye">业力<b> ${Math.floor(g.业力||0)}</b></span>`;
-  sum += `<span class="es-attr fight">道行<b> ${power()}</b></span>`;
+  sum += `<span class="es-attr fight">道行<b> ${fmtPower(power())}</b></span>`;
   sum += `</div></div>`;
   // 4.207b 本世历战统计（复盘：猎妖/斗法/走火入魔/历劫）
   const _stz = g.stats || {};
