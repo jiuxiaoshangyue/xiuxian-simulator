@@ -63,7 +63,12 @@ const CHAINS = {
   suxiaohe: {name:'小荷初露', org:'紫霄学宫', identity:'药庐小师妹', root:'四灵根', realmStart:1, realmAge:13, growth:1.0, desc:'紫霄学宫药庐里踩着板凳够药草的小师妹苏小荷，四灵根资质平平却心善手巧，一路采药救人，临别赠药见真情', steps:['sxh1','sxh2','sxh3','sxh4','sxh5','sxh6'], bonus:{气血:5, 神识:3, 功德:6, 修为:0.05}},
   chutianji: {name:'天机问道', org:'天机阁', identity:'推演大师兄', root:'三灵根', realmStart:2, realmAge:25, growth:1.1, desc:'天机阁观星台上的青衫推演师楚天机，观星命、测天机，与你共参星盘，终窥一线天道预言', steps:['ctj1','ctj2','ctj3','ctj4','ctj5','ctj6'], bonus:{神识:5, 气运:3, 悟性:2, 修为:0.05}},
   yuehua: {name:'寒月华辉', org:'太阴宫', identity:'月宫师姐', root:'双灵根', realmStart:2, realmAge:24, growth:1.2, desc:'太阴宫月华池畔白发如雪的寒月师姐，月下引气、神纹淬魂，从禁地相遇到月华同辉', steps:['hy1','hy2','hy3','hy4','hy5','hy6'], bonus:{神识:4, 灵动:4, 修为:0.05}},
-  chilian: {name:'赤练血影', org:'血煞宗', identity:'血煞魔女', root:'双灵根', realmStart:3, realmAge:28, growth:1.2, desc:'血煞宗血池旁浴血而笑的红衣魔女赤练，亦正亦邪，从血池炼体到生死与共，终见证血煞飞升', steps:['cl1','cl2','cl3','cl4','cl5','cl6'], bonus:{力量:5, 气血:4, 声望:8, 修为:0.05}}
+  chilian: {name:'赤练血影', org:'血煞宗', identity:'血煞魔女', root:'双灵根', realmStart:3, realmAge:28, growth:1.2, desc:'血煞宗血池旁浴血而笑的红衣魔女赤练，亦正亦邪，从血池炼体到生死与共，终见证血煞飞升', steps:['cl1','cl2','cl3','cl4','cl5','cl6'], bonus:{力量:5, 气血:4, 声望:8, 修为:0.05}},
+  xuanchengzi: {name:'铁面春秋', org:'元始宗', identity:'执法长老', root:'双灵根', realmStart:4, realmAge:200, growth:0.5, desc:'元始宗执法长老玄诚子，铁面无私却外冷内热，从面壁罚你到传你衣钵，严师如父', steps:['xcz1','xcz2','xcz3','xcz4','xcz5','xcz6'], bonus:{力量:4, 道心:4, 声望:6, 修为:0.05}},
+  muqingluan: {name:'青鸾灵翼', org:'风雷谷', identity:'御兽师姐', root:'三灵根', realmStart:2, realmAge:20, growth:1.1, desc:'风雷谷御兽师姐穆青鸾，飒爽爱兽，与她的风雷鸟一同成长，凌空相伴', steps:['mql1','mql2','mql3','mql4','mql5','mql6'], bonus:{灵动:5, 神识:3, 修为:0.05}},
+  suzigu: {name:'白骨生心', org:'天尸宗', identity:'尸修师姐', root:'三灵根', realmStart:3, realmAge:40, growth:0.9, desc:'天尸宗尸修苏子骨，曾为活祭，阴森护短，从尸山白骨到道心金莲', steps:['szg1','szg2','szg3','szg4','szg5','szg6'], bonus:{神识:4, 道心:4, 功德:8, 修为:0.05}},
+  yanzhuihun: {name:'追魔缉凶', org:'镇魔司', identity:'镇魔校尉', root:'双灵根', realmStart:2, realmAge:22, growth:1.2, desc:'镇魔司女校尉燕追魂，刚正嫉恶，与你查案缉凶、围剿魔巢，共镇一方妖魔', steps:['yzh1','yzh2','yzh3','yzh4','yzh5','yzh6'], bonus:{力量:4, 道心:4, 声望:8, 修为:0.05}},
+  zhouyuanhe: {name:'和气化元', org:'混元宗', identity:'和气师兄', root:'五灵根', realmStart:1, realmAge:18, growth:0.9, desc:'混元宗五灵根和气师兄周元和，以圆融之道把五行揉作一气，资质最差却走得最远', steps:['zyh1','zyh2','zyh3','zyh4','zyh5','zyh6'], bonus:{力量:2, 灵动:2, 气血:2, 神识:2, 修为:0.05}}
 }
 /* 4.351 宗门渊源冲突——当前势力 → 敌对势力列表：事件池构建时过滤敌对势力链起点（已开始的链不受影响），
    一处配置全局生效，避免"加入某宗却触发敌对势力机缘"的逻辑矛盾 */
