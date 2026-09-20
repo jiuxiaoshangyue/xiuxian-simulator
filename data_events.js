@@ -977,4 +977,152 @@ let EVENTS = [
   {band:1, q:'common', minAge:30, name:'魔女约酒', text:'赤练师姐扛着两坛酒路过，见你便挤眉弄眼：「走走走，喝酒去！今天我请——别跟我抢！」', req:{org:'血煞宗'}, w:0.12,
    opts:[{label:'陪她喝酒', eff:{npcAff:{npc:'chilian',val:4}, 气血:2}, txt:'你二人喝得大醉。她搂着你的肩膀唱魔道调子，跑调跑到天外。'},
          {label:'说在修炼', eff:{npcAff:{npc:'chilian',val:-3}}, txt:'你摆手说修炼期不饮酒。她撇嘴：「真没劲！」自己扛着酒走了。'}]},
+
+  /* ==== 4.367 第三批 NPC：玄诚子/穆青鸾/苏子骨/燕追魂/周元和（补齐 元始宗/风雷谷/天尸宗/镇魔司/混元宗） ==== */
+
+  /* --- 玄诚子：元始宗执法长老，铁面无私，外冷内热的严师 --- */
+  {band:1, q:'rare', minAge:16, name:'初犯受罚', text:'你初入元始宗，因不熟门规在讲武场与弟子起了争执。执法长老玄诚子现身，黑袍如铁，面沉似水：「元始宗立宗三百年，规矩大过天。你——面壁思过三日。」他声音不高，却如铁锤敲在心上。', once:true, chainId:'xuanchengzi', chainStart:true, step:'xcz1', req:{org:'元始宗'}, w:0.2,
+   opts:[{label:'领罚认错', eff:{npcAff:{npc:'xuanchengzi',val:15}, 道心:1}, txt:'你躬身领罚。玄诚子多看了你一眼：「知错能改，尚可救药。」'},
+         {label:'心中不服', eff:{npcAff:{npc:'xuanchengzi',val:-10}}, txt:'你嘴上认错，腹诽不已。他冷冷道：「面壁时好好想想，你错在哪。」'}]},
+
+  {band:1, q:'uncommon', minAge:22, name:'壁角苦修', text:'三日面壁，玄诚子每日来巡查。第三日他见你盘膝打坐，竟在壁角自行推演功法，神色微动：「罚你面壁，你倒把这当闭关了？」', chainId:'xuanchengzi', step:'xcz2', req:{aff:{npc:'xuanchengzi', min:40}},
+   opts:[{label:'趁机苦修', eff:{npcAff:{npc:'xuanchengzi',val:10}, 悟性:1}, txt:'你这三日颇有进境。他丢下一瓶丹药：「既肯用功，便不算白罚。」'},
+         {label:'敷衍了事', eff:{npcAff:{npc:'xuanchengzi',val:-8}}, txt:'你混了三日。他冷哼一声，拂袖而去。'}]},
+
+  {band:2, q:'rare', minAge:30, name:'长老考校', text:'演武场上，玄诚子亲自考校你的元始功法，一招一式拆解，严得近乎苛刻：「第三式你劲力浮于表面——重练一百遍。」', chainId:'xuanchengzi', step:'xcz3', req:{aff:{npc:'xuanchengzi', min:50}},
+   opts:[{label:'勤学苦练', need:{attr:{悟性:20}}, roll:{chance:0.6, extra:0.05, succ:{力量:3, 神识:2, npcAff:{npc:'xuanchengzi',val:10}}, succText:'你重练百遍，果然见功。他微微颔首：「孺子可教。」', fail:{悟性:1, npcAff:{npc:'xuanchengzi',val:5}}, failText:'你似懂非懂，但记下了。他看你表情，又多说了两句。'}},
+         {label:'讨价还价', eff:{npcAff:{npc:'xuanchengzi',val:-8}}, txt:'你央求少练几遍。他面无表情：「两百遍。」'}]},
+
+  {band:2, q:'epic', minAge:40, name:'执法如山', text:'同门诬陷你私藏宝物，闹到执法堂。玄诚子亲自查问，查明真相后，当堂将诬陷者杖责逐出，转身对你道：「元始宗不护短——你受委屈了。」', chainId:'xuanchengzi', step:'xcz4', req:{aff:{npc:'xuanchengzi', min:60}},
+   opts:[{label:'谢长老明察', eff:{npcAff:{npc:'xuanchengzi',val:10}, 声望:5, 功德:5}, txt:'他摆摆手：「执法如山，本就该还你公道。」'},
+         {label:'替同门求情', eff:{npcAff:{npc:'xuanchengzi',val:5}, 道心:2}, txt:'你为诬陷者求情。他打量你许久：「你……倒比他磊落。」'}]},
+
+  {band:2, q:'epic', minAge:50, name:'下山除妖', text:'玄诚子押你下山执法，途中遭遇一头为祸一方的妖修。他将执法令抛给你：「你我联手——今日，看看你学到了几分。」', chainId:'xuanchengzi', step:'xcz5', req:{aff:{npc:'xuanchengzi', min:65}},
+   opts:[{label:'并肩诛妖', need:{attr:{力量:28, 气血:26}}, roll:{chance:0.5, extra:0.06, succ:{力量:5, 气血:4, 灵石:600, 声望:8, npcAff:{npc:'xuanchengzi',val:10}}, succText:'你二人联手斩妖。他难得露出一丝笑意：「没白教你。」', fail:{气血:-10, npcAff:{npc:'xuanchengzi',val:5}}, failText:'你二人苦战方退。他一路沉默，到了安全处才闷声道：「下次……跟紧我。」', death:0.05, deathText:'殒命于妖修之手'}},
+         {label:'请他出手', eff:{npcAff:{npc:'xuanchengzi',val:3}, 修为:0.02}, txt:'他出手擒妖，你在旁观摩，受益匪浅。'}]},
+
+  {band:3, q:'legend', minAge:65, name:'衣钵相传', text:'玄诚子将一枚执法铁令交给你：「我执掌执法堂六十年，看人从未看走眼。你心性刚正，可继我衣钵——这铁令，你拿着。」', chainId:'xuanchengzi', step:'xcz6', chainEnd:true, req:{aff:{npc:'xuanchengzi', min:80}},
+   opts:[{label:'接令立誓', need:{attr:{声望:40}}, roll:{chance:0.6, extra:0.05, succ:{声望:12, 道心:5, 修为:0.05, npcAff:{npc:'xuanchengzi',val:10}}, succText:'你接令立誓。他欣慰点头，不久传位于你，云游去也。', fail:{声望:3, npcAff:{npc:'xuanchengzi',val:5}}, failText:'你自谦资历尚浅，他却将一本执法手札留了下来。'}},
+         {label:'推辞不受', eff:{npcAff:{npc:'xuanchengzi',val:5}, 道心:2}, txt:'你说自己资历尚浅。他不勉强，却将一本执法手札留了下来。'}]},
+
+  /* --- 穆青鸾：风雷谷御兽师姐，飒爽爱兽，坐骑是一头风雷雏鸟 --- */
+  {band:1, q:'rare', minAge:15, name:'后山御兽', text:'风雷谷后山，一位劲装女子正蹲在地上，对着一头羽翼未丰的风雷雏鸟轻声安抚。她回头见你，咧嘴一笑：「新来的？帮我按住它——这小家伙认生。」她背上长枪，飒爽得很。', once:true, chainId:'muqingluan', chainStart:true, step:'mql1', req:{org:'风雷谷'}, w:0.2,
+   opts:[{label:'上前帮忙', eff:{npcAff:{npc:'muqingluan',val:12}, 灵动:1}, txt:'你帮她按住雏鸟。她替它检查了伤势，笑道：「穆青鸾，谷里御兽的。你叫什么？」'},
+         {label:'退开观望', eff:{npcAff:{npc:'muqingluan',val:-8}}, txt:'你怕雏鸟啄人。她翻个白眼，独自按住。'}]},
+
+  {band:1, q:'uncommon', minAge:22, name:'灵鸟初长', text:'穆青鸾的风雷雏鸟伤好了，她邀你去后山看它。雏鸟已能短距离滑翔，她得意道：「我喂了它半年灵谷，你看，是不是精神多了？」', chainId:'muqingluan', step:'mql2', req:{aff:{npc:'muqingluan', min:40}},
+   opts:[{label:'赞她用心', eff:{npcAff:{npc:'muqingluan',val:10}, 神识:1}, txt:'你夸她御兽有道。她笑得眉眼弯弯。'},
+         {label:'说鸟太小', eff:{npcAff:{npc:'muqingluan',val:-5}}, txt:'你说这鸟还不成气候。她瞪你一眼。'}]},
+
+  {band:2, q:'rare', minAge:32, name:'乘风退敌', text:'一头百年妖兽袭谷，穆青鸾骑上初长成的风雷鸟迎战。她回头喊你：「跟我来——让你看看风雷谷御兽的本事！」', chainId:'muqingluan', step:'mql3', req:{aff:{npc:'muqingluan', min:50}},
+   opts:[{label:'随她出战', need:{attr:{灵动:24}}, roll:{chance:0.55, extra:0.05, succ:{灵动:4, 力量:3, 灵石:400, npcAff:{npc:'muqingluan',val:10}}, succText:'风雷鸟俯冲，你二人合力退敌。她大笑：「痛快！」', fail:{气血:-6, npcAff:{npc:'muqingluan',val:5}}, failText:'妖兽凶悍，你二人边打边退。她啐了一口：「下次带够人。」', death:0.04, deathText:'殒命于袭谷妖兽之口'}},
+         {label:'守住谷门', eff:{npcAff:{npc:'muqingluan',val:3}, 气血:2}, txt:'你守住谷门，她在外退敌。'}]},
+
+  {band:2, q:'epic', minAge:42, name:'灵鸟垂危', text:'穆青鸾的风雷鸟在一次猎妖中为护她重伤垂危。她抱着鸟，眼圈通红，却强撑着不肯落泪：「它跟了我十年……你帮我，把它救回来。」', chainId:'muqingluan', step:'mql4', req:{aff:{npc:'muqingluan', min:60}},
+   opts:[{label:'寻药救鸟', need:{attr:{神识:26}}, roll:{chance:0.5, extra:0.06, succ:{神识:4, 功德:6, npcAff:{npc:'muqingluan',val:12}}, succText:'你翻山越岭寻来续命灵药，救了风雷鸟一命。她红着眼圈，半天说不出话。', fail:{神识:-4, npcAff:{npc:'muqingluan',val:5}}, failText:'你寻药不及，风雷鸟虽缓过一口气，却元气大伤。她沉默地喂它服药。'}},
+         {label:'陪她守夜', eff:{npcAff:{npc:'muqingluan',val:8}, 道心:1}, txt:'你陪她守了鸟三天三夜。'}]},
+
+  {band:2, q:'epic', minAge:52, name:'凌空相救', text:'正邪大战，穆青鸾骑风雷鸟凌空作战，救下落入重围的你。她勒住缰绳，朗声道：「抓紧了——我这鸟，可没坐稳的习惯！」', chainId:'muqingluan', step:'mql5', req:{aff:{npc:'muqingluan', min:65}},
+   opts:[{label:'借力反攻', need:{attr:{力量:30}}, roll:{chance:0.45, extra:0.06, succ:{力量:5, 灵动:4, 声望:8, npcAff:{npc:'muqingluan',val:10}}, succText:'你借风雷鸟之势反冲杀阵。她大笑：「好样的！」', fail:{气血:-10, npcAff:{npc:'muqingluan',val:5}}, failText:'你二人杀出重围却都带伤。她揉着肩膀笑：「下次别陷那么深。」', death:0.05, deathText:'战死在乱军之中'}},
+         {label:'抱紧不杀', eff:{npcAff:{npc:'muqingluan',val:5}, 气血:2}, txt:'你抱紧鸟背，由她载你杀出重围。'}]},
+
+  {band:3, q:'legend', minAge:68, name:'青鸾同游', text:'穆青鸾已名动一方，风雷鸟亦成冲天灵禽。她邀你骑上鸟背，俯瞰万里山河：「我这辈子，与鸟为伴、与你为友——值了。」', chainId:'muqingluan', step:'mql6', chainEnd:true, req:{aff:{npc:'muqingluan', min:80}},
+   opts:[{label:'同游天际', need:{attr:{灵动:32}}, roll:{chance:0.5, extra:0.06, succ:{灵动:5, 神识:3, 修为:0.05, 气运:2, npcAff:{npc:'muqingluan',val:10}}, succText:'风雷鸟振翅九万里，你二人云海间畅谈。她笑道：「下次，带你去更高的地方。」', fail:{灵动:2, npcAff:{npc:'muqingluan',val:5}}, failText:'你被高空罡风吹得睁不开眼，却也饱览了山河。'}},
+         {label:'赠她养神符', eff:{灵石:-800, npcAff:{npc:'muqingluan',val:8}}, txt:'你送她一枚养神符。她收下，咧嘴一笑。'}]},
+
+  /* --- 苏子骨：天尸宗尸修师姐，曾是活祭，阴森护短 --- */
+  {band:1, q:'rare', minAge:18, name:'尸山初遇', text:'天尸宗阴煞深处，一个白衣女子坐在尸山白骨间，面色苍白如纸，眼底却无悲无喜。她抬眼看你，声音轻飘：「新来的？别怕，我不咬人——至少现在不咬。」', once:true, chainId:'suzigu', chainStart:true, step:'szg1', req:{org:'天尸宗'}, w:0.2,
+   opts:[{label:'不卑不亢', eff:{npcAff:{npc:'suzigu',val:12}, 神识:1}, txt:'你拱手见礼。她微微挑眉：「旁人见了我都躲，你倒胆大。苏子骨。」'},
+         {label:'心生畏惧', eff:{npcAff:{npc:'suzigu',val:-8}}, txt:'你后退一步。她自嘲一笑：「也是，活人都怕我们这些……尸修。」'}]},
+
+  {band:1, q:'uncommon', minAge:25, name:'阴灯照路', text:'苏子骨在尸堆旁翻找材料，见你来，丢给你一盏阴灯：「夜里走尸道，提灯照路——别回头。」她眼神淡淡，递得却很稳。', chainId:'suzigu', step:'szg2', req:{aff:{npc:'suzigu', min:40}},
+   opts:[{label:'接过阴灯', eff:{npcAff:{npc:'suzigu',val:10}, 神识:1}, txt:'你提灯夜行，果然没被阴煞侵体。她点点头。'},
+         {label:'不敢接', eff:{npcAff:{npc:'suzigu',val:-5}}, txt:'你说自己有护身法宝。她收回手，没说话。'}]},
+
+  {band:2, q:'rare', minAge:35, name:'活祭往事', text:'你撞见苏子骨独自对着一具旧尸发呆。她察觉你，声音很轻：「那是……我当年同村的人。我是被全村人当作活祭，送进天尸宗的。」她攥紧了手指。', chainId:'suzigu', step:'szg3', req:{aff:{npc:'suzigu', min:50}},
+   opts:[{label:'倾听她身世', eff:{npcAff:{npc:'suzigu',val:10}, 道心:2, 功德:3}, txt:'你静静听她说完。她忽然松了口气：「这些话，从未对人讲过。」'},
+         {label:'不知如何安慰', eff:{npcAff:{npc:'suzigu',val:3}}, txt:'你沉默。她也不勉强。'}]},
+
+  {band:2, q:'epic', minAge:45, name:'灭村之命', text:'宗门命苏子骨去灭一个凡俗村落——因村民误掘了宗中尸坟。她持刀而立，回头看你：「你说……我该怎么办？」这是她第一次问别人。', chainId:'suzigu', step:'szg4', req:{aff:{npc:'suzigu', min:60}},
+   opts:[{label:'劝她网开一面', need:{attr:{道心:20}}, roll:{chance:0.55, extra:0.05, succ:{道心:3, 功德:8, npcAff:{npc:'suzigu',val:12}}, succText:'你陪她回去复命，力争改为罚修。宗主虽不悦，却也没再追究。她看你的眼神柔了。', fail:{道心:1, npcAff:{npc:'suzigu',val:5}}, failText:'宗主不允，她暗中放走村民，回来后自请罚跪。'}},
+         {label:'遵宗命行事', eff:{npcAff:{npc:'suzigu',val:3}, 业力:3}, txt:'她奉命行事，回来后大病一场。'}]},
+
+  {band:2, q:'epic', minAge:55, name:'舍身相护', text:'正道联军攻上天尸宗，苏子骨为护你，硬挨了一名正道修士一掌。她咳出黑血，却把你护在身后：「我这副身子……死不了。你快走。」', chainId:'suzigu', step:'szg5', req:{aff:{npc:'suzigu', min:65}},
+   opts:[{label:'背她突围', need:{attr:{气血:30}}, roll:{chance:0.45, extra:0.06, succ:{气血:5, 道心:3, 功德:5, npcAff:{npc:'suzigu',val:12}}, succText:'你背她杀出重围。她趴在你背上，轻声道：「……你这个人，比我这尸修还固执。」', fail:{气血:-12, npcAff:{npc:'suzigu',val:8}}, failText:'你二人边打边退，都带了伤。她靠在你肩上喘气：「别回头。」', death:0.05, deathText:'战死在宗门大乱中'}},
+         {label:'喊她快撤', eff:{npcAff:{npc:'suzigu',val:6}, 修为:0.02}, txt:'你二人且战且退，好歹杀出。'}]},
+
+  {band:3, q:'legend', minAge:70, name:'白骨生心', text:'苏子骨修成天尸道果，早已脱却活祭阴影。她站在山巅，白衣猎猎：「我这一辈子，从活祭到尸修，本以为早已不是活人——」她转头看你，「是你让我觉得，我还是个人。」', chainId:'suzigu', step:'szg6', chainEnd:true, req:{aff:{npc:'suzigu', min:80}},
+   opts:[{label:'送她证道', need:{attr:{道心:28}}, roll:{chance:0.55, extra:0.05, succ:{道心:5, 神识:4, 修为:0.05, 功德:10, npcAff:{npc:'suzigu',val:10}}, succText:'她闭关证道成功，尸身竟生出道心金莲。出关第一面就来看你，难得笑了一下——那笑容像活人。', fail:{道心:2, npcAff:{npc:'suzigu',val:5}}, failText:'她证道虽有波折，终究成了。出关时她先来看你。'}},
+         {label:'赠她安魂符', eff:{灵石:-1000, npcAff:{npc:'suzigu',val:8}}, txt:'你送她一枚安魂符。她收下，指尖微凉。'}]},
+
+  /* --- 燕追魂：镇魔司女校尉，刚正嫉恶，外刚内柔 --- */
+  {band:1, q:'rare', minAge:17, name:'门前缉凶', text:'镇魔司门前，一个佩刀女子正缉拿一名逃窜魔修，三两下便将其按倒。她回头见你，眉目英朗：「新来的协从？跟紧点——镇魔司的刀，不认怂人。」', once:true, chainId:'yanzhuihun', chainStart:true, step:'yzh1', req:{org:'镇魔司'}, w:0.2,
+   opts:[{label:'领命随行', eff:{npcAff:{npc:'yanzhuihun',val:12}, 力量:1}, txt:'你跟上她。她自我介绍：燕追魂，镇魔司校尉。'},
+         {label:'自恃修为', eff:{npcAff:{npc:'yanzhuihun',val:-8}}, txt:'你觉得自己不必跟她。她挑眉：「那就各凭本事。」'}]},
+
+  {band:1, q:'uncommon', minAge:24, name:'夜宿荒庙', text:'燕追魂押解魔修途中，夜里露宿荒庙。她磨刀霍霍，忽然道：「镇魔司的刀，斩的不是妖魔，是人心底下的贪念。你……怕不怕？」', chainId:'yanzhuihun', step:'yzh2', req:{aff:{npc:'yanzhuihun', min:40}},
+   opts:[{label:'立志镇魔', eff:{npcAff:{npc:'yanzhuihun',val:10}, 道心:2}, txt:'你说愿随她除魔卫道。她点点头。'},
+         {label:'只为谋生', eff:{npcAff:{npc:'yanzhuihun',val:-5}}, txt:'你说为俸禄而来。她没再说话。'}]},
+
+  {band:2, q:'rare', minAge:34, name:'县城擒妖', text:'一处县城闹妖，燕追魂带你查案。她顺着蛛丝马迹，断定是伪装成人的妖物作祟。「跟我来，」她按刀而行，「今晚，收网。」', chainId:'yanzhuihun', step:'yzh3', req:{aff:{npc:'yanzhuihun', min:50}},
+   opts:[{label:'与她夜探', need:{attr:{神识:24}}, roll:{chance:0.6, extra:0.05, succ:{神识:4, 声望:5, npcAff:{npc:'yanzhuihun',val:10}}, succText:'你二人合力擒妖，县城安宁。她难得夸你：「眼很尖。」', fail:{气血:-6, npcAff:{npc:'yanzhuihun',val:5}}, failText:'你二人联手才将妖物拿下，都挂了彩。', death:0.04, deathText:'殒命于伪装妖物之口'}},
+         {label:'请她调兵', eff:{npcAff:{npc:'yanzhuihun',val:3}, 声望:2}, txt:'她调司兵合围，妖物伏诛。'}]},
+
+  {band:2, q:'epic', minAge:44, name:'朝中内应', text:'一桩大案牵出朝中有人为魔道内应。燕追魂收到匿名警告信，她把信往案上一拍：「怕死就别跟——我一个人去。」', chainId:'yanzhuihun', step:'yzh4', req:{aff:{npc:'yanzhuihun', min:60}},
+   opts:[{label:'执意同行', need:{attr:{道心:22}}, roll:{chance:0.5, extra:0.06, succ:{道心:3, 声望:8, 功德:5, npcAff:{npc:'yanzhuihun',val:12}}, succText:'你陪她查出内应，铁面无私地上报。她拍你肩：「好兄弟。」', fail:{道心:1, npcAff:{npc:'yanzhuihun',val:5}}, failText:'案情复杂，你们只查到些蛛丝马迹。'}},
+         {label:'劝她从长计议', eff:{npcAff:{npc:'yanzhuihun',val:5}}, txt:'你劝她从长计议，上报司里。她沉吟后点头。'}]},
+
+  {band:2, q:'epic', minAge:54, name:'魔巢护友', text:'围剿魔巢，燕追魂为护你被魔修重伤。她半跪在地，刀仍拄着，却把你往后一挡：「别管我——先毁了那卷魔功！」', chainId:'yanzhuihun', step:'yzh5', req:{aff:{npc:'yanzhuihun', min:65}},
+   opts:[{label:'毁功护她', need:{attr:{力量:28}}, roll:{chance:0.45, extra:0.06, succ:{力量:4, 道心:3, 灵石:500, npcAff:{npc:'yanzhuihun',val:12}}, succText:'你毁了魔功，回身护她杀出。她战后叹道：「你这条命，我记下了。」', fail:{气血:-12, npcAff:{npc:'yanzhuihun',val:8}}, failText:'你二人拼死方退，都伤得不轻。', death:0.06, deathText:'战死在魔巢之中'}},
+         {label:'先救她', eff:{npcAff:{npc:'yanzhuihun',val:8}, 气血:-8}, txt:'你先扶她突围，魔功留待司里处理。'}]},
+
+  {band:3, q:'legend', minAge:68, name:'追魂刀令', text:'燕追魂已官至镇魔司副司主。她把一枚追魂刀令掷给你：「镇魔百年，杀妖无数。这枚刀令，见令如见我——你可愿接？」', chainId:'yanzhuihun', step:'yzh6', chainEnd:true, req:{aff:{npc:'yanzhuihun', min:80}},
+   opts:[{label:'接令镇魔', need:{attr:{声望:40}}, roll:{chance:0.55, extra:0.05, succ:{声望:12, 道心:5, 修为:0.05, 功德:8, npcAff:{npc:'yanzhuihun',val:10}}, succText:'你接令，从此与她同镇一方妖魔。她大笑：「镇魔司，又多一个不要命的。」', fail:{声望:4, npcAff:{npc:'yanzhuihun',val:5}}, failText:'你说自己更喜自在。她也不勉强，把刀令收回。'}},
+         {label:'婉拒刀令', eff:{npcAff:{npc:'yanzhuihun',val:6}, 道心:2}, txt:'你说自己更喜欢自在修行。她也不勉强。'}]},
+
+  /* --- 周元和：混元宗和气师兄，五灵根却磨出混元一气 --- */
+  {band:1, q:'rare', minAge:16, name:'饭堂让座', text:'混元宗饭堂，一个圆脸师兄见你端着饭盆找座，忙把你拉到他桌：「来来来，坐这儿——新师弟是吧？我周元和，有什么不懂的尽管问。」他笑眯眯的，一团和气。', once:true, chainId:'zhouyuanhe', chainStart:true, step:'zyh1', req:{org:'混元宗'}, w:0.2,
+   opts:[{label:'与他同坐', eff:{npcAff:{npc:'zhouyuanhe',val:12}, 气血:1}, txt:'他给你讲了一堆宗门趣事，饭都香了几分。'},
+         {label:'独自用餐', eff:{npcAff:{npc:'zhouyuanhe',val:-5}}, txt:'你想安静。他也不恼，笑着点头。'}]},
+
+  {band:1, q:'uncommon', minAge:22, name:'和事之道', text:'同门两位师弟为一株灵草争执不下，周元和两边劝和，最后从自己药圃里匀出一株了事。他擦汗笑道：「和气生财，和气生财嘛。」', chainId:'zhouyuanhe', step:'zyh2', req:{aff:{npc:'zhouyuanhe', min:40}},
+   opts:[{label:'赞他圆融', eff:{npcAff:{npc:'zhouyuanhe',val:10}, 道心:1}, txt:'你学了他的和事之道，与人相处也圆融了几分。'},
+         {label:'觉得他太软', eff:{npcAff:{npc:'zhouyuanhe',val:-5}}, txt:'你说这样会被人欺负。他只是笑。'}]},
+
+  {band:2, q:'rare', minAge:32, name:'五灵归一气', text:'你才知周元和竟是五灵根——在旁人眼中资质最差。可他打坐时，五行气机圆融流转，隐隐有混元气象。他睁眼笑：「五灵根又如何？我把五行，揉成一气。」', chainId:'zhouyuanhe', step:'zyh3', req:{aff:{npc:'zhouyuanhe', min:50}},
+   opts:[{label:'讨教混元', need:{attr:{悟性:20}}, roll:{chance:0.6, extra:0.05, succ:{悟性:3, 力量:1, 灵动:1, 气血:1, 神识:1, npcAff:{npc:'zhouyuanhe',val:10}}, succText:'你从他身上悟出五行归一的道理，四气皆有进益。', fail:{悟性:1, npcAff:{npc:'zhouyuanhe',val:5}}, failText:'五灵归一的道理太深，你只听了个大概。'}},
+         {label:'替他可惜', eff:{npcAff:{npc:'zhouyuanhe',val:3}}, txt:'你替他惋惜。他摆手笑。'}]},
+
+  {band:2, q:'epic', minAge:42, name:'以和化刚', text:'宗门大比，周元和被人讥讽五灵根也敢上台。他却笑呵呵上台，以五行调和之力，竟把那弟子的刚猛之力化于无形。下台后他冲你眨眼：「和气，也是一种力量。」', chainId:'zhouyuanhe', step:'zyh4', req:{aff:{npc:'zhouyuanhe', min:60}},
+   opts:[{label:'为他喝彩', eff:{npcAff:{npc:'zhouyuanhe',val:10}, 道心:2, 声望:3}, txt:'你真心喝彩。他乐得眯起眼。'},
+         {label:'赛前叮嘱', eff:{npcAff:{npc:'zhouyuanhe',val:5}, 气血:1}, txt:'你赛前叮嘱他小心。他连连点头。'}]},
+
+  {band:2, q:'epic', minAge:52, name:'山门御敌', text:'宗门遭强敌攻山，众弟子各守一方。周元和守在山门，以一身混元气机化解了数道凌厉攻势，却也油尽灯枯。他见你赶来，笑了笑：「别急……我还撑得住。」', chainId:'zhouyuanhe', step:'zyh5', req:{aff:{npc:'zhouyuanhe', min:65}},
+   opts:[{label:'替他守山', need:{attr:{气血:30}}, roll:{chance:0.45, extra:0.06, succ:{气血:5, 道心:3, 声望:8, npcAff:{npc:'zhouyuanhe',val:12}}, succText:'你补上他的空缺，二人合力守住山门。他喘着气道：「好兄弟。」', fail:{气血:-10, npcAff:{npc:'zhouyuanhe',val:5}}, failText:'山门险些被破，你们且战且退。', death:0.05, deathText:'战死在山门攻防中'}},
+         {label:'扶他疗伤', eff:{npcAff:{npc:'zhouyuanhe',val:8}, 气血:-5}, txt:'你扶他退下，另请长老补上。'}]},
+
+  {band:3, q:'legend', minAge:68, name:'混元丹成', text:'周元和竟凭五灵根之资，修出混元一气，惊动一方。他把一颗自行凝练的五行混元丹递你：「我这辈子，资质最差，却走得最远——这颗丹，送你。」', chainId:'zhouyuanhe', step:'zyh6', chainEnd:true, req:{aff:{npc:'zhouyuanhe', min:80}},
+   opts:[{label:'受丹悟道', need:{attr:{悟性:30}}, roll:{chance:0.5, extra:0.06, succ:{力量:2, 灵动:2, 气血:2, 神识:2, 修为:0.05, 道心:4, npcAff:{npc:'zhouyuanhe',val:10}}, succText:'丹入腹，你只觉五行调和、浑身舒畅。他大笑：「这才是我混元宗的道。」', fail:{力量:1, 灵动:1, 气血:1, 神识:1, npcAff:{npc:'zhouyuanhe',val:5}}, failText:'丹药力和气，你四气各有微进。'}},
+         {label:'回赠厚礼', eff:{灵石:-800, npcAff:{npc:'zhouyuanhe',val:8}}, txt:'你回赠厚礼。他推辞不过收下，连说「见外了」。'}]},
+
+  /* --- 第三批 NPC 日常风味事件 --- */
+  {band:1, q:'common', minAge:25, name:'长老巡场', text:'演武场上，玄诚子背手巡场，见你练拳，忽然停下，指出你一处疏漏。话不多，却一针见血。', req:{org:'元始宗'}, w:0.1,
+   opts:[{label:'按他所指', eff:{npcAff:{npc:'xuanchengzi',val:3}, 力量:1}, txt:'你改了运劲法门，果然顺畅。他微微点头。'},
+         {label:'没往心里去', eff:{npcAff:{npc:'xuanchengzi',val:-2}}, txt:'你点头称是，转头又忘了。他远远看你一眼，没说话。'}]},
+
+  {band:1, q:'common', minAge:25, name:'青鸾喂鸟', text:'后山，穆青鸾正蹲在地上给风雷鸟喂灵谷，见你来便招手：「来，帮我扶着它——它最近又胖了，不好按。」', req:{org:'风雷谷'}, w:0.1,
+   opts:[{label:'上前帮忙', eff:{npcAff:{npc:'muqingluan',val:3}, 灵动:1}, txt:'你帮她按住鸟翅，它乖乖吃完了灵谷。她笑出了声。'},
+         {label:'远远看着', eff:{npcAff:{npc:'muqingluan',val:-2}}, txt:'你怕鸟啄手，站远了。她撇撇嘴。'}]},
+
+  {band:1, q:'common', minAge:30, name:'子骨守夜', text:'尸道尽头，苏子骨独自守夜，白衣在阴火里明明灭灭。她见你提灯路过，淡淡道：「夜深了，尸道不干净——要走便快些。」', req:{org:'天尸宗'}, w:0.1,
+   opts:[{label:'陪她片刻', eff:{npcAff:{npc:'suzigu',val:4}, 神识:1}, txt:'你陪她站了一会儿，两人都没说话，却不觉得尴尬。'},
+         {label:'加快脚步', eff:{npcAff:{npc:'suzigu',val:-2}}, txt:'你加快脚步走过。她也不在意。'}]},
+
+  {band:1, q:'common', minAge:28, name:'追魂磨刀', text:'镇魔司廊下，燕追魂霍霍磨刀。见你来，她头也不抬：「刀不磨不快，人不练不进——今日功课做了？」', req:{org:'镇魔司'}, w:0.1,
+   opts:[{label:'应诺去练', eff:{npcAff:{npc:'yanzhuihun',val:3}, 力量:1}, txt:'你转身去练功。她磨完刀，难得点了点头。'},
+         {label:'含糊应付', eff:{npcAff:{npc:'yanzhuihun',val:-2}}, txt:'你含糊应了一声。她抬眼扫你，似笑非笑。'}]},
+
+  {band:1, q:'common', minAge:25, name:'元和劝架', text:'混元宗院里，两个弟子又为琐事红脸。周元和端着碗饭过去，三言两语把两人逗笑了，又各自劝了两句。', req:{org:'混元宗'}, w:0.1,
+   opts:[{label:'学他圆融', eff:{npcAff:{npc:'zhouyuanhe',val:3}, 道心:1}, txt:'你看他三言两语化解干戈，暗记在心。'},
+         {label:'觉得啰嗦', eff:{npcAff:{npc:'zhouyuanhe',val:-2}}, txt:'你觉得他太过啰嗦。他乐呵呵，不往心里去。'}]},
 ]

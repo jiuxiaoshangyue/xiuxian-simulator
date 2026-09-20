@@ -3439,7 +3439,7 @@ function renderGameLife(g){ // 事件链 + 人生轨迹
   if(g.godArtifact) lf += '神器 · '+g.godArtifact+_sep; // 成仙凝聚的仙装展示
   // 4.364 NPC好感度显示——仅显示有互动的NPC
   if(g.npcAff){
-    const _npcNames = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练'};
+    const _npcNames = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练', xuanchengzi:'玄诚子', muqingluan:'穆青鸾', suzigu:'苏子骨', yanzhuihun:'燕追魂', zhouyuanhe:'周元和'};
     const _npcTiers = v => v>=90?'生死之交':v>=70?'知己':v>=50?'友善':v>=30?'平淡':'冷淡';
     const _npcColor = v => v>=70?'var(--gold)':v>=50?'var(--text)':v>=30?'var(--dim)':'var(--red)';
     const _npcChain = k => (CHAINS[k]||{});
@@ -7121,7 +7121,7 @@ function resolveEventEff(g, a, ev, o){ // 固定效果——事件共鸣倍率�
         g.npcAff = g.npcAff || {};
         const _oldAff = g.npcAff[_npc]!==undefined ? g.npcAff[_npc] : 50;
         g.npcAff[_npc] = Math.max(0, Math.min(100, _oldAff + _dv));
-        const _npcNames = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练'};
+        const _npcNames = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练', xuanchengzi:'玄诚子', muqingluan:'穆青鸾', suzigu:'苏子骨', yanzhuihun:'燕追魂', zhouyuanhe:'周元和'};
         addLog((_npcNames[_npc]||_npc)+' 好感度 '+_oldAff+' → '+g.npcAff[_npc]+'（'+(_dv>0?'+':'')+_dv+'）','note');
       }
       else { if(typeof console!=='undefined' && console.warn && !['力量','灵动','气血','神识','悟性','家境','气运'].includes(k)) console.warn('[resolveEventEff] 未消费eff键: '+k+'='+o.eff[k]); let v=Math.round(o.eff[k]*m*orgTrend(k)); if(k==='悟性' && v>0) v=gainWu(v); a[k]+=v; addLog(`${k} ${v>0?'+':''}${v}${synTxt}`,'sys'); }
@@ -7287,7 +7287,7 @@ function rerApply(g, a, key, v, isSucc){ // roll 奖励/代价键路由——灵
     const _np = v.npc, _nv = v.val;
     const _oldA = g.npcAff[_np]!==undefined ? g.npcAff[_np] : 50;
     g.npcAff[_np] = Math.max(0, Math.min(100, _oldA + _nv));
-    const _nn = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼'};
+    const _nn = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', xuanchengzi:'玄诚子', muqingluan:'穆青鸾', suzigu:'苏子骨', yanzhuihun:'燕追魂', zhouyuanhe:'周元和'};
     addLog((_nn[_np]||_np)+' 好感度 '+_oldA+' → '+g.npcAff[_np]+'（'+(_nv>0?'+':'')+_nv+'）','note');
   }
   else { if(typeof console!=='undefined' && console.warn && !['力量','灵动','气血','神识','悟性','家境','气运'].includes(key)) console.warn('[rerApply] 未消费roll奖励键: '+key+'='+v); // 4.355 开发期告警——未知键静默失效防再犯
