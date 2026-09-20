@@ -3439,7 +3439,7 @@ function renderGameLife(g){ // 事件链 + 人生轨迹
   if(g.godArtifact) lf += '神器 · '+g.godArtifact+_sep; // 成仙凝聚的仙装展示
   // 4.364 NPC好感度显示——仅显示有互动的NPC
   if(g.npcAff){
-    const _npcNames = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练', xuanchengzi:'玄诚子', muqingluan:'穆青鸾', suzigu:'苏子骨', yanzhuihun:'燕追魂', zhouyuanhe:'周元和'};
+    const _npcNames = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练', xuanchengzi:'玄诚子', muqingluan:'穆青鸾', suzigu:'苏子骨', yanzhuihun:'燕追魂', zhouyuanhe:'周元和', luotieshan:'罗铁山', yingqingying:'阴清影', juxiaotian:'巨啸天', baixuanzhou:'白玄洲', zhaoheng:'赵衡', hujiuer:'胡九儿', yunfuzi:'云符子', suhuichun:'苏回春', guchangfeng:'顾长风', yaoqingnang:'药青囊', liuqingci:'柳清词', moxuanji:'墨玄机'};
     const _npcTiers = v => v>=90?'生死之交':v>=70?'知己':v>=50?'友善':v>=30?'平淡':'冷淡';
     const _npcColor = v => v>=70?'var(--gold)':v>=50?'var(--text)':v>=30?'var(--dim)':'var(--red)';
     const _npcChain = k => (CHAINS[k]||{});
@@ -4329,9 +4329,30 @@ function toggleSpousePanel(){
   if(p.style.display !== 'none'){ p.style.display='none'; return; }
   renderSpousePanel(); p.style.display='block';
 }
-function renderSpousePanel(){
+const NPC_GENDER = {linmobai:'男', zhaowuji:'男', laojiugui:'男', shenqingyi:'女', yeguhong:'男', suxiaohe:'女', chutianji:'男', yuehua:'女', chilian:'女', xuanchengzi:'男', muqingluan:'女', suzigu:'男', yanzhuihun:'男', zhouyuanhe:'男', luotieshan:'男', yingqingying:'女', juxiaotian:'男', baixuanzhou:'男', zhaoheng:'男', hujiuer:'女', yunfuzi:'男', suhuichun:'男', guchangfeng:'男', yaoqingnang:'男', liuqingci:'女', moxuanji:'男'};
+function marryNPC(k){
   const g=G;
-  const p=$('spousePanel'); if(!p || !g.spouse) return;
+  if(g.spouse) return;
+  const aff = g.npcAff[k];
+  if(aff===undefined||aff<80) return;
+  const c = CHAINS[k]||{};
+  const cn = ({linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练', xuanchengzi:'玄诚子', muqingluan:'穆青鸾', suzigu:'苏子骨', yanzhuihun:'燕追魂', zhouyuanhe:'周元和', luotieshan:'罗铁山', yingqingying:'阴清影', juxiaotian:'巨啸天', baixuanzhou:'白玄洲', zhaoheng:'赵衡', hujiuer:'胡九儿', yunfuzi:'云符子', suhuichun:'苏回春', guchangfeng:'顾长风', yaoqingnang:'药青囊', liuqingci:'柳清词', moxuanji:'墨玄机'})[k]||k;
+  g.spouse = cn;
+  g.spouseRole = c.identity||'同道';
+  g.spouseGender = NPC_GENDER[k];
+  g.spouseLv = Math.min(10, g.realm);
+  g.bond = 50;
+  g._npcSpouseKey = k;
+  addLog(cn+'（'+g.spouseRole+'）与你结为道侣，羁绊深厚。','good');
+  closeAllModals();
+  renderGame();
+}function renderSpousePanel(){
+  const g=G;
+  const p=$('spousePanel'); if(!p) return;
+  if(!g.spouse){
+    p.innerHTML = '<div style="border:1px solid var(--line);border-radius:8px;padding:8px"><div class="muted" style="font-size:12px">红尘道侣缘薄，暂无同道相伴。</div></div>';
+    return;
+  }
   const _bd0 = Math.min(100, (g.bond||0));
   const _sl = Math.min(10, Math.max(0, g.spouseLv||0));
   const _acts = [
@@ -4905,6 +4926,17 @@ function advanceYears(kind, n){
     g._evPause = false;
     if(g._stepRemain > 0) addLog(`闭关因故中断，余 <b>${g._stepRemain}</b> 年待续。`,'note');
     if(AUTO.on){ renderGameAuto(); } else { renderGame(); }
+    return;
+  }
+  // 4.371 NPC道侣结缘事件
+  if(g._marryPending && !g.spouse){
+    const k = g._marryPending; g._marryPending = null;
+    const cn = ({linmobai:'林墨白',zhaowuji:'赵无极',laojiugui:'老酒鬼',shenqingyi:'沈青衣',yeguhong:'叶孤鸿',suxiaohe:'苏小荷',chutianji:'楚天机',yuehua:'寒月',chilian:'赤练',xuanchengzi:'玄诚子',muqingluan:'穆青鸾',suzigu:'苏子骨',yanzhuihun:'燕追魂',zhouyuanhe:'周元和',luotieshan:'罗铁山',yingqingying:'阴清影',juxiaotian:'巨啸天',baixuanzhou:'白玄洲',zhaoheng:'赵衡',hujiuer:'胡九儿',yunfuzi:'云符子',suhuichun:'苏回春',guchangfeng:'顾长风',yaoqingnang:'药青囊',liuqingci:'柳清词',moxuanji:'墨玄机'})[k]||k;
+    const c = CHAINS[k]||{};
+    const id = c.identity||'同道';
+    var _m=document.getElementById('marryModal'); if(!_m){_m=document.createElement('div');_m.id='marryModal';document.body.appendChild(_m);}
+    _m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    _m.innerHTML='<div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;max-width:400px;width:90%;color:var(--text)"><div style="color:var(--gold);font-weight:700;font-size:16px;margin-bottom:10px">道缘天定</div><p style="font-size:14px;line-height:1.6">'+cn+'（'+id+'）与你历经患难，情谊已至深浓。她/他眼中脉脉含情，似有意与你结为道侣，从此双修共参、不离不弃。</p><p style="color:var(--gold);margin:10px 0">是否与 '+cn+' 结为道侣？</p><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="G.spouse=\''+cn+'\';G.spouseRole=\''+id+'\';G.spouseLv=Math.min(10,G.realm);G.bond=50;G._npcSpouseKey=\''+k+'\';addLog(\''+cn+'与你结为道侣，羁绊深厚。\',\'good\');document.getElementById(\'marryModal\').remove();renderGame();">结为道侣</button><button class="btn" style="flex:1" onclick="addLog(\'你婉拒了'+cn+'的情意，她/他默默转身。\',\'note\');document.getElementById(\'marryModal\').remove();renderGame();">婉拒</button></div></div>';
     return;
   }
   if(AUTO.on){ renderGameAuto(); } else { renderGame(); }
@@ -7121,8 +7153,12 @@ function resolveEventEff(g, a, ev, o){ // 固定效果——事件共鸣倍率�
         g.npcAff = g.npcAff || {};
         const _oldAff = g.npcAff[_npc]!==undefined ? g.npcAff[_npc] : 50;
         g.npcAff[_npc] = Math.max(0, Math.min(100, _oldAff + _dv));
-        const _npcNames = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练', xuanchengzi:'玄诚子', muqingluan:'穆青鸾', suzigu:'苏子骨', yanzhuihun:'燕追魂', zhouyuanhe:'周元和'};
+        const _npcNames = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', shenqingyi:'沈青衣', yeguhong:'叶孤鸿', suxiaohe:'苏小荷', chutianji:'楚天机', yuehua:'寒月', chilian:'赤练', xuanchengzi:'玄诚子', muqingluan:'穆青鸾', suzigu:'苏子骨', yanzhuihun:'燕追魂', zhouyuanhe:'周元和', luotieshan:'罗铁山', yingqingying:'阴清影', juxiaotian:'巨啸天', baixuanzhou:'白玄洲', zhaoheng:'赵衡', hujiuer:'胡九儿', yunfuzi:'云符子', suhuichun:'苏回春', guchangfeng:'顾长风', yaoqingnang:'药青囊', liuqingci:'柳清词', moxuanji:'墨玄机'};
         addLog((_npcNames[_npc]||_npc)+' 好感度 '+_oldAff+' → '+g.npcAff[_npc]+'（'+(_dv>0?'+':'')+_dv+'）','note');
+        if(!g.spouse && _dv>0 && _oldAff<80 && g.npcAff[_npc]>=80){
+          const ng = NPC_GENDER[_npc];
+          if(ng && ng!==(g.gender||'男')){ g._marryPending = _npc; }
+        }
       }
       else { if(typeof console!=='undefined' && console.warn && !['力量','灵动','气血','神识','悟性','家境','气运'].includes(k)) console.warn('[resolveEventEff] 未消费eff键: '+k+'='+o.eff[k]); let v=Math.round(o.eff[k]*m*orgTrend(k)); if(k==='悟性' && v>0) v=gainWu(v); a[k]+=v; addLog(`${k} ${v>0?'+':''}${v}${synTxt}`,'sys'); }
     });
@@ -7287,7 +7323,7 @@ function rerApply(g, a, key, v, isSucc){ // roll 奖励/代价键路由——灵
     const _np = v.npc, _nv = v.val;
     const _oldA = g.npcAff[_np]!==undefined ? g.npcAff[_np] : 50;
     g.npcAff[_np] = Math.max(0, Math.min(100, _oldA + _nv));
-    const _nn = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', xuanchengzi:'玄诚子', muqingluan:'穆青鸾', suzigu:'苏子骨', yanzhuihun:'燕追魂', zhouyuanhe:'周元和'};
+    const _nn = {linmobai:'林墨白', zhaowuji:'赵无极', laojiugui:'老酒鬼', xuanchengzi:'玄诚子', muqingluan:'穆青鸾', suzigu:'苏子骨', yanzhuihun:'燕追魂', zhouyuanhe:'周元和', luotieshan:'罗铁山', yingqingying:'阴清影', juxiaotian:'巨啸天', baixuanzhou:'白玄洲', zhaoheng:'赵衡', hujiuer:'胡九儿', yunfuzi:'云符子', suhuichun:'苏回春', guchangfeng:'顾长风', yaoqingnang:'药青囊', liuqingci:'柳清词', moxuanji:'墨玄机'};
     addLog((_nn[_np]||_np)+' 好感度 '+_oldA+' → '+g.npcAff[_np]+'（'+(_nv>0?'+':'')+_nv+'）','note');
   }
   else { if(typeof console!=='undefined' && console.warn && !['力量','灵动','气血','神识','悟性','家境','气运'].includes(key)) console.warn('[rerApply] 未消费roll奖励键: '+key+'='+v); // 4.355 开发期告警——未知键静默失效防再犯
@@ -7758,6 +7794,17 @@ function endYear(batch){
   if(g._stepRemain > 0 && g.alive && !g.godTitle){
     const _k = g._stepRemain; g._stepRemain = 0;
     advanceYears(g._lastKind || '历练', _k);
+    return;
+  }
+  // 4.371 NPC道侣结缘事件
+  if(g._marryPending && !g.spouse){
+    const k = g._marryPending; g._marryPending = null;
+    const cn = ({linmobai:'林墨白',zhaowuji:'赵无极',laojiugui:'老酒鬼',shenqingyi:'沈青衣',yeguhong:'叶孤鸿',suxiaohe:'苏小荷',chutianji:'楚天机',yuehua:'寒月',chilian:'赤练',xuanchengzi:'玄诚子',muqingluan:'穆青鸾',suzigu:'苏子骨',yanzhuihun:'燕追魂',zhouyuanhe:'周元和',luotieshan:'罗铁山',yingqingying:'阴清影',juxiaotian:'巨啸天',baixuanzhou:'白玄洲',zhaoheng:'赵衡',hujiuer:'胡九儿',yunfuzi:'云符子',suhuichun:'苏回春',guchangfeng:'顾长风',yaoqingnang:'药青囊',liuqingci:'柳清词',moxuanji:'墨玄机'})[k]||k;
+    const c = CHAINS[k]||{};
+    const id = c.identity||'同道';
+    var _m=document.getElementById('marryModal'); if(!_m){_m=document.createElement('div');_m.id='marryModal';document.body.appendChild(_m);}
+    _m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    _m.innerHTML='<div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;max-width:400px;width:90%;color:var(--text)"><div style="color:var(--gold);font-weight:700;font-size:16px;margin-bottom:10px">道缘天定</div><p style="font-size:14px;line-height:1.6">'+cn+'（'+id+'）与你历经患难，情谊已至深浓。她/他眼中脉脉含情，似有意与你结为道侣，从此双修共参、不离不弃。</p><p style="color:var(--gold);margin:10px 0">是否与 '+cn+' 结为道侣？</p><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="G.spouse=\''+cn+'\';G.spouseRole=\''+id+'\';G.spouseLv=Math.min(10,G.realm);G.bond=50;G._npcSpouseKey=\''+k+'\';addLog(\''+cn+'与你结为道侣，羁绊深厚。\',\'good\');document.getElementById(\'marryModal\').remove();renderGame();">结为道侣</button><button class="btn" style="flex:1" onclick="addLog(\'你婉拒了'+cn+'的情意，她/他默默转身。\',\'note\');document.getElementById(\'marryModal\').remove();renderGame();">婉拒</button></div></div>';
     return;
   }
   if(AUTO.on){ renderGameAuto(); } else { renderGame(); }
