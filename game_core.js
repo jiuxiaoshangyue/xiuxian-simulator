@@ -1156,22 +1156,19 @@ function artEffSum(o){ const e=o&&o.eff?o.eff:{}; let s=0; ['cult','悟性','力
 function recordDaoTong(){
   META.daoTong = META.daoTong || {gongfas: [], shentongs: []};
   if(!G) return;
-  // -3：重置式铭刻——历史与当世合并去重后，按品质优先取前 3（功法/神通各 3 门上限，永不膨胀）
-  const gf = (G.gongfaOwned||[]).filter(id=>GONGFAS[id] && !GONGFAS[id].special); // 特殊功法（混沌经等事件获得）不入传承池——防白嫖稀有事件奖励
-  const st = (G.shentongOwned||[]).filter(id=>SHENTONGS[id] && !SHENTONGS[id].special);
-  const mg = META.daoTong.gongfas.slice();
-  gf.forEach(id=>{ if(mg.indexOf(id)<0) mg.push(id); });
-  META.daoTong.gongfas = mg.sort((a,b)=>daoTongScore(GONGFAS[b],'gongfa')-daoTongScore(GONGFAS[a],'gongfa')).slice(0,3);
-  const ms = META.daoTong.shentongs.slice();
-  st.forEach(id=>{ if(ms.indexOf(id)<0) ms.push(id); });
-  META.daoTong.shentongs = ms.sort((a,b)=>daoTongScore(SHENTONGS[b],'shentong')-daoTongScore(SHENTONGS[a],'shentong')).slice(0,3);
+  // 4.395：仅限上一世·非奇遇——覆盖式铭刻（不再合并历史累计），只铭刻当世（上一世）学过的非奇遇功法神通，各至多 3 门
+  // special=特殊功法（混沌经等）、qiyu=奇遇事件获得（ev.art 事件/链功法、artPool 金事件功法、shenPool 奇遇神通）——均不入传承池（防转世白嫖稀有事件奖励）
+  const gf = (G.gongfaOwned||[]).filter(id=>GONGFAS[id] && !GONGFAS[id].special && !GONGFAS[id].qiyu);
+  const st = (G.shentongOwned||[]).filter(id=>SHENTONGS[id] && !SHENTONGS[id].special && !SHENTONGS[id].qiyu);
+  META.daoTong.gongfas = gf.sort((a,b)=>daoTongScore(GONGFAS[b],'gongfa')-daoTongScore(GONGFAS[a],'gongfa')).slice(0,3);
+  META.daoTong.shentongs = st.sort((a,b)=>daoTongScore(SHENTONGS[b],'shentong')-daoTongScore(SHENTONGS[a],'shentong')).slice(0,3);
 }
 function toggleDaoTong(kind, id){ GIFT = GIFT || {}; GIFT[kind] = (GIFT[kind]===id)?null:id; renderDaoTong(); renderDaoTong('daoTongRollBox'); } // 两容器同步刷新（主菜单+投胎页），点击即时反馈
 function renderDaoTong(boxId){
   const box = $(boxId || 'daoTongBox'); if(!box) return;
   GIFT = GIFT || {};
-  const gf = ((META.daoTong && META.daoTong.gongfas) || []).filter(id=>!GONGFAS[id] || !GONGFAS[id].special); // 过滤特殊功法（旧档残留清理）
-  const st = ((META.daoTong && META.daoTong.shentongs) || []).filter(id=>!SHENTONGS[id] || !SHENTONGS[id].special);
+  const gf = ((META.daoTong && META.daoTong.gongfas) || []).filter(id=>!GONGFAS[id] || !GONGFAS[id].special || GONGFAS[id].qiyu); // 过滤特殊/奇遇功法（旧档残留清理）
+  const st = ((META.daoTong && META.daoTong.shentongs) || []).filter(id=>!SHENTONGS[id] || !SHENTONGS[id].special || SHENTONGS[id].qiyu);
   if(!gf.length && !st.length){ box.innerHTML = '<div class="muted" style="font-size:12px;line-height:1.7">尚无传承——完成一局后，按品质铭刻当世修得的功法神通，转世可觉醒（每世 1 功法 + 1 神通，免费习得）。</div>'; return; }
   const isRoll = (boxId === 'daoTongRollBox');
   // 4.252：超大函数拆分——折叠态/展开态抽 2 子函数
@@ -7303,6 +7300,7 @@ function recHundun(g, ev, o){ // 混沌五行仙丹——成功率受气运影�
 }
 function recJing(g, ev, o){ // 混沌经——获得特殊天级功法（被动生效：cultBase 按品质 +5%/+15%；大境界突破小概率淬炼灵根）
   g.chaosJing = true;
+  if(GONGFAS['混沌经']) GONGFAS['混沌经'].qiyu = true; // 4.395 奇遇来源标记——混沌经不入道统传承池（与 special 双保险）
   if((g.gongfaOwned||[]).indexOf('混沌经')<0){ g.gongfaOwned = g.gongfaOwned||[]; g.gongfaOwned.push('混沌经'); } // 入装备池——需主动装备主修/辅修位才生效
   atlasGain('gongfas', '混沌经'); // 本局暂存，世末结算入图鉴
   addLog('<b>习得混沌经：</b>混沌玉简化作一道流光没入识海，一部无上功法自此与你性命交修——混沌经（天级）！','gold');
@@ -7462,6 +7460,7 @@ function regArt(g, ev){ // 事件功法登记——宗门归属校验（他宗�
     if(g.tangmenArts.indexOf(ev.art) < 0){
       g.tangmenArts.push(ev.art);
       g.gongfaOwned = g.gongfaOwned || []; if(g.gongfaOwned.indexOf(ev.art)<0) g.gongfaOwned.push(ev.art); // 习得功法入藏经阁库，可装备主修/辅修
+      if(GONGFAS[ev.art]) GONGFAS[ev.art].qiyu = true; // 4.395 奇遇来源标记——事件/链直接获得功法不入道统传承池
       atlasGain('gongfas', ev.art); // 本局暂存，世末结算入图鉴
       // 功法无习得被动——宗门增益（ORG_BONUS['元始宗'] 六绝版）即集齐六部功法的回报，避免双重叠加
       addLog(`<b>习得元始宗功法「${ev.art}」！</b>（${g.tangmenArts.length}/6）`,'good');
@@ -7476,6 +7475,7 @@ function regShen(g, o){ // 奇遇神通——shenPool 随机习得一门未拥�
     if(_shenPool.length){
       const _shenId = _shenPool[Math.floor(Math.random()*_shenPool.length)];
       g.shentongOwned = g.shentongOwned||[]; g.shentongOwned.push(_shenId);
+      if(SHENTONGS[_shenId]) SHENTONGS[_shenId].qiyu = true; // 4.395 奇遇来源标记——shenPool 奇遇神通不入道统传承池
       atlasGain('shentongs', _shenId); // 本局暂存，世末结算入图鉴
       addLog(`<b>机缘神通！</b>你于机缘中习得神通「${_shenId}」（${SHENTONGS[_shenId].desc}）。`,'good');
     }
@@ -7488,6 +7488,7 @@ function regArtPool(g, o){ // 机缘功法——artPool 随机习得一门未拥
     if(_artPool.length){
       const _artId = _artPool[Math.floor(Math.random()*_artPool.length)];
       g.gongfaOwned = g.gongfaOwned||[]; g.gongfaOwned.push(_artId);
+      if(GONGFAS[_artId]) GONGFAS[_artId].qiyu = true; // 4.395 奇遇来源标记——金事件 artPool 功法不入道统传承池
       atlasGain('gongfas', _artId);
       addLog(`<b>机缘功法！</b>你于机缘中参悟功法「${_artId}」（${GONGFAS[_artId].desc}）。`,'good');
     }
