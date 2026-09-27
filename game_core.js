@@ -1,4 +1,4 @@
-﻿const RULESET = 'XL_RS_3_20260913'; // 修为体系重构——每境独立累计、突破清零、渡劫期每年一劫，版本号升级隔离旧档
+const RULESET = 'XL_RS_3_20260913'; // 修为体系重构——每境独立累计、突破清零、渡劫期每年一劫，版本号升级隔离旧档
 
 /* ============ 配置 ============ */
 // 悟道法则体系——元素法则（8，炼虚解锁）/ 至高法则（9，合体解锁）；每悟一道获法则之力（元素+1 / 至高+3）
@@ -5023,12 +5023,12 @@ function advanceYears(kind, n){
     if(__NORENDER || (AUTO && AUTO.on)){ // 4.390d 自动/批测自动接受道侣——消除挂机弹窗卡死（手动模式保留抉择弹窗）
       G.spouse=cn; G.spouseRole=id; var _ri=npcRealmInfo(k,G.age); G.spouseLv=Math.min(10,_ri.idx!==undefined?_ri.realmIdx:G.realm); G.bond=50; G._npcSpouseKey=k;
       addLog(cn+'与你结为道侣，羁绊深厚。','good');
-      return;
-    }
-    var _m=document.getElementById('marryModal'); if(!_m){_m=document.createElement('div');_m.id='marryModal';document.body.appendChild(_m);}
+    } else {
+      var _m=document.getElementById('marryModal'); if(!_m){_m=document.createElement('div');_m.id='marryModal';document.body.appendChild(_m);}
     _m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
     _m.innerHTML='<div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;max-width:400px;width:90%;color:var(--text)"><div style="color:var(--gold);font-weight:700;font-size:16px;margin-bottom:10px">道缘天定</div><p style="font-size:14px;line-height:1.6">'+cn+'（'+id+'）与你历经患难，情谊已至深浓。她/他眼中脉脉含情，似有意与你结为道侣，从此双修共参、不离不弃。</p><p style="color:var(--gold);margin:10px 0">是否与 '+cn+' 结为道侣？</p><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="G.spouse=\''+cn+'\';G.spouseRole=\''+id+'\';var _ri=npcRealmInfo(\''+k+'\',G.age);G.spouseLv=Math.min(10,_ri.idx!==undefined?_ri.realmIdx:G.realm);G.bond=50;G._npcSpouseKey=\''+k+'\';addLog(\''+cn+'与你结为道侣，羁绊深厚。\',\'good\');document.getElementById(\'marryModal\').remove();if(AUTO&&AUTO.on){renderGameAuto();}else{renderGame();}">结为道侣</button><button class="btn" style="flex:1" onclick="G._marryCooldown=\''+k+'\';G._marryCooldownAge=G.age;addLog(\'你婉拒了'+cn+'的情意，她/他默默转身。\',\'note\');document.getElementById(\'marryModal\').remove();if(AUTO&&AUTO.on){renderGameAuto();}else{renderGame();}">婉拒</button></div></div>';
     return;
+    }
   }
   if(AUTO.on){ renderGameAuto(); } else { renderGame(); }
   startYear();
@@ -8069,12 +8069,12 @@ function endYear(batch){
     if(__NORENDER || (AUTO && AUTO.on)){ // 4.390d 自动/批测自动接受道侣——消除挂机弹窗卡死（手动模式保留抉择弹窗）
       G.spouse=cn; G.spouseRole=id; var _ri=npcRealmInfo(k,G.age); G.spouseLv=Math.min(10,_ri.idx!==undefined?_ri.realmIdx:G.realm); G.bond=50; G._npcSpouseKey=k;
       addLog(cn+'与你结为道侣，羁绊深厚。','good');
-      return;
-    }
-    var _m=document.getElementById('marryModal'); if(!_m){_m=document.createElement('div');_m.id='marryModal';document.body.appendChild(_m);}
+    } else {
+      var _m=document.getElementById('marryModal'); if(!_m){_m=document.createElement('div');_m.id='marryModal';document.body.appendChild(_m);}
     _m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
     _m.innerHTML='<div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;max-width:400px;width:90%;color:var(--text)"><div style="color:var(--gold);font-weight:700;font-size:16px;margin-bottom:10px">道缘天定</div><p style="font-size:14px;line-height:1.6">'+cn+'（'+id+'）与你历经患难，情谊已至深浓。她/他眼中脉脉含情，似有意与你结为道侣，从此双修共参、不离不弃。</p><p style="color:var(--gold);margin:10px 0">是否与 '+cn+' 结为道侣？</p><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="G.spouse=\''+cn+'\';G.spouseRole=\''+id+'\';var _ri=npcRealmInfo(\''+k+'\',G.age);G.spouseLv=Math.min(10,_ri.idx!==undefined?_ri.realmIdx:G.realm);G.bond=50;G._npcSpouseKey=\''+k+'\';addLog(\''+cn+'与你结为道侣，羁绊深厚。\',\'good\');document.getElementById(\'marryModal\').remove();if(AUTO&&AUTO.on){renderGameAuto();}else{renderGame();}">结为道侣</button><button class="btn" style="flex:1" onclick="G._marryCooldown=\''+k+'\';G._marryCooldownAge=G.age;addLog(\'你婉拒了'+cn+'的情意，她/他默默转身。\',\'note\');document.getElementById(\'marryModal\').remove();if(AUTO&&AUTO.on){renderGameAuto();}else{renderGame();}">婉拒</button></div></div>';
     return;
+    }
   }
   if(AUTO.on){ renderGameAuto(); } else { renderGame(); }
   startYear();
