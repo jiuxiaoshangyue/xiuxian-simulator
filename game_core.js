@@ -7058,6 +7058,9 @@ function finishChain(g, def, ev){ // 4.352 链完成统一出口——事件终�
       if(_cb.悟性){ const _wu=gainWu(_cb.悟性); g.a.悟性=(g.a.悟性||0)+_wu; _logs.push('悟性 +'+_wu); }
       if(_cb.声望){ g.prestige=(g.prestige||0)+_cb.声望; _logs.push('声望 +'+_cb.声望); }
       if(_cb.修为){ const _seg=subSegLen(g,(g.subRealm===undefined||g.subRealm===null)?0:g.subRealm); const _amt=Math.max(1,Math.round(_seg*_cb.修为)); g.realmPos=Math.min(_seg,(g.realmPos||0)+_amt); _logs.push('修为 +'+_amt); }
+      if(_cb.道心){ const _nd3=Math.max(0,Math.min(100,(g.daoXin||50)+_cb.道心)); if(_nd3!==(g.daoXin||50)){ g.daoXin=_nd3; _logs.push('道心 +'+_cb.道心); } } // 4.393 链嘉奖道心（原漏结算静默丢失）
+      if(_cb.功德){ g.功德=Math.max(0,(g.功德||0)+_cb.功德); _logs.push('功德 +'+_cb.功德); } // 4.393 链嘉奖功德
+      if(_cb.气运){ const _ny=clamp((g.a.气运||0)+_cb.气运,1,100); if(_ny!==(g.a.气运||0)){ g.a.气运=_ny; _logs.push('气运 +'+_cb.气运); } } // 4.393 链嘉奖气运
       if(_logs.length) addLog('<b>链成嘉奖：</b>'+_logs.join('、')+'。','good');
     }
   }
@@ -7376,7 +7379,17 @@ function resolveEventEff(g, a, ev, o){ // 固定效果——事件共鸣倍率�
           if(ng && ng!==(g.gender||'男') && g._marryCooldown!==_npc){ g._marryPending = _npc; }
         }
       }
-      else { if(typeof console!=='undefined' && console.warn && !['力量','灵动','气血','神识','悟性','家境','气运'].includes(k)) console.warn('[resolveEventEff] 未消费eff键: '+k+'='+o.eff[k]); let v=Math.round(o.eff[k]*m*orgTrend(k)); if(k==='悟性' && v>0) v=gainWu(v); a[k]+=v; addLog(`${k} ${v>0?'+':''}${v}${synTxt}`,'sys'); }
+      else if(k==='道心'){ // 4.393 事件道心——成长类奖励不随共鸣缩放（对齐 rerApply/finishChain），clamp 0-100
+        const _dv2 = Math.round(o.eff[k]); const _nd = Math.max(0, Math.min(100, (g.daoXin||50) + _dv2));
+        if(_nd !== (g.daoXin||50)){ g.daoXin = _nd; addLog(`道心 ${_dv2>0?'+':''}${_dv2}。`,'good'); }
+      }
+      else if(k==='修为'){ // 4.393 事件修为——段内百分比语义（与 rerApply/finishChain 一致）
+        const _seg2 = subSegLen(g, (g.subRealm===undefined||g.subRealm===null)?0:g.subRealm)||1;
+        const _amt2 = Math.max(1, Math.round(_seg2 * o.eff[k]));
+        const _np2 = Math.min(_seg2, (g.realmPos||0) + _amt2);
+        if(_np2 !== (g.realmPos||0)){ g.realmPos = _np2; addLog(`修为 +${_amt2}。`,'good'); }
+      }
+      else { if(!['力量','灵动','气血','神识','悟性','家境','气运'].includes(k)){ if(typeof console!=='undefined') console.warn('[resolveEventEff] 未消费eff键: '+k+'='+o.eff[k]); return; } let v=Math.round(o.eff[k]*m*orgTrend(k)); if(k==='悟性' && v>0) v=gainWu(v); a[k]+=v; addLog(`${k} ${v>0?'+':''}${v}${synTxt}`,'sys'); }
     });
   }
 }
@@ -7530,6 +7543,7 @@ function rerApply(g, a, key, v, isSucc){ // roll 奖励/代价键路由——灵
   else if(key==='spouseLost'){ g.spouse=''; g.spouseRole=''; g.bond=0; }
   else if(key==='evClear'){ if(g.evFlags) delete g.evFlags[v]; }
   else if(key==='修为'){ const _seg=subSegLen(g,(g.subRealm===undefined||g.subRealm===null)?0:g.subRealm); const _amt=Math.max(1,Math.round(_seg*v)); g.realmPos=Math.min(_seg,(g.realmPos||0)+_amt); } // 4.352 修为键=段内百分比（0.15=15%段长），与链嘉奖同语义
+  else if(key==='道心'){ const _nd2=Math.max(0,Math.min(100,(g.daoXin||50)+Math.round(v))); if(_nd2!==(g.daoXin||50)){ g.daoXin=_nd2; addLog(`道心 ${v>0?'+':''}${Math.round(v)}。`,'good'); } } // 4.393 roll 道心——clamp 0-100（原落 a.道心 无效字段）
   else if(key==='herbs'){ g.herbs=(g.herbs||0)+Math.round(v); addLog(`灵草 +${Math.round(v)}。`,'good'); } // 4.355 灵草（roll 路径漏配分支，原落 a.herbs 无效字段）
   else if(key==='materials'){ g.materials=(g.materials||0)+Math.round(v); addLog(`妖材 +${Math.round(v)}。`,'good'); } // 4.355 妖材（同 herbs）
   else if(key==='lv'){ reeLvGain(g, v); } // 4.355 修为等级键（上古传承/战场传承 roll 成功奖励原落 a.lv 无效字段）
