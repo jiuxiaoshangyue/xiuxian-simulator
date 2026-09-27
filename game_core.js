@@ -2908,7 +2908,7 @@ function checkRealmBreak(g){
   const k = realmKey(); // realmKey 4.195 已直接读 g.realm（挂起返回 X·巅峰 不在 _REALM_ORDER，不误飘）
   if(g._lastRealm === undefined){ g._lastRealm = k; return; }
   const a = _REALM_ORDER.indexOf(g._lastRealm), b = _REALM_ORDER.indexOf(k);
-  if(b > a && a >= 0){ // _lastRealm 若为旧档遗留格式（indexOf=-1），a=-1 时 b>a 恒真会误报突破——加 a>=0 排除 // b>=0 冗余（b>a 且 a>=0 已蕴含 b>0），删除
+  if(b > a && a >= 0 && !(k.indexOf('渡劫')===0 && (g._lastRealm||'').indexOf('渡劫')===0)){ // 4.391b 渡劫期逐劫推进不打"突破至"大境界日志/飘字（劫间是境界内进度；大乘→渡劫·一劫、渡劫·九劫→真仙仍触发） // _lastRealm 若为旧档遗留格式（indexOf=-1），a=-1 时 b>a 恒真会误报突破——加 a>=0 排除 // b>=0 冗余（b>a 且 a>=0 已蕴含 b>0），删除
     showToast('⚡ 境界突破 · '+k+' ⚡', '#ffd700', 'rgba(40,32,12,.95)', 'lg');
     addLog('—— <b>突破至'+k+'！</b>——','good');
   }
