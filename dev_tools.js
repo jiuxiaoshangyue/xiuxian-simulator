@@ -1,6 +1,6 @@
 
 /* ============ XL_RS 4.104：开发者工具（版本号 + 成仙率批测） ============ */
-const XL_RS_VERSION = '4.389'; // 4.389 满加成成仙率三杠杆：功德金身门槛200→150（0.35→0.30显示修正）+低品突破惩罚收窄（BRK_QMOD/BRK_COEF）+低档失败折寿减轻（1/5/10/30→0/3/6/20）；0加成4.82%(<5%)满加成15.2%(真实觉醒权重口径) // 4.388 散仙自造仙基事件化（EV_SANXIAN_ZAOJI 三选项：稳扎=原概率/燃血×2/静观跳过；AUTO 静默=原概率）+ 功德业力破境天劫修正统一 0.05%/点（与飞升渡劫同口径，原1%/点改0.05%/点） // 4.385 新增5位NPC(玄诚子/穆青鸾/苏子骨/燕追魂/周元和)补齐元始宗/风雷谷/天尸宗/镇魔司/混元宗，各6步核心链+日常事件 // 4.365 4.366 道行显示去浮点尾差（70.94200000000001→70.94，整数构造杜绝尾差）；4.365 NPC寿元体系——NPC按灵根资质自然成长，各境需在寿元上限内突破否则寿尽；已故NPC不再触发事件/链随人亡，同道栏标（已故）；修复第二批6位NPC(沈青衣/叶孤鸿/苏小荷/楚天机/寒月/赤练)CHAINS元数据缺失致核心链2-6步永不触发、不显示境界寿元；修复npcRealmInfo/同道栏误用未赋值的META.CHAINS致结识NPC即报错（统一读全局CHAINS）；老酒鬼链补全为6步（4.364k NPC核心链扩展为6步（4.364b NPC好感度系统：0-100初值50，核心链+日常事件+面板显示（4.364a NPC因缘链上线：墨白知交/无极争锋/醉中真意 三NPC四步链（4.363c 弹窗关闭按钮滚动消失修复（4.361b 旧链悟性收敛（4.361 宗门链悟性收敛——新链悟性奖励克制（4.360 宗门差异化——12 宗专属传承链（4.359 突破反馈强化：大境界 lg 亮横幅+小境界飘字（4.358 结构拆分——主逻辑拆出 game_core.js，开发者工具独立成文件；阶段2：修为门槛 expOfLv 判定 → realm 语义（事件数据 lv→realm/pos 迁移 35 处 + prBasic/optEnabled/needText/法宝/职务/境界共鸣改读 realm，删除 expOfLv）
+const XL_RS_VERSION = '4.390'; // 4.390 方案A魔道事件补全：天尸宗/阴冥宗/血煞宗各+3日常事件（尸傀喂养/葬天窟巡夜/炼尸堂打下手/鬼市采买/魂游幽冥/白骨殿值夜/血池淬炼/猎杀夺煞/血煞大典观礼，q白绿蓝入池）+各+1条5步专属链（万尸朝宗→尸皇道基四维+2%、九幽通冥→幽冥道基神识+3%、杀伐证道→血煞道基力量+3%），正魔对称；事件515/链52 // 4.389 满加成成仙率三杠杆：功德金身门槛200→150（0.35→0.30显示修正）+低品突破惩罚收窄（BRK_QMOD/BRK_COEF）+低档失败折寿减轻（1/5/10/30→0/3/6/20）；0加成4.82%(<5%)满加成15.2%(真实觉醒权重口径) // 4.388 散仙自造仙基事件化（EV_SANXIAN_ZAOJI 三选项：稳扎=原概率/燃血×2/静观跳过；AUTO 静默=原概率）+ 功德业力破境天劫修正统一 0.05%/点（与飞升渡劫同口径，原1%/点改0.05%/点） // 4.385 新增5位NPC(玄诚子/穆青鸾/苏子骨/燕追魂/周元和)补齐元始宗/风雷谷/天尸宗/镇魔司/混元宗，各6步核心链+日常事件 // 4.365 4.366 道行显示去浮点尾差（70.94200000000001→70.94，整数构造杜绝尾差）；4.365 NPC寿元体系——NPC按灵根资质自然成长，各境需在寿元上限内突破否则寿尽；已故NPC不再触发事件/链随人亡，同道栏标（已故）；修复第二批6位NPC(沈青衣/叶孤鸿/苏小荷/楚天机/寒月/赤练)CHAINS元数据缺失致核心链2-6步永不触发、不显示境界寿元；修复npcRealmInfo/同道栏误用未赋值的META.CHAINS致结识NPC即报错（统一读全局CHAINS）；老酒鬼链补全为6步（4.364k NPC核心链扩展为6步（4.364b NPC好感度系统：0-100初值50，核心链+日常事件+面板显示（4.364a NPC因缘链上线：墨白知交/无极争锋/醉中真意 三NPC四步链（4.363c 弹窗关闭按钮滚动消失修复（4.361b 旧链悟性收敛（4.361 宗门链悟性收敛——新链悟性奖励克制（4.360 宗门差异化——12 宗专属传承链（4.359 突破反馈强化：大境界 lg 亮横幅+小境界飘字（4.358 结构拆分——主逻辑拆出 game_core.js，开发者工具独立成文件；阶段2：修为门槛 expOfLv 判定 → realm 语义（事件数据 lv→realm/pos 迁移 35 处 + prBasic/optEnabled/needText/法宝/职务/境界共鸣改读 realm，删除 expOfLv）
 (function(){
   const FULL_LH = {superTop:100, shenTop:100, sheTop:100, liLiang:10, minJie:10, tiLi:10, jingShen:10, life:20, wuXing:20, cultTop:30, huntTop:15, epicEv:60, legendEv:50, mythicEv:50, shenGan:100};
   function newLife(lh, opts){
@@ -217,7 +217,57 @@ function runDecFinalStat(st, g, bq){ // 单局结局统计——境界分布 + �
       AUTO.on = savedAuto;
     }
   };
-  /* 批测入口：临时禁用渲染/日志/事件弹窗与自动 interval，跑完恢复——不干扰正常游玩 */
+  /* 低品机缘体检（4.390c 诊断接口）——逐局采样灵根共鸣/混沌丹/混沌经触发与终局品质，
+     用于评估低品"机缘升品通道"是否够得着（不改任何游戏数值，纯统计） */
+  window.__BATCH.xiuxiAudit = function(qual, n){
+    n = n || 200;
+    const _oldNR = __NORENDER; __NORENDER = true;
+    const saved = {};
+    saved.showEvent = window.showEvent; window.showEvent = function(ev){ window.__EV = ev; };
+    const savedAuto = AUTO.on; AUTO.on = false;
+    const rows = [];
+    try {
+      for(let i=0;i<n;i++){
+        newLife(FULL_LH, {qual:qual});
+        const g = G;
+        let guard=0, lastQ = (g.soul && g.soul.quality) || qual;
+        while(g.alive && !g.godTitle && guard++<30000 && g.age<60000){
+          g._autoActCount = (g._autoActCount||0)+1;
+          if(guard%15===0){ try{ autoEquipArt(); }catch(e){} }
+          if(orgTick()) continue;
+          if(autoPre()){
+            if(!g.alive||g.godTitle) break;
+            if(window.__EV){ resolveEvent(window.__EV, autoPickIdx(window.__EV)); window.__EV=null; if(!g.alive||g.godTitle) break; }
+            if(g.soul) lastQ = g.soul.quality;
+            continue;
+          }
+          const kind = pickKind(); if(!kind) break;
+          if(kind==='突破' && g._breakPending===3 && g.realm>=8){
+            const _gdNet2 = (g.功德||0)-(g.业力||0);
+            if(_gdNet2>=200 && !g._jinShenFail){ doGongdeAscend(); }
+            else if(_gdNet2<=-200){ doMoAscend(); }
+            else { doAction(kind); }
+            if(!g.alive||g.godTitle) break;
+            if(window.__EV){ resolveEvent(window.__EV, autoPickIdx(window.__EV)); window.__EV=null; if(!g.alive||g.godTitle) break; }
+            if(g.soul) lastQ = g.soul.quality;
+            continue;
+          }
+          window.__EV = null;
+          if(kind==='狩猎'){ huntTick(); if(!g.alive||g.godTitle) break; if(window.__EV){ resolveEvent(window.__EV, autoPickIdx(window.__EV)); window.__EV=null; } if(g.soul) lastQ=g.soul.quality; continue; }
+          doAction(kind);
+          if(!g.alive||g.godTitle) break;
+          if(window.__EV){ resolveEvent(window.__EV, autoPickIdx(window.__EV)); window.__EV=null; if(!g.alive||g.godTitle) break; }
+          if(g.soul) lastQ = g.soul.quality;
+        }
+        rows.push({q1:lastQ, xiSuiN:g._xiSuiN||0, hundun:g._hundunN?1:0, hunjing:g._hunjingMet?1:0, age:g.age, end:g.godTitle||(g._sanxian?'散仙':(g.deathCause||'?'))});
+      }
+      return {qual:qual, n:n, rows:rows};
+    } finally {
+      if(saved.showEvent !== undefined) window.showEvent = saved.showEvent;
+      __NORENDER = _oldNR;
+      AUTO.on = savedAuto;
+    }
+  };
   window.batchTest = function(n, full, opts){
     const saved = {};
     const _oldNR = __NORENDER; __NORENDER = true; // 渲染开关替代临时替换 hack（渲染入口已判断 __NORENDER）
