@@ -4372,6 +4372,44 @@ function renderDujieOverlay(btns){
   b.innerHTML = (g._dujieFirst ? '渡劫 · 蓄势' : ('渡劫 · 第'+_n+'/9重'+_jk+'劫')) + (g._dujieFirst ? '' : ' <span style="font-size:11px;color:var(--dim)">'+Math.round(_p*100)+'%</span>');
   btns.appendChild(b);
 }
+/* 4.390c 渡劫抉择——第 1/4/7 劫（雷/火/风首劫）渡劫姿态选择：成败判定路径不变，仅改变成败附属得失 */
+function showTribChoice(g, jieN, _jk){
+  if(__NORENDER || !g || !g.alive) return;
+  if(!g._tribChoice) g._tribChoice = {};
+  var _m = document.getElementById('tribChoiceModal');
+  if(!_m){ _m = document.createElement('div'); _m.id = 'tribChoiceModal'; document.body.appendChild(_m); }
+  _m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9998;display:flex;align-items:center;justify-content:center;';
+  _m.innerHTML = '<div style="background:var(--card,#1e2130);border:1px solid var(--gold,#c9a227);border-radius:12px;padding:18px 20px;max-width:380px;width:92%;color:var(--text,#e8e6df);box-shadow:0 8px 30px rgba(0,0,0,.5)">'
+    + '<div style="color:var(--gold,#ffd700);font-weight:700;font-size:15px;margin-bottom:8px">第'+jieN+'重'+_jk+'劫将至 · 渡劫抉择</div>'
+    + '<p style="font-size:13px;line-height:1.7;margin:0 0 12px">天劫临头，你如何应对？成败判定不变，仅影响成败的附属得失。</p>'
+    + '<button class="btn" style="display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px" onclick="G._tribChoice['+jieN+']=\'aggressive\';addLog(\'你选择引天威入体，以命搏天——成败皆受天劫淬炼（成功四维+2；失败气血-20）。\',\'note\');document.getElementById(\'tribChoiceModal\').remove();renderGame();">'
+    + '<b style="color:var(--gold,#ffd700)">引天威入体</b><br/><span style="font-size:12px;opacity:.8">渡劫成功：四维+2；渡劫失败：气血-20</span></button>'
+    + '<button class="btn" style="display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px" onclick="G._tribChoice['+jieN+']=\'stable\';addLog(\'你选择稳守道基，以不变应万变。\',\'note\');document.getElementById(\'tribChoiceModal\').remove();renderGame();">'
+    + '<b style="color:var(--gold,#ffd700)">稳守道基</b><br/><span style="font-size:12px;opacity:.8">无额外得失，稳中求进</span></button>'
+    + '</div>';
+}
+/* 4.390c 散仙际遇——败劫后首次年末一次抉择：仙缘（当年重铸判定额外一试）/ 心魔（气血-5、凝道果成功率+1%）/ 天材地宝（筑仙台成功率+2%） */
+function sxFateLog(g, fate){
+  if(fate==='xianyuan'){ addLog('你拾得一线<b>仙缘</b>——一株仙草、一页残篇，于废墟中泛起微光（当年重铸判定可额外一试）。','good'); }
+  else if(fate==='xinmo'){ g.a.气血 = Math.max(1, (g.a.气血||0) - 5); g._sxXinmo = true; addLog('败劫心魔入体，你于梦魇中挣扎七日——气血-5，但道心愈坚（此后凝道果成功率+1%）。','bad'); }
+  else if(fate==='tiancai'){ addLog('你寻得一块<b>天材地宝</b>，仙材入手，重铸仙台更有把握（筑仙台成功率+2%）。','good'); }
+}
+function showSxChoice(g){
+  if(__NORENDER || !g || !g.alive) return;
+  var _m = document.getElementById('sxChoiceModal');
+  if(!_m){ _m = document.createElement('div'); _m.id = 'sxChoiceModal'; document.body.appendChild(_m); }
+  _m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9997;display:flex;align-items:center;justify-content:center;';
+  _m.innerHTML = '<div style="background:var(--card,#1e2130);border:1px solid var(--gold,#c9a227);border-radius:12px;padding:18px 20px;max-width:380px;width:92%;color:var(--text,#e8e6df);box-shadow:0 8px 30px rgba(0,0,0,.5)">'
+    + '<div style="color:var(--gold,#ffd700);font-weight:700;font-size:15px;margin-bottom:8px">散仙际遇</div>'
+    + '<p style="font-size:13px;line-height:1.7;margin:0 0 12px">仙基破碎、寿元无多，你于废墟残境中寻得一线转机——如何把握这最后一搏？</p>'
+    + '<button class="btn" style="display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px" onclick="G._sxFate=\'xianyuan\';sxFateLog(G,\'xianyuan\');document.getElementById(\'sxChoiceModal\').remove();renderGame();">'
+    + '<b style="color:var(--gold,#ffd700)">拾取仙缘</b><br/><span style="font-size:12px;opacity:.8">当年重铸判定可额外一试</span></button>'
+    + '<button class="btn" style="display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px" onclick="G._sxFate=\'xinmo\';sxFateLog(G,\'xinmo\');document.getElementById(\'sxChoiceModal\').remove();renderGame();">'
+    + '<b style="color:var(--gold,#ffd700)">直面心魔</b><br/><span style="font-size:12px;opacity:.8">气血-5，此后凝道果成功率+1%</span></button>'
+    + '<button class="btn" style="display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px" onclick="G._sxFate=\'tiancai\';sxFateLog(G,\'tiancai\');document.getElementById(\'sxChoiceModal\').remove();renderGame();">'
+    + '<b style="color:var(--gold,#ffd700)">寻天材地宝</b><br/><span style="font-size:12px;opacity:.8">筑仙台成功率+2%</span></button>'
+    + '</div>';
+}
 /* 道侣互动面板（弹窗聚合） */
 function toggleSpousePanel(){
   const p=$('spousePanel'); if(!p) return;
@@ -8058,11 +8096,17 @@ function endYearDujie(g, batch){ // 飞升渡劫（91-99 一劫一级，三雷�
   // 功德飞升——渡劫前净功德 >=150 塑造功德金身（成功率 30%+净功德×0.01%，上限 50%）// 4.389 门槛 200→150、显示/注释修正 35%→30%
   // 魔道飞升——渡劫前净业力 >=200，入化魔池、凝魔躯，成则证九幽真魔飞升九幽魔界（成功率 40%+|业力|×0.01%，上限 55%）
   if(isDujieOf()){ // 渡劫期统一判定（排除突破挂起；功德/魔道飞升在大乘巅峰按钮自主选择），每年渡一劫
+    if(!g._tribChoice) g._tribChoice = {}; // 4.390c 渡劫抉择标记（第1/4/7劫已选姿态）
     if(g._dujieFirst){ g._dujieFirst = 0; addLog('—— <b>踏入渡劫之境</b>：天劫蓄势待发，来年将渡第一重雷劫。——','note'); }
     else if((g._jie||0) < 9){
       // 4.292：超大函数拆分——渡劫判定抽 edjTry（成败/身死/散仙三路）
       const jieN = (g._jie||0) + 1;
       const _jk = ['雷','雷','雷','火','火','火','风','风','风'][jieN-1];
+      // 4.390c 渡劫抉择：第 1/4/7 劫（雷/火/风首劫）首次渡劫前弹出姿态抉择——成败判定路径不变，仅改变成败附属得失；auto/批测默认稳守道基
+      if((jieN===1||jieN===4||jieN===7) && g._tribChoice[jieN] === undefined){
+        if(batch || __NORENDER || AUTO.on){ g._tribChoice[jieN] = 'stable'; }
+        else { showTribChoice(g, jieN, _jk); return true; } // 弹出抉择，本年年末中止；选择后续年渡劫
+      }
       const _p = tribRate(g, jieN);
       return edjTry(g, batch, jieN, _jk, _p);
     }
@@ -8072,6 +8116,15 @@ function edjTry(g, batch, jieN, _jk, _p){ // 渡劫判定——成功晋劫（�
   if(Math.random() < _p){
     g._jie = jieN;
     FIGHT_ATTRS.forEach(k=>{ g.a[k] += 1; }); // 渡劫期每渡一劫战斗四维+1（修为固定，不再随修为推进）
+    // 4.390c 渡劫抉择·引天威入体：成功额外 四维+2、气血+10
+    if(g._tribChoice && g._tribChoice[jieN] === 'aggressive'){
+      FIGHT_ATTRS.forEach(k=>{ g.a[k] += 2; }); // 四维各+2（力量/灵动/气血/神识，气血即四维之一）
+      addLog('（引天威入体，天劫淬炼更纯：四维+2）','good');
+    }
+    // 4.390c 九劫差异化：雷劫锻体+气血 / 火劫炼神+神识 / 风劫塑骨+灵动（仅成功附属，成败路径不变）
+    if(_jk==='雷'){ g.a.气血 = (g.a.气血||0) + 5; }
+    else if(_jk==='火'){ g.a.神识 = (g.a.神识||0) + 1; }
+    else if(_jk==='风'){ g.a.灵动 = (g.a.灵动||0) + 1; }
     addLog(`—— <b>第${jieN}重${_jk}劫</b>渡过！（成功率 ${Math.round(_p*100)}%）天威渐散，道行又进一步${jieN>=9?'，仙门已在眼前':''}。——`,'good');
     if(jieN >= 9 && !g.godTitle){ ascend(); return true; }
   } else {
@@ -8084,6 +8137,10 @@ function edjTry(g, batch, jieN, _jk, _p){ // 渡劫判定——成功晋劫（�
       } else {
         die('第'+jieN+'重'+_jk+'劫身死道消'); return true;
       }
+    }
+    if(g._tribChoice && g._tribChoice[jieN] === 'aggressive'){
+      g.a.气血 = Math.max(1, (g.a.气血||0) - 20);
+      addLog('（引天威入体，天威反噬：气血-20）','bad');
     }
     g._sanxian = jieN;
     g.realm = 9; g.subRealm = 0; g.realmPos = 0;  // 散仙修为固定渡劫起点（realm=9），劫数由 _sanxian 显示
@@ -8100,13 +8157,28 @@ function edjTry(g, batch, jieN, _jk, _p){ // 渡劫判定——成功晋劫（�
 function endYearSanxian(g){ // 散仙自造仙基（4.60）：分两步——先筑仙台、再凝道果；道胎品质（有瑕/无缺/完美）影响两步成功率；返回 true 中止本年年末
   if(g._sxEvHandled){ g._sxEvHandled = false; return false; } // 4.388 事件化：本年度已由「自造仙基」事件判定，跳过静默兜底防双判
   if(g._sanxian && !g.godTitle && g.alive){
+    // 4.390c 散仙际遇——败劫后首次年末一次抉择；手动弹窗，auto/批测随机
+    if(!g._sxFate){
+      if(__NORENDER || AUTO.on){
+        g._sxFate = ['xianyuan','xinmo','tiancai'][Math.floor(Math.random()*3)];
+        sxFateLog(g, g._sxFate);
+      } else {
+        showSxChoice(g);
+        return true; // 本年年末中止，选择后续年继续重铸
+      }
+    }
     const _tai = (g.rings||[]).reduce(function(m,r){ return Math.max(m, (r&&r.y)||0); }, 0);
     if(!g._xiantai){
-      if(Math.random() < ([0.012, 0.016, 0.03][_tai] || 0.012)){
+      var _pTai = ([0.012, 0.016, 0.03][_tai] || 0.012);
+      if(g._sxFate === 'tiancai') _pTai += 0.02; // 天材地宝：筑仙台成功率 +2%
+      if(Math.random() < _pTai){
         g._xiantai = true;
         addLog('—— <b>筑仙台成！</b>你于废墟中重塑根基，一座仙台拔地而起，只待凝道果证道！——','good');
+      } else if(g._sxFate === 'xianyuan' && Math.random() < _pTai){ // 仙缘：当年重铸判定额外一试
+        g._xiantai = true;
+        addLog('—— <b>筑仙台成！</b>仙缘眷顾，一缕仙机落入废墟，你于绝境中重塑根基，一座仙台拔地而起！——','good');
       }
-    } else if(Math.random() < ([0.014, 0.02, 0.035][_tai] || 0.014)){
+    } else if(Math.random() < ([0.014, 0.02, 0.035][_tai] || 0.014) + (g._sxXinmo ? 0.01 : 0)){ // 心魔：凝道果成功率+1%
       g._dixian = true; g.godTitle = '地仙'; g.shenkaoDone = true; g._sanxian = null; // 4.207f 地仙清理散仙标记，防修为段位残留「N劫散仙」
       g.realm = 9; g.subRealm = 0; g.realmPos = 0;  // 地仙修为固定渡劫起点（realm=9，仙位由 godTitle 显示）
       if(g.achievements.indexOf('证得地仙')<0) g.achievements.push('证得地仙');
