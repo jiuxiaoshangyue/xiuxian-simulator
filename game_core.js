@@ -6053,6 +6053,7 @@ function tbMods(g, parts, p){ // 渡劫修正项——功德业力/气运/庇护
   if(_tq === 'she'){ p += 0.08; parts.push({name:'圣灵根', txt:'渡劫成功率+8%', val:0.08}); }
   else if(_tq === 'shen'){ p += 0.05; parts.push({name:'天灵根', txt:'渡劫成功率+5%', val:0.05}); }
   if(g.org==='元始宗'){ p += 0.05; parts.push({name:'元始宗被动', txt:'势力渡劫加成', val:0.05}); }
+  if(g.post==='掌门'){ p += 0.02; parts.push({name:'掌门', txt:'掌门渡劫成功率+2%', val:0.02}); } // 4.405 掌门项补齐——结算 tribRate 含掌门+2%，面板同源显示
   if(g.spouse && (g.bond||0)>0){ const _dlB = Math.min((g.bond||0)*0.0005, 0.05); p += _dlB; parts.push({name:'道侣同心', txt:'羁绊每点+0.05%（上限+5%）· 当前'+Math.min(100,(g.bond||0))+'点', val:_dlB}); }
   const _kx2 = succKids().length; if(_kx2>0){ const _kv = Math.min(_kx2*0.02, 0.04); p += _kv; parts.push({name:'血脉护佑', txt:'成才子嗣每名+2%（上限+4%）· 当前'+_kx2+'名', val:_kv}); }
   if(g._jinShenFail){ const _yh = Math.min((g.功德||0)/10, 0.15); p += _yh; parts.push({name:'金身余晖', txt:'功德/10（上限+15%）', val:_yh}); } // 面板文案与代码一致（4.147 已从 30% 下调至 15%）
