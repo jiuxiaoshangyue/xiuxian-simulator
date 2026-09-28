@@ -1929,6 +1929,7 @@ function renderStart(){
   if(_hp && _hp.style.display === 'block') renderHistorySaves();
 }
 const BONE_TOTAL = Object.keys(BONE_NAMES).reduce(function(a,k){ return a + BONE_NAMES[k].length; }, 0); // 法宝图鉴总数（4 部位×12 名）
+const ENDING_TITLES = [ '凡人 · 尘埃一生','凡人 · 不凡一生','炼气 · 初踏仙途','筑基 · 平顺一生','金丹 · 站稳脚跟','元婴 · 小有名气','化神 · 人中翘楚','炼虚 · 名动一域','合体 · 一方强者','大乘 · 一方巨擘','渡劫修士 · 天劫临头','渡劫强者 · 惊世之才','渡劫九重 · 半步成仙','散仙 · 仙途未竟','四劫散仙 · 残躯存道','六劫散仙 · 劫后余生','八劫散仙 · 半步仙基','九幽真魔 · 魔道飞升','真仙 · 功德证道','真仙 · 飞升仙域','地仙 · 重铸仙基' ]; // 结局图鉴全集（fltRealm/fltForce 提取，与结算分支一一对应）
 // ==================== 图鉴系统 ====================
 function renderAtlasSumm(){
   const box = $('atlasSumm'); if(!box) return;
@@ -1937,19 +1938,20 @@ function renderAtlasSumm(){
     <div class="atlas-group"><div class="atlas-gt">收集进度</div><div class="atlas-grow">
       <div class="atlas-chip"><b>${ns}/${SOUL_TOTAL}</b><span>灵根</span></div>
       <div class="atlas-chip"><b>${ne}/${EVENTS.length}</b><span>事件</span></div>
-      <div class="atlas-chip"><b>${nEnd}</b><span>结局</span></div>
+      <div class="atlas-chip"><b>${nEnd}/${ENDING_TITLES.length}</b><span>结局</span></div>
       <div class="atlas-chip"><b>${Math.min(atlasCount('gongfas'),Object.keys(GONGFAS).length)}/${Object.keys(GONGFAS).length}</b><span>功法</span></div>
       <div class="atlas-chip"><b>${Math.min(atlasCount('shentongs'),Object.keys(SHENTONGS).length)}/${Object.keys(SHENTONGS).length}</b><span>神通</span></div>
       <div class="atlas-chip"><b>${Math.min(atlasCount('bones'),BONE_TOTAL)}/${BONE_TOTAL}</b><span>法宝</span></div>
     </div></div>
     <div class="atlas-group"><div class="atlas-gt">永久加成 · 开局生效</div><div class="atlas-grow">
-      <div class="atlas-chip"><b>+${atlasBonus()}</b><span>灵根气运</span></div>
-      <div class="atlas-chip"><b>+${achieveBonus()}</b><span>成就气运</span></div>
+      <div class="atlas-chip" title="灵根图鉴收集里程碑（10/20/30/36 得气运 +2/+5/+8/+15）"><b>+${atlasBonus()}</b><span>灵根气运</span></div>
+      <div class="atlas-chip" title="跨局成就记录驱动（成仙/道号/冠军等达成）"><b>+${achieveBonus()}</b><span>成就气运</span></div>
       <div class="atlas-chip"><b>+${atlasBonusEvents()}</b><span>事件悟性</span></div>
       <div class="atlas-chip"><b>+${endingBonus()}</b><span>结局神识</span></div>
       <div class="atlas-chip"><b>+${gongfaAtlasCultMult()*100}%</b><span>功法修炼</span></div>
       <div class="atlas-chip"><b>+${shentongAtlasBonus()}</b><span>神通四维</span></div>
-      <div class="atlas-chip"><b>${collectionTitles().length}</b><span>称号</span></div>
+      <div class="atlas-chip" title="收集称号（跨局荣誉，无属性加成——纯收集动力）"><b>${collectionTitles().length}</b><span>称号</span></div>
+      <div style="grid-column:1/-1;font-size:10.5px;color:var(--dim);opacity:.8;margin-top:2px">法宝收集暂无永久加成（纯收藏）；成就气运来自跨局成就记录</div>
     </div></div>`;
 }
 $('btnAtlas').onclick = ()=>{ openAtlasModal(); };
@@ -2029,12 +2031,12 @@ function renderAtlasTitle(){
 function renderAtlasEnd(){
   let html = '';
   {
-    // 结局图鉴
-    const endNames = Object.keys(META.atlas.endings||{});
-    html += '<div class="atlas-sec"><h4>结局图鉴（'+endNames.length+'）</h4><div class="atlas-grid">';
-    
-    if(endNames.length) endNames.forEach(n=>{ html += `<span class="atlas-item owned" title="${escapeHtml(n)}">${escapeHtml(n)}</span>`; });
-    else html += '<span class="atlas-item locked">尚无达成结局</span>';
+    // 结局图鉴——全列表（含未解锁），owned 高亮 / locked 灰显
+    html += '<div class="atlas-sec"><h4>结局图鉴（'+atlasCount('endings')+'/'+ENDING_TITLES.length+'）</h4><div class="atlas-grid">';
+    ENDING_TITLES.forEach(function(n){
+      const owned = atlasHas('endings', n);
+      html += `<span class="atlas-item ${owned?'owned':'locked'}" title="${escapeHtml(n)}">${escapeHtml(n)}</span>`;
+    });
     html += '</div></div>';
   }
   return html;
@@ -5970,7 +5972,7 @@ function rhFail(g, a, idx, p){ // 狩猎失败——妖兽濒死反扑：气血/
 /* 修仙版：成仙结局见 ascend——渡劫九劫尽渡即飞升真仙，散仙重铸仙基证地仙 */
 /* 渡劫成功率（修仙版）：基础逐劫递减（第1劫 61% → 第9劫 45%，每劫 -2%），叠加法宝/功德业力/气运/轮回殿「天劫庇护」
    法宝：宝器每件 +1%、仙器每件 +3%（灵器及以下不加）；四件圆满时该加成 ×1.5（合计上限 +18%）
-   功德业力：每点 ±0.05%（上限 ±10%，200 点吃满）；气运：每点 ±0.1%；天劫庇护：每点 +0.20%（满100 +20%）；总封顶 80% */
+   功德业力：每点 ±0.05%（上限 ±10%，200 点吃满）；气运：每点 ±0.1%；天劫庇护：每点 +0.20%（满100 +20%）；总封顶 85% */
 function tribRate(g, jieN){
   const _jn = Math.max(1, Math.min(9, jieN||1)); // 九劫基础逐劫递减 61%→45%
   let p = 0.61 - (_jn-1)*0.02;
@@ -6271,7 +6273,7 @@ function tribModalHtml(){
   const b = tribBreakdown(g);
   let h = '<div style="font-size:12px;line-height:1.9">';
   h += '<div style="font-size:13px;font-weight:600;color:var(--gold2);margin-bottom:4px">渡劫成功率构成</div>';
-  h += '<div style="font-size:12px;margin-bottom:6px">当前渡劫成功率 <b style="color:var(--gold)">'+Math.round(b.total*100)+'%</b>'+ (b.capped?' <span style="color:var(--red)">（已触 80% 上限）</span>':'') +' · 每劫独立判定</div>';
+  h += '<div style="font-size:12px;margin-bottom:6px">当前渡劫成功率 <b style="color:var(--gold)">'+Math.round(b.total*100)+'%</b>'+ (b.capped?' <span style="color:var(--red)">（已触 85% 上限）</span>':'') +' · 每劫独立判定</div>';
   h += '<div style="font-size:11px;color:var(--gold2);margin:4px 0 2px">—— 成功率加成 ——</div>';
   b.parts.forEach(pp=>{
     h += '<div style="display:flex;justify-content:space-between;gap:10px;font-size:12px"><span>'+pp.name+(pp.txt?' <span style="color:var(--dim)">'+pp.txt+'</span>':'')+'</span><b style="color:'+(pp.val>=0?'var(--gold)':'var(--red)')+';white-space:nowrap">'+(pp.val>=0?'+':'')+(pp.val*100).toFixed(1)+'%</b></div>';
