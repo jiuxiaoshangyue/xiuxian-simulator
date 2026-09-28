@@ -2083,7 +2083,7 @@ function renderAtlasBone(){
   {
     // 法宝图鉴（跨世记录获得/炼成；按部位分组展示名称池）
     const _ownN = BONE_SLOTS.reduce(function(_a,_sl){ return _a + (BONE_NAMES[_sl]||[]).filter(function(_n){ return atlasHas('bones',_n); }).length; }, 0); // v4.343 仅计当前池（旧版遗留名不计入，与格子一致）
-    html += '<div class="atlas-sec"><h4>法宝图鉴（'+_ownN+'/'+BONE_TOTAL+'）</h4>';
+    html += '<div class="atlas-sec"><h4>法宝图鉴（'+_ownN+'/'+BONE_TOTAL+'）· 收集 15/27/39 件得四维 +1/+3/+6（跨世生效）</h4>';
     BONE_SLOTS.forEach(function(slot){
       const list = BONE_NAMES[slot]||[];
       const ownN = list.filter(function(n){ return atlasHas('bones', n); }).length;
@@ -2095,7 +2095,7 @@ function renderAtlasBone(){
       });
       html += '</div>';
     });
-    html += '<div class="muted" style="font-size:11px">法宝图鉴跨世记录获得与炼成的法宝（含本命祭炼）。</div></div>';
+    html += '<div class="muted" style="font-size:11px">法宝图鉴跨世记录获得与炼成的法宝（含本命祭炼）；收集达 15/27/39 件，下世开局四维永久 +1/+3/+6。</div></div>';
   }
   return html;
 }
