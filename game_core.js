@@ -3379,7 +3379,7 @@ function rgaMisc(sa, g){ // 道心（向道之心）+ 道行构成行 + 基准�
   sa.insertAdjacentHTML('beforeend', rgaPowerRow()); // 4.250：道行构成行抽子函数
   sa.insertAdjacentHTML('beforeend', '<div class="muted" style="grid-column:1/-1;font-size:11px;margin-top:2px">四维与道行均以普通人 5 为基准</div>');
 }
-function rgaVirtueRow(g){ // 功德/业力行——正魔道业仅影响渡劫 + 渡劫/突破构成按钮
+function rgaVirtueRow(g){ // 功德/业力行——正魔道业影响破境天劫/心魔劫/渡劫/功德飞升 + 渡劫/突破构成按钮
   return '<div style="grid-column:1/-1;margin-top:2px;padding-top:4px;border-top:1px dashed var(--line);font-size:11.5px;color:var(--dim)">功德 <b style="color:#7ecb7e">'+(g.功德||0)+'</b> · 业力 <b style="color:#e77">'+(g.业力||0)+'</b> <span style="opacity:.65">（正魔道业：影响破境天劫/心魔劫/渡劫，亦是功德飞升门槛）</span> <button class="btn mini" style="margin-left:6px;padding:0 8px;font-size:10px" title="查看渡劫成功率构成：基础/法宝/功德业力/气运/庇护/灵根/势力/功法" onclick="openTribModal()">渡劫构成</button> <button class="btn mini" style="padding:0 8px;font-size:10px" title="查看大境界突破成功率与失败后果、小境界突破成功率（与代码同源）" onclick="openBreakModal()">突破构成</button></div>';
 }
 function rgaPowerRow(){ // 道行构成行——道行终值 + 构成按钮 + 明细容器
@@ -5745,7 +5745,7 @@ function joinOrg(org){
   let pre = 10;
   if(org==='太阴宫') pre=20; else if(org==='元始宗') pre=25;
   g.prestige += pre;
-  // 修仙版：正魔道影响功德/业力（仅影响渡劫）
+  // 修仙版：正魔道影响功德/业力（影响破境天劫/心魔劫/渡劫，功德亦为飞升门槛）
   const _zhengOrg = ['龙象宗','风雷谷','灵宝阁','太阴宫','真阳门','元始宗','天机阁','太虚剑宗','紫霄学宫','镇魔司','巨灵宗','混元宗'].indexOf(org)>=0;
   const _moOrg = ['天尸宗','阴冥宗','血煞宗'].indexOf(org)>=0;
   if(_zhengOrg){ g.功德=(g.功德||0)+5; }
