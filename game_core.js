@@ -1777,7 +1777,7 @@ function powerBreakdown(){
   const _ls = _laws.filter(function(x){ return LAWS_SUP.indexOf(x) >= 0; }).length;
   const lawP = _le*0.01 + _ls*0.03;
   const skMul = 1 + skP + lawP;
-  // 本命法宝加成：凡器1% / 灵器2% / 宝器3% / 仙器4%（与神通+法则乘算）；法域系统已移除
+  // 本命法宝加成：凡器3% / 灵器6% / 宝器10% / 仙器15%（与普通法宝同表 EXTRA_BONE_PCT，与神通+法则乘算）；法域系统已移除
   const xbP = G.extraBone ? ({凡器:0.01, 灵器:0.02, 宝器:0.03, 仙器:0.04}[G.extraBone.grade] || 0) : 0;
   const xbMul = 1 + xbP;
   let total = Math.round(Math.max(0, base * mult * soulMult * ringMul * skMul * xbMul));
@@ -3380,7 +3380,7 @@ function rgaMisc(sa, g){ // 道心（向道之心）+ 道行构成行 + 基准�
   sa.insertAdjacentHTML('beforeend', '<div class="muted" style="grid-column:1/-1;font-size:11px;margin-top:2px">四维与道行均以普通人 5 为基准</div>');
 }
 function rgaVirtueRow(g){ // 功德/业力行——正魔道业仅影响渡劫 + 渡劫/突破构成按钮
-  return '<div style="grid-column:1/-1;margin-top:2px;padding-top:4px;border-top:1px dashed var(--line);font-size:11.5px;color:var(--dim)">功德 <b style="color:#7ecb7e">'+(g.功德||0)+'</b> · 业力 <b style="color:#e77">'+(g.业力||0)+'</b> <span style="opacity:.65">（正魔道业，仅影响渡劫）</span> <button class="btn mini" style="margin-left:6px;padding:0 8px;font-size:10px" title="查看渡劫成功率构成：基础/法宝/功德业力/气运/庇护/灵根/势力/功法" onclick="openTribModal()">渡劫构成</button> <button class="btn mini" style="padding:0 8px;font-size:10px" title="查看大境界突破成功率与失败后果、小境界突破成功率（与代码同源）" onclick="openBreakModal()">突破构成</button></div>';
+  return '<div style="grid-column:1/-1;margin-top:2px;padding-top:4px;border-top:1px dashed var(--line);font-size:11.5px;color:var(--dim)">功德 <b style="color:#7ecb7e">'+(g.功德||0)+'</b> · 业力 <b style="color:#e77">'+(g.业力||0)+'</b> <span style="opacity:.65">（正魔道业：影响破境天劫/心魔劫/渡劫，亦是功德飞升门槛）</span> <button class="btn mini" style="margin-left:6px;padding:0 8px;font-size:10px" title="查看渡劫成功率构成：基础/法宝/功德业力/气运/庇护/灵根/势力/功法" onclick="openTribModal()">渡劫构成</button> <button class="btn mini" style="padding:0 8px;font-size:10px" title="查看大境界突破成功率与失败后果、小境界突破成功率（与代码同源）" onclick="openBreakModal()">突破构成</button></div>';
 }
 function rgaPowerRow(){ // 道行构成行——道行终值 + 构成按钮 + 明细容器
   return '<div style="grid-column:1/-1;margin-top:8px;padding-top:6px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:10px"><span style="font-size:14px;color:var(--dim)">道行</span><span style="font-size:20px;font-weight:800;color:var(--gold)">'+fmtPower(power())+'</span><button class="btn mini" onclick="togglePowerBrk()">构成</button></div>' + '<div id="powerBrk" style="grid-column:1/-1;margin-top:2px"></div>';
@@ -3665,7 +3665,7 @@ function rtChance(g, idx, _xmBonus){ // 破境天劫成功率构成——基础�
   p += (hasFate(g,'jieti')?0.05:0); // 命格·道基稳固：破境天劫成功率+5%
   // 灵根品质影响基础突破成功率——品质越低越难（过程性天堑，配合寿元构成「来不及突破就寿尽」）
   const _qq = (g.soul && g.soul.quality) || 'fei';
-  p += BRK_QMOD[_qq] || 0; // 品质修正加减上限 ±15%（等比 ×0.5 收敛）
+  p += BRK_QMOD[_qq] || 0; // 品质修正 -10%~+4%（BRK_QMOD 定义表，低品负向收窄见 4.389）
   p += (g.daoXin||50) >= 90 ? 0.02 : (g.daoXin||50) <= 10 ? -0.02 : 0; // 道心通明（≥90）破境+2% / 道心蒙尘（≤10）−2%
   p += lawForce(g) * 0.02; // 法则之力——每道破境天劫+2%
   p += (g._breakBuff>0 ? 0.10 : 0); // 突破丹——大境界破境天劫成功率+10%
@@ -6314,12 +6314,26 @@ function breakChanceOf(g, r, _qq){ // 大境界突破成功率构成计算（含
   const _jt = hasFate(g,'jieti') ? 0.05 : 0;
   p += _jt;
   p += _qqMod;
+  const _dx = (g.daoXin||50) >= 90 ? 0.02 : (g.daoXin||50) <= 10 ? -0.02 : 0; // 道心通明（≥90）破境+2% / 道心蒙尘（≤10）−2%（与 rtChance 同式）
+  p += _dx;
   p += lawForce(g) * 0.02; // 法则之力——每道破境+2%
+  const _bb = (g._breakBuff>0 ? 0.10 : 0); // 突破丹——大境界破境天劫成功率+10%（与 rtChance 同式）
+  p += _bb;
+  const _wd = ((g.wound||0) >= 3 ? -0.10 : 0); // 濒危体虚，破境成功率-10%（与 rtChance 同式）
+  p += _wd;
+  const _cave = (g.caveLv>=1 ? [0,0.02,0.04,0.06][g.caveLv] : 0); // 洞府灵气护道——破境天劫+2/4/6%（与 rtChance 同式）
+  p += _cave;
+  // 四维根基修正（与 rtChance 同式）——四维总和相对境界基准，达基准0修正、翻倍+4%（上限+6%）、六成-2.4%（下限-2.4%）
+  const _e4 = effAttrs();
+  const _s4 = (_e4.力量||0)+(_e4.灵动||0)+(_e4.气血||0)+(_e4.神识||0);
+  const _base4 = (r+1)*60;
+  const _s4r = Math.max(-0.6, Math.min(1.5, _s4/_base4 - 1)) * 0.04;
+  p += _s4r;
   const _final = Math.max(0.05, Math.min(0.95, p));
   const _dp = (BRK_DP[_qq] || 0.05);
   const _lp = [0,3,6,20,80,150,300,500][r] || 500; // 4.389 低档折寿减轻（炼体~金丹 1/5/10/30→0/3/6/20，元婴起不变）
   const _subP = BRK_COEF[_qq] || 0.85;
-  return {_final:_final, _base:_base, _qqMod:_qqMod, _gd:_gd, _jt:_jt, _dp:_dp, _lp:_lp, _subP:_subP};
+  return {_final:_final, _base:_base, _qqMod:_qqMod, _gd:_gd, _jt:_jt, _dx:_dx, _bb:_bb, _wd:_wd, _cave:_cave, _s4r:_s4r, _dp:_dp, _lp:_lp, _subP:_subP};
 }
 function brkDetailHtml(g, r, _qq, _qualName, c){ // 成功率构成行 + 失败后果 + 小境界 + 修为需求
   let h = '<div style="font-size:11px;color:var(--gold2);margin:4px 0 2px">—— 成功率构成 ——</div>';
@@ -6330,14 +6344,20 @@ function brkDetailHtml(g, r, _qq, _qualName, c){ // 成功率构成行 + 失败�
     ['功德业力修正', '每点差值 0.05%（±10% 封顶）', c._gd],
 
     ['命格·道基稳固', hasFate(g,'jieti')?'已生效':'未拥有', c._jt],
-    ['法则之力', lawForce(g)+' 道（每道+2%）', lawForce(g)*0.02]
+    ['法则之力', lawForce(g)+' 道（每道+2%）', lawForce(g)*0.02],
+    ['道心通明/蒙尘', '≥90 +2% / ≤10 −2%', c._dx],
+    ['突破丹护道', '服用后本次破境+10%', c._bb],
+    ['伤势体虚', '重伤（≥3）−10%', c._wd],
+    ['洞府灵气护道', 'Lv1/2/3 分别 +2/4/6%', c._cave],
+    ['四维根基', '超基准最多+6% / 不足最多−2.4%', c._s4r],
+    ['心魔勘破（条件）', '本次心魔劫勘破成功再+5%', 0.05]
   ];
   rows.forEach(pp=>{
     if(pp[2] === 0 && pp[0]!=='基础成功率') return;
     h += '<div style="display:flex;justify-content:space-between;gap:10px;font-size:12px"><span>'+pp[0]+' <span style="color:var(--dim)">'+pp[1]+'</span></span><b style="color:'+(pp[2]>=0?'var(--gold)':'var(--red)')+';white-space:nowrap">'+(pp[2]>0?'+':'')+(pp[2]*100).toFixed(1)+'%</b></div>';
   });
   h += '<div style="font-size:11px;color:var(--gold2);margin:6px 0 2px">—— 失败后果 ——</div>';
-  h += '<div style="font-size:12px">死亡 <b style="color:var(--red)">'+((c._dp)*100)+'%</b>（'+_qualName+'） · 未死则退 1 小境（后段起点、修为清零重攒）+ <b style="color:var(--red)">折寿 '+c._lp+' 年</b></div>';
+  h += '<div style="font-size:12px">死亡 <b style="color:var(--red)">'+((c._dp)*100)+'%</b>（'+_qualName+'） · 未死则退 1 小境（后段起点、修为清零重攒）+ 气血反噬 <b style="color:var(--red)">-'+Math.round((4+r*1.5))+'</b> + <b style="color:var(--red)">折寿 '+c._lp+' 年</b>（四维根基浑厚最高减免 50%）</div>';
   h += '<div style="font-size:11px;color:var(--gold2);margin:6px 0 2px">—— 小境界突破 ——</div>';
   h += '<div style="font-size:12px">小境界成功率 <b style="color:var(--gold)">'+Math.round(c._subP*100)+'%</b>（仅受灵根品质 '+_qualName+'，fei 85% → she 95%） · 失败修为折损 5%（留在段内）</div>';
   h += '<div style="font-size:11px;color:var(--gold2);margin:6px 0 2px">—— 修为需求 ——</div>';
