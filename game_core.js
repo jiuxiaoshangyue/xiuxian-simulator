@@ -3612,7 +3612,7 @@ function realmXinmo(g, idx){ // 心魔劫——大境界突破前置劫（功德
       addLog('—— <b>心魔劫</b>：业障化形、心魔来袭，你道心通明、勘破虚妄，道心精进（悟性+2、神识+3、气运+2、道心+3，本次破境成功率+5%）！——','good');
       return _xmBonus;
     } else {
-      const _lp2 = [0,3,6,20,80,150,300,500][idx] || 500; // 4.389 低档折寿减轻（与破境天劫同梯度）
+      const _lp2 = [0,3,6,20,80,150,300,500,500][idx] ?? 500; // 4.389 低档折寿减轻（与破境天劫同梯度）——补哨兵元素防 0 被 ||500 吞（炼体折寿0）
       g.subRealm = 1; g.realmPos = subSegLen(g, 1);  // realmPos 版（境界不变，退 1 小境到中期）
       g._lifeCut = (isFinite(g._lifeCut)?g._lifeCut:0) + _lp2;
       g.lifeCap = lifeCapOf();
@@ -3687,7 +3687,7 @@ function rtJname(idx, g){ // 天劫名称与失败参数——大乘→渡劫的
   const _jname = idx === 8 ? '飞升之劫' : (nextName + '天劫'); // 大乘→渡劫的飞升之劫专名（其余 X天劫）
   const _qq = (g && g.soul && g.soul.quality) || 'fei';
   const _dp = (BRK_DP[_qq] || 0.05); // 失败死亡概率（提示用）
-  const _lp = [0,3,6,20,80,150,300,500][idx] || 500; // 失败折寿梯度（提示用）// 4.389 低档折寿减轻
+  const _lp = [0,3,6,20,80,150,300,500,500][idx] ?? 500; // 失败折寿梯度（提示用）// 4.389 低档折寿减轻——补哨兵元素防 0 被 ||500 吞（炼体折寿0）
   return {jname: _jname, dp: _dp, lp: _lp};
 }
 function startYear(){
@@ -6333,7 +6333,7 @@ function breakChanceOf(g, r, _qq){ // 大境界突破成功率构成计算（含
   p += _s4r;
   const _final = Math.max(0.05, Math.min(0.95, p));
   const _dp = (BRK_DP[_qq] || 0.05);
-  const _lp = [0,3,6,20,80,150,300,500][r] || 500; // 4.389 低档折寿减轻（炼体~金丹 1/5/10/30→0/3/6/20，元婴起不变）
+  const _lp = [0,3,6,20,80,150,300,500,500][r] ?? 500; // 4.389 低档折寿减轻（炼体~金丹 1/5/10/30→0/3/6/20，元婴起不变）——补哨兵元素防 0 被 ||500 吞（炼体折寿0）
   const _subP = BRK_COEF[_qq] || 0.85;
   return {_final:_final, _base:_base, _qqMod:_qqMod, _gd:_gd, _jt:_jt, _dx:_dx, _bb:_bb, _wd:_wd, _cave:_cave, _s4r:_s4r, _dp:_dp, _lp:_lp, _subP:_subP};
 }
