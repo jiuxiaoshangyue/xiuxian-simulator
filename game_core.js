@@ -1962,6 +1962,7 @@ function renderAtlasSumm(){
       <div class="atlas-chip"><b>+${shentongAtlasBonus()}</b><span>神通四维</span></div>
       <div class="atlas-chip" title="法宝图鉴收集驱动（跨世获得/炼成/本命祭炼，15/27/39 件得四维 +1/+3/+6）"><b>+${boneCollectBonus()}</b><span>法宝四维</span></div>
       <div class="atlas-chip" title="收集称号（跨局荣誉，无属性加成——纯收集动力）"><b>${collectionTitles().length}</b><span>称号</span></div>
+      <div style="grid-column:1/-1;font-size:11px;color:var(--gold);margin-top:2px">跨世加成合计：四维各 +${shentongAtlasBonus()+boneCollectBonus()} · 神识 +${endingBonus()} · 气运 +${atlasBonus()+achieveBonus()} · 悟性 +${atlasBonusEvents()} · 修炼速度 +${Math.round(gongfaAtlasCultMult()*100)}%</div>
       <div style="grid-column:1/-1;font-size:10.5px;color:var(--dim);opacity:.8;margin-top:2px">法宝收集达成 30%/55%/80% → 四维 +1/+3/+6（跨世生效）；成就气运来自跨局成就记录</div>
     </div></div>`;
 }
