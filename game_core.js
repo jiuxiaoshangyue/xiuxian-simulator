@@ -1032,7 +1032,7 @@ function lunhuiBuffText(){
       case 'epicEv':   t = '紫事件+'+fmt(v*0.1)+'%'; break;
       case 'legendEv': t = '红事件+'+fmt(v*0.1)+'%'; break;
       case 'mythicEv': t = '金事件+'+fmt(v*0.05)+'%'; break;
-      case 'shenGan':  t = '天劫庇护+'+fmt(v*0.15)+'%'; break;
+      case 'shenGan':  t = '天劫庇护+'+fmt(v*0.2)+'%'; break;
       default:         t = d.name+'+'+v;
     }
     items.push(t);
@@ -3151,10 +3151,10 @@ function dbLift(g, _bIdx, _aIdx){ // 破境升华——跨大境界战斗四维 
 function doGongdeAscend(){
   const g=G;
   const _gdNet=(g.功德||0)-(g.业力||0);
-  if(_gdNet < 150 || g._jinShenFail || g.godTitle || g._sanxian || !g.alive) return; // 4.389 功德金身门槛 200→150（满加成成仙率 P0）
+  if(_gdNet < 250 || g._jinShenFail || g.godTitle || g._sanxian || !g.alive) return; // 4.396 功德金身门槛 150→250（功德压回稀有路径）
   if(!g._jinShenDone){
     g._jinShenDone = true;
-    if(Math.random() < Math.min(0.50, 0.30 + _gdNet/10000)){
+    if(Math.random() < Math.min(0.30, 0.15 + _gdNet/30000)){ // 4.396 触发率 0.10+功德/40000→0.15+功德/30000，上限0.30
       g._gongdeAscend = true;
       addLog('功德圆满，金光自虚空中垂落——你以无量功德凝聚<b>功德金身</b>，肉身成圣，九劫未起，白日飞升！','good');
       ascend(); return;
@@ -3661,7 +3661,7 @@ function rtChance(g, idx, _xmBonus){ // 破境天劫成功率构成——基础�
   const _base = [0.85,0.80,0.75,0.70,0.65,0.60,0.55,0.50][idx] || 0.45;
   let p = _base + (g.a.气运-50)*0.002 + _xmBonus;
   p += Math.max(-0.10, Math.min(0.10, ((g.功德||0)-(g.业力||0))*0.0005)); // 4.388 与飞升渡劫同口径（每点±0.05%，200点吃满±10%）
-  p += (META.lunhui&&META.lunhui.shenGan||0)*0.001;
+  p += (META.lunhui&&META.lunhui.shenGan||0)*0.002; // 4.396 天劫庇护 +10%→+20%
   p += (hasFate(g,'jieti')?0.05:0); // 命格·道基稳固：破境天劫成功率+5%
   // 灵根品质影响基础突破成功率——品质越低越难（过程性天堑，配合寿元构成「来不及突破就寿尽」）
   const _qq = (g.soul && g.soul.quality) || 'fei';
@@ -5970,7 +5970,7 @@ function rhFail(g, a, idx, p){ // 狩猎失败——妖兽濒死反扑：气血/
 /* 修仙版：成仙结局见 ascend——渡劫九劫尽渡即飞升真仙，散仙重铸仙基证地仙 */
 /* 渡劫成功率（修仙版）：基础逐劫递减（第1劫 61% → 第9劫 45%，每劫 -2%），叠加法宝/功德业力/气运/轮回殿「天劫庇护」
    法宝：宝器每件 +1%、仙器每件 +3%（灵器及以下不加）；四件圆满时该加成 ×1.5（合计上限 +18%）
-   功德业力：每点 ±0.05%（上限 ±10%，200 点吃满）；气运：每点 ±0.1%；天劫庇护：每点 +0.10%（满100 +10%）；总封顶 80% */
+   功德业力：每点 ±0.05%（上限 ±10%，200 点吃满）；气运：每点 ±0.1%；天劫庇护：每点 +0.20%（满100 +20%）；总封顶 80% */
 function tribRate(g, jieN){
   const _jn = Math.max(1, Math.min(9, jieN||1)); // 九劫基础逐劫递减 61%→45%
   let p = 0.61 - (_jn-1)*0.02;
@@ -5985,7 +5985,7 @@ function tribRate(g, jieN){
   }
   p += clamp((g.功德||0)*0.0005 - (g.业力||0)*0.0005, -0.10, 0.10); // 每点 ±0.05%，200 点吃满 ±10%
   p += (g.a.气运 - 50) * 0.001;
-  p += (lunhuiVal('shenGan')||0) * 0.001;
+  p += (lunhuiVal('shenGan')||0) * 0.002; // 4.396 天劫庇护 +10%→+20%
   // 4.59→4.141：灵根品质渡劫加成——天灵根（含异灵根）+5%，圣灵根 +8%（双灵根及以下无加成也不减值）
   const _tq = (g.soul && g.soul.quality) || '';
   if(_tq === 'she') p += 0.08; // 圣灵根渡劫加成 5%→8%
@@ -6031,8 +6031,8 @@ function tbMods(g, parts, p){ // 渡劫修正项——功德业力/气运/庇护
   if(_gd !== 0){ p += _gd; parts.push({name:_gd>0?'功德庇佑':'业力缠身', txt:'每点±0.05%（±10%封顶）', val:_gd}); }
   const _qy = ((g.a.气运||50) - 50) * 0.001;
   if(_qy !== 0){ p += _qy; parts.push({name:'气运', txt:'(气运-50)×0.1%', val:_qy}); }
-  const _bh = (lunhuiVal('shenGan')||0) * 0.001;
-  if(_bh > 0){ p += _bh; parts.push({name:'天劫庇护', txt:'轮回殿加点 · 每点+0.10%', val:_bh}); }
+  const _bh = (lunhuiVal('shenGan')||0) * 0.002; // 4.396 天劫庇护 +10%→+20%
+  if(_bh > 0){ p += _bh; parts.push({name:'天劫庇护', txt:'轮回殿加点 · 每点+0.20%', val:_bh}); }
   const _tq = (g.soul && g.soul.quality) || '';
   if(_tq === 'she'){ p += 0.08; parts.push({name:'圣灵根', txt:'渡劫成功率+8%', val:0.08}); }
   else if(_tq === 'shen'){ p += 0.05; parts.push({name:'天灵根', txt:'渡劫成功率+5%', val:0.05}); }
@@ -6310,7 +6310,7 @@ function breakChanceOf(g, r, _qq){ // 大境界突破成功率构成计算（含
   let p = _base + (g.a.气运-50)*0.002;
   const _gd = Math.max(-0.10, Math.min(0.10, ((g.功德||0)-(g.业力||0))*0.0005)); // 4.388 与飞升渡劫同口径（每点±0.05%，200点吃满±10%）
   p += _gd;
-  p += (META.lunhui&&META.lunhui.shenGan||0)*0.001;
+  p += (META.lunhui&&META.lunhui.shenGan||0)*0.002; // 4.396 天劫庇护 +10%→+20%
   const _jt = hasFate(g,'jieti') ? 0.05 : 0;
   p += _jt;
   p += _qqMod;
@@ -6328,7 +6328,7 @@ function brkDetailHtml(g, r, _qq, _qualName, c){ // 成功率构成行 + 失败�
     ['灵根品质修正', _qualName+'（加减上限 10%）', c._qqMod], // 4.389 上限随低品收窄同步
     ['气运修正', '(气运-50)×0.2%', (g.a.气运-50)*0.002],
     ['功德业力修正', '每点差值 0.05%（±10% 封顶）', c._gd],
-    ['天劫庇护', '轮回殿·每点+0.1%', (META.lunhui&&META.lunhui.shenGan||0)*0.001],
+    ['天劫庇护', '轮回殿·每点+0.2%', (META.lunhui&&META.lunhui.shenGan||0)*0.002],
     ['命格·道基稳固', hasFate(g,'jieti')?'已生效':'未拥有', c._jt],
     ['法则之力', lawForce(g)+' 道（每道+2%）', lawForce(g)*0.02]
   ];
@@ -6751,7 +6751,7 @@ const EVENT_TRIGGER_HOOKS = [
   },
   // ⑭ 散仙自造仙基（4.388）——散仙且未证地仙时概率触发抉择事件（40%/年）；AUTO/批量静默直接 autoPick 结算=稳扎=原概率（不弹卡打断挂机）；未触发年仍由 endYearSanxian 静默判定，判定口径不变
   function evHookSanxian(g){
-    if(g._sanxian && !g.godTitle && g.alive && Math.random() < 0.4){
+    if(g._sanxian && !g.godTitle && g.alive && Math.random() < 0.3){ // 4.396 抉择触发 40%→30%（地仙收紧）
       if(AUTO && AUTO.on){
         resolveEvent(EV_SANXIAN_ZAOJI, autoPickIdx(EV_SANXIAN_ZAOJI)); // 自动模式静默结算（选稳扎=原概率）
       } else {
@@ -7314,9 +7314,10 @@ function recSanxian(g, ev, o){ // 散仙自造仙基抉择（4.388）——稳�
     addLog('你静观天机流转，留待来年再试。','note');
   } else {
     let _p = 0;
-    if(!g._xiantai) _p = [0.012,0.016,0.03][_tai]||0.012;      // 筑仙台
-    else _p = [0.014,0.02,0.035][_tai]||0.014;                  // 凝道果
+    if(!g._xiantai) _p = [0.004,0.005,0.01][_tai]||0.004;      // 筑仙台（4.396 定档——地仙≈4%）
+    else _p = [0.005,0.007,0.012][_tai]||0.005;                  // 凝道果（4.396 定档——地仙≈4%）
     if(o._sx === 'burn') _p = Math.min(0.5, _p*2);              // 燃烧气血成功率×2（上限50%）
+    if(g._sanxian>3) _p *= 0.7;                                 // 4.396 4劫以上散仙成功率衰减（散仙越修越难）
     if(Math.random() < _p){
       if(!g._xiantai){
         g._xiantai = true;
@@ -8194,7 +8195,8 @@ function endYearSanxian(g){ // 散仙自造仙基（4.60）：分两步——先
     }
     const _tai = (g.rings||[]).reduce(function(m,r){ return Math.max(m, (r&&r.y)||0); }, 0);
     if(!g._xiantai){
-      var _pTai = ([0.012, 0.016, 0.03][_tai] || 0.012);
+      var _pTai = ([0.004, 0.005, 0.01][_tai] || 0.004); // 4.396 与 recSanxian 同步（地仙≈4%）
+      if(g._sanxian>3) _pTai *= 0.7; // 4.396 4劫以上散仙筑台成功率衰减（散仙越修越难）
       if(g._sxFate === 'tiancai') _pTai += 0.02; // 天材地宝：筑仙台成功率 +2%
       if(Math.random() < _pTai){
         g._xiantai = true;
@@ -8203,7 +8205,7 @@ function endYearSanxian(g){ // 散仙自造仙基（4.60）：分两步——先
         g._xiantai = true;
         addLog('—— <b>筑仙台成！</b>仙缘眷顾，一缕仙机落入废墟，你于绝境中重塑根基，一座仙台拔地而起！——','good');
       }
-    } else if(Math.random() < ([0.014, 0.02, 0.035][_tai] || 0.014) + (g._sxXinmo ? 0.01 : 0)){ // 心魔：凝道果成功率+1%
+    } else if(Math.random() < (([0.005, 0.007, 0.012][_tai] || 0.005) + (g._sxXinmo ? 0.01 : 0)) * (g._sanxian>3 ? 0.7 : 1)){ // 4.396 与 recSanxian 同步（地仙≈4%） // 心魔：凝道果成功率+1%
       g._dixian = true; g.godTitle = '地仙'; g.shenkaoDone = true; g._sanxian = null; // 4.207f 地仙清理散仙标记，防修为段位残留「N劫散仙」
       g.realm = 9; g.subRealm = 0; g.realmPos = 0;  // 地仙修为固定渡劫起点（realm=9，仙位由 godTitle 显示）
       if(g.achievements.indexOf('证得地仙')<0) g.achievements.push('证得地仙');
