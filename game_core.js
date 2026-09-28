@@ -4339,7 +4339,7 @@ function renderBreakOverlay(btns){
       // 大乘巅峰：飞升之劫 + 功德/魔道飞升并列（自主选择）
       _mk('飞升之劫即将降临','修为圆满，冲击飞升之劫——渡过则踏入渡劫期，九重天劫在望', ()=>{ advanceYears('突破',1); });
       const _gdNet=(g.功德||0)-(g.业力||0);
-      if(_gdNet>=150 && !g._jinShenFail) _mk('功德金身 · 飞升','以无量功德凝聚功德金身，肉身成圣，白日飞升（成功率 '+Math.round(Math.min(0.50,0.30+_gdNet/10000)*100)+'%）', ()=>{ doGongdeAscend(); if(g.alive && !g.godTitle) renderGame(); }); // 4.389 门槛 150 + 显示修正 0.35→0.30
+      if(_gdNet>=250 && !g._jinShenFail) _mk('功德金身 · 飞升','以无量功德凝聚功德金身，肉身成圣，白日飞升（成功率 '+Math.round(Math.min(0.30,0.15+_gdNet/30000)*100)+'%）', ()=>{ doGongdeAscend(); if(g.alive && !g.godTitle) renderGame(); }); // 4.396 门槛 150→250 + 显示同步实际触发
       if(_gdNet<=-200) _mk(g._huamo?'凝魔躯 · 魔道飞升':'魔道飞升 · 化魔池', g._huamo?'魔气已灌体，凝魔躯证九幽真魔之位':'堕入化魔池，魔气灌体，凝魔躯飞升九幽魔界', ()=>{ doMoAscend(); if(g.alive && !g.godTitle) renderGame(); });
     } else {
       const _bt = rtJname(_r, g); const _bp = rtChance(g, _r, 0).p; // 4.328 破境天劫风险量化（rtJname/rtChance 同源；g 必须传，否则形参错位）
@@ -4359,7 +4359,7 @@ function renderDujieOverlay(btns){
   // 4.330 飞升之路对比（演出层，数值不动）：硬渡九劫 vs 功德金身/魔道飞升（同源成功率）
   const _gdNet=(g.功德||0)-(g.业力||0);
   let _pathTxt = '硬渡九劫 · 当前成功率 '+(g._dujieFirst?'?':Math.round(_p*100)+'%');
-  if(_gdNet>=150 && !g._jinShenFail) _pathTxt += ' ｜ 功德金身可择（成功率 '+Math.round(Math.min(0.50,0.30+_gdNet/10000)*100)+'%）'; // 4.389 门槛 150 + 显示修正 0.35→0.30
+  if(_gdNet>=250 && !g._jinShenFail) _pathTxt += ' ｜ 功德金身可择（成功率 '+Math.round(Math.min(0.30,0.15+_gdNet/30000)*100)+'%）'; // 4.396 门槛 150→250 + 显示同步实际触发
   else if(_gdNet<=-200) _pathTxt += ' ｜ 魔道飞升可择（成功率 '+Math.round(Math.min(0.55,0.40+(-_gdNet)/10000)*100)+'%）';
   else if(g._jinShenFail) _pathTxt += '（功德金身曾尝试失败，此路已断）';
   const _pi=document.createElement('div'); _pi.className='muted'; _pi.style.cssText='font-size:11px;margin:2px 0 6px;color:var(--gold)'; _pi.innerHTML=_pathTxt; btns.appendChild(_pi);
