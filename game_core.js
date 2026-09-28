@@ -904,6 +904,16 @@ function endingBonus(){
   if(n >= 4)  return 1;
   return 0;
 }
+/* 法宝图鉴收集里程碑 → 永久四维加成（法宝库渐丰，底蕴渐厚；比例档，克制最多 +6；口径与法宝图鉴页一致——仅计当前 4 部件×12 池） */
+function boneCollectBonus(){
+  const total = 48;
+  const n = BONE_SLOTS.reduce(function(_a,_sl){ return _a + (BONE_NAMES[_sl]||[]).filter(function(_x){ return atlasHas('bones',_x); }).length; }, 0);
+  const ratio = n / total;
+  if(ratio >= 0.8)  return 6; // ≥39 件（48×80%=38.4→39）
+  if(ratio >= 0.55) return 3; // ≥27 件
+  if(ratio >= 0.3)  return 1; // ≥15 件
+  return 0;
+}
 
 /* ============ 成就系统（DL_RS_4.139）：图鉴「成就」页展示的跨世成就清单 ============
    分「收集 / 生涯 / 战绩」三类，解锁状态由跨局持久化数据实时推导，无需额外存储：
@@ -1950,8 +1960,9 @@ function renderAtlasSumm(){
       <div class="atlas-chip"><b>+${endingBonus()}</b><span>结局神识</span></div>
       <div class="atlas-chip"><b>+${gongfaAtlasCultMult()*100}%</b><span>功法修炼</span></div>
       <div class="atlas-chip"><b>+${shentongAtlasBonus()}</b><span>神通四维</span></div>
+      <div class="atlas-chip" title="法宝图鉴收集驱动（跨世获得/炼成/本命祭炼，15/27/39 件得四维 +1/+3/+6）"><b>+${boneCollectBonus()}</b><span>法宝四维</span></div>
       <div class="atlas-chip" title="收集称号（跨局荣誉，无属性加成——纯收集动力）"><b>${collectionTitles().length}</b><span>称号</span></div>
-      <div style="grid-column:1/-1;font-size:10.5px;color:var(--dim);opacity:.8;margin-top:2px">法宝收集暂无永久加成（纯收藏）；成就气运来自跨局成就记录</div>
+      <div style="grid-column:1/-1;font-size:10.5px;color:var(--dim);opacity:.8;margin-top:2px">法宝收集达成 30%/55%/80% → 四维 +1/+3/+6（跨世生效）；成就气运来自跨局成就记录</div>
     </div></div>`;
 }
 $('btnAtlas').onclick = ()=>{ openAtlasModal(); };
@@ -2780,6 +2791,8 @@ function awakenSoul(g){
   Object.keys(bonus).forEach(k=>{ g.a[k] = clampAttr(k, g.a[k]+bonus[k]); });
   // 神通图鉴收集 → 永久四维加成（觉醒即生效）
   { const _stB = shentongAtlasBonus(); if(_stB){ ['力量','灵动','气血','神识'].forEach(k=>{ g.a[k] = clampAttr(k, g.a[k]+_stB); }); } }
+  // 法宝图鉴收集 → 永久四维加成（觉醒即生效）
+  { const _bB = boneCollectBonus(); if(_bB){ ['力量','灵动','气血','神识'].forEach(k=>{ g.a[k] = clampAttr(k, g.a[k]+_bB); }); } }
   // 顶级/天灵根额外增幅
   const qb = Q_BONUS[quality]||{};
   Object.keys(qb).forEach(k=>{ g.a[k] = clampAttr(k, g.a[k]+qb[k]); });
@@ -4054,7 +4067,7 @@ const DANFANGS = {
   cui:    {name:'淬体丹', mat:1, herb:2, p:0.75, eff:'气血+5', buy:0, maxUse:0},
   // 中期（金丹-元婴）
   peiyuan:{name:'培元丹', mat:2, herb:2, p:0.70, eff:'气血+15', buy:200, maxUse:5},
-  yijin:  {name:'易筋丹', mat:2, herb:3, p:0.65, eff:'随机四维+2', buy:0, maxUse:3},
+  yijin:  {name:'易筋丹', mat:2, herb:3, p:0.65, eff:'四维各+2', buy:0, maxUse:3},
   juling: {name:'聚灵丹', mat:2, herb:3, p:0.60, eff:'修为+10%当前进度', buy:0, maxUse:3},
   tupo:   {name:'突破丹', mat:1, herb:3, p:0.70, eff:'下次大境界破境成功率+10%', buy:300, maxUse:5},
   shou:   {name:'寿元丹', mat:2, herb:3, p:0.65, eff:'寿元+10', buy:500, maxUse:3},
@@ -8586,12 +8599,13 @@ function fltRealm(g){ // 境界结局——成仙档/渡劫分档（散仙按劫
 }
 function finishLifeAtlas(g, endTitle){ // 世末结算——本局收集（功法/神通）统一写入跨世图鉴，里程碑日志
   // 世末结算——本局收集（灵根/功法/神通/事件）统一写入跨世图鉴
-  const _m0g = gongfaAtlasCultMult(), _m0s = shentongAtlasBonus();
+  const _m0g = gongfaAtlasCultMult(), _m0s = shentongAtlasBonus(), _m0b = boneCollectBonus();
   const _atlasAdd = flushAtlasGain();
-  if(_atlasAdd && (_atlasAdd.gongfas || _atlasAdd.shentongs)){
-    const _m1g = gongfaAtlasCultMult(), _m1s = shentongAtlasBonus();
+  if(_atlasAdd && (_atlasAdd.gongfas || _atlasAdd.shentongs || _atlasAdd.bones)){
+    const _m1g = gongfaAtlasCultMult(), _m1s = shentongAtlasBonus(), _m1b = boneCollectBonus();
     if(_m1g > _m0g) addLog(`<b>图鉴里程碑</b>跨世功法收集达成：修炼速度+${Math.round(_m1g*100)}%（下世起永久生效）。`,'good');
     if(_m1s > _m0s) addLog(`<b>图鉴里程碑</b>跨世神通收集达成：四维+${_m1s}（下世起永久生效）。`,'good');
+    if(_m1b > _m0b) addLog(`<b>图鉴里程碑</b>跨世法宝收集达成：四维+${_m1b}（下世起永久生效）。`,'good');
   }
   recordAtlas('endings', endTitle); // 结局图鉴记录
 }
