@@ -200,19 +200,19 @@ function reforgeBone(id, opts){
   const _log = opts.log !== false, _rd = opts.render !== false;
   const g=G;
   const b=(g.bones||[]).find(x=>x && x.id===id); if(!b) return;
-  if(b.grade==='仙器'){ if(_log){ addLog('仙器已是至宝，非人力可铸，无法重铸。','sys'); renderShop(); } return; }
+  if(b.grade==='仙器'){ if(_log){ addLog('仙器已是至宝，非人力可铸，无法重铸。','sys'); renderForgePanel(); } return; }
   // 4.209 炼器深化——凡→灵→宝→仙 全链可铸；妖兽材料入消耗（资源取舍：上缴/炼丹/炼器）；宝→仙失败仅损材（保底 5 次必成）
   const _p = rbParams(b); // 4.255：重铸参数抽子函数
   const fee = _p.fee, mat = _p.mat, succ = _p.succ, tgt = _p.tgt, reqLv = _p.reqLv, reqRing = _p.reqRing;
-  if(g.money < fee){ if(_log){ addLog('灵石不足，无法重铸。','bad'); renderShop(); } return; }
-  if((g.materials||0) < mat){ if(_log){ addLog('妖兽材料不足（需 '+mat+' 妖丹），无法重铸。','bad'); renderShop(); } return; }
+  if(g.money < fee){ if(_log){ addLog('灵石不足，无法重铸。','bad'); renderForgePanel(); } return; }
+  if((g.materials||0) < mat){ if(_log){ addLog('妖兽材料不足（需 '+mat+' 妖丹），无法重铸。','bad'); renderForgePanel(); } return; }
   if(g.realm < reqLv || (g.rings||[]).length < reqRing){
-    if(_log){ addLog('修为不足：'+tgt+'法宝需'+(tgt==='仙器'?'大乘 + 8 道胎':tgt==='宝器'?'元婴 + 4 道胎':'筑基 + 1 道胎')+'方可炼化，强行重铸只会经脉寸断。','bad'); renderShop(); }
+    if(_log){ addLog('修为不足：'+tgt+'法宝需'+(tgt==='仙器'?'大乘 + 8 道胎':tgt==='宝器'?'元婴 + 4 道胎':'筑基 + 1 道胎')+'方可炼化，强行重铸只会经脉寸断。','bad'); renderForgePanel(); }
     return;
   }
   g.money -= fee; g.materials = (g.materials||0) - mat;
   rbResolve(g, b, tgt, succ, _log); // 4.255：结果判定抽子函数
-  if(_rd){ renderShop(); renderGame(); }
+  if(_rd){ renderForgePanel(); renderGame(); }
 }
 function rbParams(b){ // 重铸参数——费用/材料/成功率/目标品阶/修为与道胎要求（凡→灵→宝→仙 全链）
   const fee = b.grade==='凡器' ? 300 : b.grade==='灵器' ? 1500 : 8000;
@@ -3887,18 +3887,21 @@ function buyCave(id){
 }
 
 // ==================== 坊市系统 ====================
-function renderShop(){
+let SHOP_TAB = 'grocer'; // 4.407 万宝楼标签分类（杂货/洞府/灵宝/功法神通）
+function setShopTab(t){ SHOP_TAB = t; renderShop(); }
+function renderShop(){ // 万宝楼——按标签分类，避免一长页难读（4.407）
   const g=G;
   const owned = g.artifacts||{};
-  // 4.220：超大函数拆分——按坊市区块抽子函数（各区块返回 html 片段，渲染结果零变化）
   let html = '<div style="border:1px solid var(--line);border-radius:8px;padding:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="color:var(--gold);font-weight:700">万宝楼 · 灵石 '+Math.floor(g.money)+'</div><button class="btn mini" title="关闭万宝楼" onclick="toggleShop()">✕ 关闭</button></div>';
-  html += renderShopGrocer(g);          // 坊市杂货——丹药/妖丹/法宝
-  html += renderShopDanfang(g);         // 炼丹区
-  html += renderShopCave(g);            // 洞府
-  html += renderShopArtifacts(g, owned);// 灵宝
-  html += renderShopGongfa(g);          // 坊市功法
-  html += renderShopShentong(g);        // 坊市神通
-  html += renderShopRefine(g);          // 炼器阁重铸
+  const _tabs = [['grocer','杂货'],['cave','洞府'],['artifact','灵宝'],['gongfa','功法神通']];
+  html += '<div style="display:flex;gap:4px;margin-bottom:4px;flex-wrap:wrap">'+_tabs.map(function(t){
+    const _on = SHOP_TAB===t[0];
+    return '<button class="btn mini" style="'+(_on?'background:var(--gold);color:#141414;border-color:var(--gold)':'')+'" onclick="setShopTab(\''+t[0]+'\')">'+t[1]+'</button>';
+  }).join('')+'</div>';
+  if(SHOP_TAB==='grocer') html += renderShopGrocer(g);            // 坊市杂货——丹药/妖丹/法宝
+  else if(SHOP_TAB==='cave') html += renderShopCave(g);            // 洞府
+  else if(SHOP_TAB==='artifact') html += renderShopArtifacts(g, owned); // 灵宝
+  else { html += renderShopGongfa(g); html += renderShopShentong(g); } // 功法神通
   html += '<div class="muted" style="font-size:11px;margin-top:4px">灵宝可重复购买、永久生效，价格随次数递增（每次 +50%）——后期灵石的主要出口。</div></div>';
   $('shopPanel').innerHTML = html;
 }
@@ -3918,8 +3921,29 @@ function rsgRow(g, name, color, desc, price, onclick){ // 杂货单商品行—�
     + '<div><b style="color:'+color+'">'+name+'</b> <span class="muted" style="font-size:11px">'+desc+'</span></div>'
     + '<button class="btn mini" '+(g.money<price?'disabled':'')+' onclick="'+onclick+'">'+price+' 灵石</button></div>';
 }
-function renderShopDanfang(g){ // 炼丹区——妖材×灵草 → 丹药
-  let html = '<div style="font-size:12px;color:var(--gold);margin:8px 0 2px">—— 炼丹（妖材×'+(g.materials||0)+' · 灵草×'+(g.herbs||0)+'） ——</div>';
+let FORGE_TAB = 'dan'; // 4.408 炼造面板子标签（炼丹/炼器）
+function setForgeTab(t){ FORGE_TAB = t; renderForgePanel(); }
+function toggleForge(){ // 4.408 炼造面板开关（炼丹+炼器合并）
+  const p=$('forgePanel'); if(!p) return;
+  if(p.style.display !== 'none'){ p.style.display='none'; return; }
+  renderForgePanel(); p.style.display='block';
+}
+function renderForgePanel(){ // 炼造——炼丹/炼器（4.408 合并：制作行为统一入口）
+  const p=$('forgePanel'); if(!p) return;
+  const g=G;
+  let html = '<div style="border:1px solid var(--line);border-radius:8px;padding:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="color:var(--gold);font-weight:700">炼造 · 妖材×'+(g.materials||0)+' 灵草×'+(g.herbs||0)+'</div><button class="btn mini" title="关闭炼造" onclick="toggleForge()">✕ 关闭</button></div>';
+  const _tabs = [['dan','炼丹'],['refine','炼器']];
+  html += '<div style="display:flex;gap:4px;margin-bottom:4px">'+_tabs.map(function(t){
+    const _on = FORGE_TAB===t[0];
+    return '<button class="btn mini" style="'+(_on?'background:var(--gold);color:#141414;border-color:var(--gold)':'')+'" onclick="setForgeTab(\''+t[0]+'\')">'+t[1]+'</button>';
+  }).join('')+'</div>';
+  if(FORGE_TAB==='dan') html += renderDanContent(g);      // 炼丹
+  else html += renderRefineContent(g);                    // 炼器
+  html += '</div>';
+  p.innerHTML = html;
+}
+function renderDanContent(g){ // 炼丹内容（无面板头，4.408 并入炼造）
+  let html = '';
   Object.keys(DANFANGS).forEach(function(id){
     const df = DANFANGS[id];
     const owned = (g.danfangOwned||[]).indexOf(id)>=0;
@@ -3931,10 +3955,13 @@ function renderShopDanfang(g){ // 炼丹区——妖材×灵草 → 丹药
         + '<button class="btn mini" '+(en?'':'disabled')+' onclick="lianDan(\''+id+'\')">炼制</button></div>';
     } else {
       html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 2px;border-bottom:1px dashed #3a3a44">'
-        + '<div><b style="color:#7a7a8a">'+df.name+'</b> <span class="muted" style="font-size:11px">丹方未得 · '+df.eff+'</span></div>'
-        + '<button class="btn mini" '+(g.money<df.buy?'disabled':'')+' onclick="buyDanfang(\''+id+'\')">'+df.buy+' 灵石购方</button></div>';
+        + '<div><b style="color:#7a7a8a">'+df.name+'</b> <span class="muted" style="font-size:11px">丹方未得 · '+df.eff+' · '+((df.buy>0)?('坊市可购（'+df.buy+'灵石）'):'仅机缘可得')+'</span></div>'
+        + ((df.buy>0)
+          ? '<button class="btn mini" '+(g.money<df.buy?'disabled':'')+' onclick="buyDanfang(\''+id+'\')">'+df.buy+' 灵石购方</button>'
+          : '') + '</div>'; // 4.406 购方按钮仅可购丹方；buy:0 仅机缘可得
     }
   });
+  html += '<div class="muted" style="font-size:11px;margin-top:4px">炼丹消耗妖材与灵草（猎妖/宗门/坊市可得）；丹方可于坊市购买或机缘获得；丹药服用上限每大境界重置。</div>';
   return html;
 }
 function renderShopCave(g){ // 洞府——灵气加成（闭关修为+突破护道）
@@ -3994,27 +4021,25 @@ function renderShopShentong(g){ // 坊市出售神通（战斗增益，购得后
   }
   return html;
 }
-function renderShopRefine(g){ // 4.167 炼器阁：法宝重铸（凡器→灵器→宝器；仙器不可重铸）
+function renderRefineContent(g){ // 炼器内容（无面板头，4.408 并入炼造）
   let html = '';
   const _bones = g.bones||[];
   const _ref = _bones.filter(b=>b && b.grade!=='仙器');
-  if(_ref.length){
-    html += '<div style="font-size:12px;color:var(--gold);margin:8px 0 2px">—— 炼器阁（法宝重铸）——</div>';
-    _ref.forEach(b=>{
-      const _fee = b.grade==='凡器' ? 300 : b.grade==='灵器' ? 1500 : 8000;
-      const _mat = b.grade==='凡器' ? 2 : b.grade==='灵器' ? 4 : 8;
-      const _succ = b.grade==='凡器' ? 0.70 : b.grade==='灵器' ? 0.50 : 0.30;
-      const _tgt = b.grade==='凡器' ? '灵器' : b.grade==='灵器' ? '宝器' : '仙器';
-      const _reqLv = _tgt==='仙器' ? 8 : _tgt==='宝器' ? 4 : 2; // realm 境界门槛
-      const _reqRing = _tgt==='仙器' ? 8 : _tgt==='宝器' ? 4 : 1;
-      const _pityTxt = (_tgt==='仙器' && (g._refinePity||0) > 0) ? ('<span style="color:#e0763a"> · 保底 '+(g._refinePity||0)+'/5</span>') : '';
-      const _can = g.money>=_fee && (g.materials||0)>=_mat && g.realm>=_reqLv && (g.rings||[]).length>=_reqRing;
-      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 2px;border-bottom:1px dashed #3a3a44">'
-        + '<div><b>'+b.name+'</b><span class="muted" style="font-size:10px"> · '+b.grade+'（'+b.main+'+'+b.pct+'%）→ '+_tgt+'</span>'+_pityTxt+'</div>'
-        + '<button class="btn mini" '+(_can?'':'disabled')+' data-id="'+b.id+'" onclick="reforgeBone(this.dataset.id)">'+_fee+' 灵石+'+_mat+'材 · '+Math.round(_succ*100)+'%</button></div>';
-    });
-    html += '<div class="muted" style="font-size:11px">重铸消耗妖兽材料，失败不退；凡→灵/灵→宝 失败 15% 法宝受损（凡器碎裂 / 灵器跌回凡器）；宝→仙 失败仅损材料，累计 5 次必成。本命法宝不参与重铸。</div>';
-  }
+  if(!_ref.length){ html += '<div class="muted" style="font-size:11px">当前无可重铸法宝（仙器已是至宝）。</div>'; return html; }
+  _ref.forEach(b=>{
+    const _fee = b.grade==='凡器' ? 300 : b.grade==='灵器' ? 1500 : 8000;
+    const _mat = b.grade==='凡器' ? 2 : b.grade==='灵器' ? 4 : 8;
+    const _succ = b.grade==='凡器' ? 0.70 : b.grade==='灵器' ? 0.50 : 0.30;
+    const _tgt = b.grade==='凡器' ? '灵器' : b.grade==='灵器' ? '宝器' : '仙器';
+    const _reqLv = _tgt==='仙器' ? 8 : _tgt==='宝器' ? 4 : 2; // realm 境界门槛
+    const _reqRing = _tgt==='仙器' ? 8 : _tgt==='宝器' ? 4 : 1;
+    const _pityTxt = (_tgt==='仙器' && (g._refinePity||0) > 0) ? ('<span style="color:#e0763a"> · 保底 '+(g._refinePity||0)+'/5</span>') : '';
+    const _can = g.money>=_fee && (g.materials||0)>=_mat && g.realm>=_reqLv && (g.rings||[]).length>=_reqRing;
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 2px;border-bottom:1px dashed #3a3a44">'
+      + '<div><b>'+b.name+'</b><span class="muted" style="font-size:10px"> · '+b.grade+'（'+b.main+'+'+b.pct+'%）→ '+_tgt+'</span>'+_pityTxt+'</div>'
+      + '<button class="btn mini" '+(_can?'':'disabled')+' data-id="'+b.id+'" onclick="reforgeBone(this.dataset.id)">'+_fee+' 灵石+'+_mat+'材 · '+Math.round(_succ*100)+'%</button></div>';
+  });
+  html += '<div class="muted" style="font-size:11px;margin-top:4px">重铸消耗妖兽材料，失败不退；凡→灵/灵→宝 失败 15% 法宝受损（凡器碎裂 / 灵器跌回凡器）；宝→仙 失败仅损材料，累计 5 次必成。本命法宝不参与重铸。</div>';
   return html;
 }
 /* 坊市丹药购买——回气丹（气血+8）/ 凝神丹（悟性+2） */
@@ -4083,8 +4108,8 @@ const DANFANGS = {
 function lianDan(id){
   const g=G, a=g.a, df = DANFANGS[id];
   if(!df) return;
-  if((g.danfangOwned||[]).indexOf(id)<0){ addLog('尚未掌握此丹方。','bad'); renderShop(); return; }
-  if((g.materials||0) < df.mat || (g.herbs||0) < df.herb){ addLog(`材料不足（需妖兽材料×${df.mat}、灵草×${df.herb}）。`,'bad'); renderShop(); return; }
+  if((g.danfangOwned||[]).indexOf(id)<0){ addLog('尚未掌握此丹方。','bad'); renderForgePanel(); return; }
+  if((g.materials||0) < df.mat || (g.herbs||0) < df.herb){ addLog(`材料不足（需妖兽材料×${df.mat}、灵草×${df.herb}）。`,'bad'); renderForgePanel(); return; }
   g.materials -= df.mat; g.herbs -= df.herb;
   // 成功率：基础 + 悟性修正（每10点+1%，上限+10%） + 境界修正（每大境界+2%，上限+10%），总上限 95%
   let p = df.p + Math.min(0.10, (a.悟性||0)*0.001) + Math.min(0.10, g.realm*0.02);
@@ -4096,7 +4121,7 @@ function lianDan(id){
     const _used = g.pillUse[id] || 0;
     if(_used >= _maxUse){
       addLog(`此丹此境界已服${_maxUse}次，药力已尽，再服无效。`,'bad');
-      renderShop(); return;
+      renderForgePanel(); return;
     }
   }
   if(Math.random() < p){ g._danOk = (g._danOk||0) + 1; atlasGain('dans', id); // 4.314 成就计数：炼丹成功；4.322 丹药图鉴记录
@@ -4128,19 +4153,19 @@ function lianDan(id){
   } else {
     addLog(`炼丹失败……${df.name}的药材尽毁（材料已耗）。`,'bad');
   }
-  renderShop(); renderGame();
+  renderForgePanel(); renderGame();
 }
 /* 坊市购丹方（突破/寿元/气运丹方需灵石解锁） */
 function buyDanfang(id){
   const g=G, df=DANFANGS[id];
   if(!df || !df.buy) return;
   if((g.danfangOwned||[]).indexOf(id)>=0){ addLog('你已掌握此丹方。','sys'); return; }
-  if(g.money < df.buy){ addLog('灵石不足（需 '+df.buy+'）。','bad'); renderShop(); return; }
+  if(g.money < df.buy){ addLog('灵石不足（需 '+df.buy+'）。','bad'); renderForgePanel(); return; }
   g.money -= df.buy;
   g.danfangOwned = g.danfangOwned || [];
   g.danfangOwned.push(id);
   addLog(`购得「${df.name}」丹方（灵石-${df.buy}）。`,'good');
-  renderShop(); renderGame();
+  renderForgePanel(); renderGame();
 }
 function buyArtifact(id){
   const g=G;
@@ -4341,6 +4366,10 @@ function renderActionsOrg(g, btns){ // 宗门 + 坊市
     bOrg.onclick=()=>toggleOrgPanel();
     btns.appendChild(bOrg);
   }
+  const bForge=document.createElement('button'); bForge.className='btn'; // 4.408 炼造合并入口（炼丹+炼器，制作行为统一）
+  bForge.textContent='炼造'; bForge.title='炼造：炼丹（妖材×灵草→丹药，需掌握丹方）与炼器（灵石×妖材重铸法宝）。';
+  bForge.onclick=()=>toggleForge();
+  btns.appendChild(bForge);
   const bShop=document.createElement('button'); bShop.className='btn';
   bShop.textContent='万宝楼'; bShop.title='万宝楼：消耗灵石购买灵宝、丹药、功法神通与洞府（后期金钱出口）；与「更多机缘·逛坊市」（奇遇/零钱）不同。';
   bShop.onclick=()=>toggleShop();
